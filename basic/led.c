@@ -1,4 +1,11 @@
 
+/* Enciende y apaga un led conectado al puerto B bit 5 de un atmega328 */
+
+/* 
+ * El puerto B de un atmega328 tiene los bits 0-5 mapeados a los pines 8-13 de
+ *  arduino 
+ */
+
 #ifndef F_CPU
 #define F_CPU 16000000UL // or whatever may be your frequency
 #endif
@@ -8,15 +15,15 @@
  
 int main(void)
 {
-    DDRC = 0x01;                       // initialize port C
+    DDRB = 0x20;                       // initialize port B
     while(1)
     {
         // LED on
-        PORTC = 0b00000001;            // PC0 = High = Vcc
-        _delay_ms(500);                // wait 500 milliseconds
+        PORTB = 0b00100000;            // PB5 = High = Vcc
+        _delay_ms(1000);                // wait 1000 milliseconds (un segundo)
  
         //LED off
-        PORTC = 0b00000000;            // PC0 = Low = 0v
-        _delay_ms(500);                // wait 500 milliseconds
+        PORTB = 0b00000000;            // PB5 = Low = 0v
+        _delay_ms(1000);                // wait 1000 milliseconds (un segundo)
     }
 }
