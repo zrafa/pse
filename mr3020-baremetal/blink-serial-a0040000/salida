@@ -1,0 +1,63 @@
+# 1 "main.c"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "main.c"
+# 11 "main.c"
+void start_baremetal(void);
+void togle_led(void);
+void wait(int seconds);
+# 59 "main.c"
+int wait_loop0 = 18200;
+int wait_loop1 = 60;
+
+
+void wait(int seconds)
+{
+    int i, j, k;
+
+    for(i = 0; i < seconds; i++)
+    {
+        for(j = 0; j < wait_loop0; j++)
+        {
+            for(k = 0; k < wait_loop1; k++)
+            {
+                int volatile t = 120 * j * i + k;
+                t = t + 5;
+            }
+        }
+    }
+}
+
+void togle_led()
+{
+ unsigned int gpio;
+
+ gpio = (*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000)));
+
+ gpio ^= 1 << 26;
+ gpio ^= 1 << 0;
+ gpio ^= 1 << 17;
+ gpio ^= 1 << 27;
+
+ do { ((*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000))) = (gpio)); (*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000))); } while(0);;
+
+}
+
+void main()
+{
+ unsigned int gpio;
+
+ gpio = (*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000)));
+ gpio &= ~(1 << 26);
+ gpio &= ~(1 << 0);
+ gpio &= ~(1 << 17);
+ gpio &= ~(1 << 27);
+ do { ((*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000))) = (gpio)); (*(volatile unsigned int *)((__typeof__(0x18000000 +0x00040000 +0x8))(((unsigned long)(0x18000000 +0x00040000 +0x8) & 0x1fffffff) | 0xa0000000))); } while(0);;
+
+
+    for(;;)
+    {
+        togle_led();
+        wait(2);
+    }
+}

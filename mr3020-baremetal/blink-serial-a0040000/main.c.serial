@@ -1,0 +1,123 @@
+/*
+ * Copyright (C) 2015 Facultad de Informática Universidad Nacional del Comahue.
+ * 
+ *
+ * This program is free software; you can redistribute  it and/or modify it
+ * under  the terms of  the GNU General  Public License as published by the
+ * Free Software Foundation;  either version 2 of the  License, or (at your
+ * option) any later version.
+ *
+ */
+void start_baremetal(void);
+static void AthrUartPut(char);
+void serial_putc(unsigned char byte);
+void serial_puts (const char *s);
+ 
+#define KSEG1			0xa0000000
+
+#define KSEG1ADDR(a)		((__typeof__(a))(((unsigned long)(a) & 0x1fffffff) | KSEG1))
+
+/*
+ * Address map
+ */
+
+#define AR7240_APB_BASE						0x18000000  /* 384M */
+
+/*
+ * APB block
+ */
+
+#define AR7240_GPIO_BASE					AR7240_APB_BASE+0x00040000
+#define AR7240_UART_BASE					AR7240_APB_BASE+0x00020000
+
+/*
+ * gpio configs
+ */
+
+#define AR7240_GPIO_OUT					AR7240_GPIO_BASE+0x8
+
+/* LED's GPIOs on MR3020:
+ *
+ * 0	=> WLAN
+ * 17	=> ETH
+ * 26	=> WPS
+ * 27	=> INTERNET
+ *
+ */
+
+#define GPIO_INTERNET_LED_BIT               27
+#define GPIO_INTERNET_LED_ON                 0
+#define GPIO_WLAN_LED_BIT                    0
+#define GPIO_WLAN_LED_ON                     1
+#define GPIO_WPS_LED_BIT                    26
+#define GPIO_WPS_LED_ON                      0
+#define GPIO_ETH_LED_BIT                    17
+#define GPIO_ETH_LED_ON                      0
+
+#define UARTDATA_ADDRESS                                             0x0000
+
+#define UARTDATA_UARTTXCSR_LSB                                       9
+#define UARTDATA_UARTTXCSR_MASK                                      0x00000200
+
+#define UARTDATA_UARTTXCSR_GET(x)                                    (((x) & UARTDATA_UARTTXCSR_MASK) >> UARTDATA_UARTTXCSR_LSB)
+#define UARTDATA_UARTTXCSR_SET(x)                                    (((0 | (x)) << UARTDATA_UARTTXCSR_LSB) & UARTDATA_UARTTXCSR_MASK)
+
+#define UARTDATA_UARTRXCSR_LSB                                       8
+
+#define UARTDATA_UARTTXRXDATA_LSB                                    0
+#define UARTDATA_UARTRXCSR_MASK                                      0x00000100
+#define UARTDATA_UARTRXCSR_GET(x)                                    (((x) & UARTDATA_UARTRXCSR_MASK) >> UARTDATA_UARTRXCSR_LSB)
+#define UARTDATA_UARTRXCSR_SET(x)                                    (((0 | (x)) << UARTDATA_UARTRXCSR_LSB) & UARTDATA_UARTRXCSR_MASK)
+#define UARTDATA_UARTTXRXDATA_MASK                                   0x000000ff
+#define UARTDATA_UARTTXRXDATA_GET(x)                                 (((x) & UARTDATA_UARTTXRXDATA_MASK) >> UARTDATA_UARTTXRXDATA_LSB)
+#define UARTDATA_UARTTXRXDATA_SET(x)                                 (((0 | (x)) << UARTDATA_UARTTXRXDATA_LSB) & UARTDATA_UARTTXRXDATA_MASK)
+
+#define ar7240_reg_rd(_phys)    (*(volatile unsigned int *)KSEG1ADDR(_phys))
+#define ar7240_reg_wr_nf(_phys, _val) \
+                    ((*(volatile unsigned int *)KSEG1ADDR(_phys)) = (_val))
+
+#define ar7240_reg_wr(_phys, _val) do {     \
+                    ar7240_reg_wr_nf(_phys, _val);  \
+                    ar7240_reg_rd(_phys);       \
+}while(0);
+
+
+#define uart_reg_read(x)        ar7240_reg_rd( (AR7240_UART_BASE+x) )
+#define uart_reg_write(x, y)    ar7240_reg_wr( (AR7240_UART_BASE+x), y)
+
+static void
+AthrUartPut(char __ch_data)
+{
+    unsigned int rdata;
+
+    do {
+        rdata = uart_reg_read(UARTDATA_ADDRESS);
+    } while (UARTDATA_UARTTXCSR_GET(rdata) == 0);
+    
+    rdata = UARTDATA_UARTTXRXDATA_SET((unsigned int)__ch_data);
+    rdata |= UARTDATA_UARTTXCSR_SET(1);
+
+    uart_reg_write(UARTDATA_ADDRESS, rdata);
+}
+
+void serial_putc(unsigned char byte)
+{
+    if (byte == '\n')   AthrUartPut('\r');
+
+    AthrUartPut((char)byte);
+}
+
+void serial_puts (const char *s)
+{
+	while (*s)
+	{
+		serial_putc (*s++);
+	}
+}
+
+void main()
+{
+    serial_puts("Hello World!\n");
+
+    for(;;);
+}
