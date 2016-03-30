@@ -56,16 +56,15 @@ El capítulo unicamente contiene el código fuente del programa. Se explica como
 Pareciera que todo libro sobre programación comienza con el mismo ejemplo -un programa que imprime 'Hello, World!' en la pantalla del usuario. Un ejemplo como este tan utilizado podría parecer aburrido.
 Entre otras cosas, el ejemplo ayuda al lector a verificar la facilidad o dificultad con la que se pueden escribir programas sencillos en el ambiente de programación utilizado. En ese sentido, el programa 'Hello, World!' es muy útil como benchmark para los usuarios de lenguajes de programación y plataformas de computación.
 
-Basados en el benchmark 'Hello, World!' los sistemas embebidos son las plataformas de computación mas desafiantes con las cuales trabajar. Incluso, en algunos sistemas embebidos podría ser imposible implementar el programa 'Hello, World!'. Y en los sistemas capaces de ejecutar un programa del estilo, el hecho de imprimir mensajes de texto usualmente es más un punto de llegada que el comienzo del aprendizaje.
+Los sistemas embebidos son las plataformas de computación mas desafiantes con las cuales trabajar si se iniciara el aprendizaje con el benchmark 'Hello, World!". Incluso, para algunos sistemas embebidos podría ser imposible implementar este programa. Y en los sistemas en que fuese posible, el hecho de imprimir mensajes de texto usualmente es más un punto de llegada que el comienzo del aprendizaje.
 
+Una presunción principal del ejemplo 'Hello, World!' es que existe algun tipo de dispositivo de salida en el cual las cadenas de caracteres puedan ser mostradas. Una ventana de texto en el monitor del usuario usualmente sirve para ese propósito. Pero, la mayoría de los sistemas embebidos no contienen un monitor o dispositivo de salida similar. Y para los que tengan, tipicamente, requieren una pieza especial de software embebido llamado controlador de pantalla (display driver), que se debe implementar en primer lugar. Si este llegara a ser el caso para un primer programa para estas plataformas entonces sería una manera muy desafiante de comenzar una carrera en programación de sistemas embebidos.
 
-Una presunción principal del ejemplo 'Hello, World!' es que existe algun tipo de dispositivo de salida en el cual las cadenas de caracteres puedan ser mostradas. Una ventana de texto en el monitor del usuario usualmente sirve para ese propósito. Pero, la mayoría de los sistemas embebidos no contienen un monitor o dispositivo de salida similar. Y para los que tengan , tipicamente, requieren una pieza especial de software embebido, llamado controlador de pantalla (display driver), que debe implementar en primer lugar. Si este llegara a ser el caso para un primer programa para estas plataformas entonces sería una manera muy desafiante de comenzar una carrera en programación de sistemas embebidos.
-
-Una forma mucho mas convenientes es comenzar con una programa embebido portable,
+Una forma mucho mas conveniente es comenzar con una programa embebido portable,
 facilmente implementable y pequeño. De esta manera hay pocas posibilidades de
-comenter errores. Por lo que el ejemplo básico presentado en este libro elimina
+comenter errores. Por lo tanto, el ejemplo básico presentado en este libro elimina
 una de las variables si el programa no funciona correctamente la primera vez:
-el programa no contiene un bug en el código, sino que el problema es con las
+el programa no contiene un error en el código, sino que el problema es con las
 herramientas de desarrollo o el proceso utilizado para crear el ejecutable.
 
 
@@ -113,7 +112,7 @@ dure un segundo es dificil. Para conocer la presición puede utilizar un
 cronómetro. Simplemente inicie un cronómetro, cuente la cantidad de veces
 que se apaga el LED, pare el cronómetro, y vea si el número de segundos
 que transcurrieron coinciden con el número de parpadeos contados.
-Si se necesita mayor precisión simplemente cuente mas parpadeos off.
+Si se necesita mayor precisión simplemente cuente por mas tiempo la cantidad de 'apagados'.
 \vspace*{0.4cm} } }
 
 El primer paso es aprender a controlar el LED rojo que deseamos parpadear.
