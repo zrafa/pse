@@ -118,14 +118,17 @@ Si se necesita mayor precisión simplemente cuente por mas tiempo la cantidad de
 El primer paso es aprender a controlar el LED que deseamos parpadear.
 En la placa arduino pro mini, existe un led color rojo localizado entre los
 pines digitales etiquetados '10' y '11' 
-(observe la Figura 3-1). Se debe utilizar los esquemáticos
+(observe la Figura \ref{fig:ledrojo}. Se debe utilizar los esquemáticos
 para conocer el recorrido de la conexión, desde el LED al microcontrolador.
 Este es el método adecuado que necesita realizar cada vez que deba
 conocer cómo está conectado un LED.
 
-\begin{center}
+\begin{figure}
 \includegraphics{led.png}
-\end{center}
+\caption{Ubicación del LED rojo en la placa Arduino Pro mini.}
+\label{fig:ledrojo}
+\end{figure}
+
 
 En los esquemáticos de la placa se puede observar que el LED está controlado por la señal de salida PORTB5 del microcontrolador atmega328p.
 El manual del microcontrolador informa que esa señal es controlada por
@@ -201,13 +204,15 @@ Por cada pin GPIO
 existen varios registros de 8 bits. 
 Estos registros permiten configurar y controlar cada pin GPIO.
 La descripción del puerto que contiene los registros
-para configurar y controlar el pin del LED se muestra en la Figura 3-1. 
+para configurar y controlar el pin del LED se muestra en la Figura \ref{fig:puertob}. 
 
 
 
-\begin{center}
-\includegraphics{descripcion-registro.png}
-\end{center}
+\begin{figure}
+\includegraphics[width=\linewidth]{descripcion-registro.png}
+\caption{Descripcion puerto B.}
+\label{fig:puertob}
+\end{figure}
 
 
 
@@ -215,18 +220,24 @@ El manual del atmega328 establece también que la configuración del pin GPIO pa
 LED es controlado por el bit 5 del registro DDRB (Data Direction Register).
 Los registros DDRX determinan si los pines se utilizarán como ENTRADA
 o como SALIDA.
-La Figura 3-2 muestra la ubicación del bit 5 en el registro DDRB. Este
+La Figura \ref{fig:regpuertob} muestra la descripción de los bits 
+para los registros del puerto B, y en particular, se puede observar la ubicación del bit 5 en el registro DDRB. Este
 bit configura la dirección del pin GPIO que controla el LED rojo.
 
+\begin{figure}
+\includegraphics[width=\linewidth]{portb-ddrb.png}
+\caption{Descripcion de los registros del puerto B.}
+\label{fig:regpuertob}
+\end{figure}
+
+
 \begin{center}
-\includegraphics{portb-ddrb.png}
 \end{center}
 
-Estos registros de configuración y control están ubicados en el espacio de memoria, como se muestra en la Figura 2-6.
-Las direcciones de estos registros se presentan en la Tabla 3-1. 
+Estos registros de configuración y control están ubicados en el espacio de memoria, y sus direcciones se pueden observar en la Figura \ref{fig:regpuertob} presentada anteriormente (primer columna de la izquierda).
 Debido a que los registros están mapeados en memoria se los puede
 acceder fácilmente en C, de la misma manera que una ubicación de memoria
-es leída o escrita.
+es leída o escrita (utilizando la dirección entre paréntesis).
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
@@ -300,7 +311,7 @@ establecido a cero.
  *
  * Description: Initialize the GPIO pin that controls the LED.
  *
- * Notes: This function is specific to the Arcom board.
+ * Notes: This function is specific to the atmega328p.
  *
  * Returns: None.
  *
@@ -343,19 +354,23 @@ Como este registro (PORTB) es de lectura escritura el estado de este bit
  *
  * Description: Toggle the state of one LED.
  *
- * Notes: This function is specific to the Arcom board.
+ * Notes: This function is specific to the atmega238p.
  *
  * Returns: None.
  *
  **********************************************************************/
 void ledToggle(void)
 {
-    /* Check the current state of the LED control pin. Then change the
-     * state accordingly. */
-    if (GPIO_0_LEVEL_REG & LED_ROJO)
-        GPIO_0_CLEAR_REG = LED_ROJO;
-    else
-        GPIO_0_SET_REG = LED_ROJO;
+    volatile unsigned char * PUERTO_B = 0x25;	/* direccion de PUERTO B */
+    unsigned char valor_b;
+
+    /* Turn the GPIO pin voltage off, which will light the LED. This should
+     * be done before the pins are configured. */
+    valor_b = *(PUERTO_B);
+
+    valor_b ^= LED_ROJO;
+
+    *(PUERTO_B) = valor_b;
 }
 \end{verbatim}
 
