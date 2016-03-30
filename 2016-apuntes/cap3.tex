@@ -200,9 +200,8 @@ una funcionalidad. En estos casos, un pin puede ser utilizado por el usuario
 Por cada pin GPIO 
 existen varios registros de 8 bits. 
 Estos registros permiten configurar y controlar cada pin GPIO.
-La descripción de los registros para el puerto GPIO que contiene el pin
-para el LED rojo se muestra en la Tabla 3-1. Estos registros son parte
-del atmega328p.
+La descripción del puerto que contiene los registros
+para configurar y controlar el pin del LED se muestra en la Figura 3-1. 
 
 
 
@@ -245,10 +244,11 @@ o modifique los mismos sin leer el manual.
 NOTA 2: Acceso a registros en espacio de E/S
 Si los registros para los pines GPIO se encuentran en el espacio de E/S
 se los puede acceder unicamente a través de código en lenguaje ensamblador.
-EL lenguaje ensamblador para el 80x86, por ejemplo, tiene instrucciones para
+El lenguaje ensamblador para el 80x86, por ejemplo, tiene instrucciones 
+especificas para
 acceder al espacio de E/S, llamadas in y out. EL lenguaje C no tiene
 soporte nativo para estas operaciones. Funciones específicas en C
-llamadas inport y outport han sido escritas, pero son parte de los
+llamadas inport y outport han sido escritas, pero son parte unicamente de los
 paquetes de bibliotecas estandar específicos para procesadores 80x86.
 \vspace*{0.4cm} } }
 
@@ -256,8 +256,6 @@ La mayoría de los registros dentro de una CPU tienen una configuración
 predeterminada luego de un reset.
 Esto significa que antes de que se pueda controlar la salida de cualquier
 pin de E/S se debe asegurar que el pin está configurado correctamente.
-Luego de un reset, los pines del puerto B del atmega328 están configurados
-como [ COMPLETAR esta seccion . 
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
@@ -287,7 +285,7 @@ x = x \& y. Se explica con un poco mas de detalle estas operaciones para manipul
 de bits en el Capítulo 7.
 
 La funcion ledInit configura el microcontrolador atmega328 en la placa
-arduino pro mini para controlar el led rojo localizado en el centro de la placa.
+arduino pro mini para controlar el led rojo.
 En el código debajo note que se pone en cero el pin GPIO en el registro
 PORTB, para asegurarnos que el voltage de salida en el pin GPIO es 
 establecido a cero.
@@ -310,16 +308,16 @@ establecido a cero.
 
 void ledInit(void)
 {
+    volatile unsigned char * DDR_B = 0x24;	/* direccion de DDR B */
+    volatile unsigned char * PUERTO_B = 0x25;	/* direccion de PUERTO B */
+
     /* Turn the GPIO pin voltage off, which will light the LED. This should
      * be done before the pins are configured. */
-    GPIO_0_CLEAR_REG = LED_ROJO;
+    *(PUERTO_B) = *(PUERTO_B) & (~ LED_ROJO);
 
-    /* Make sure the LED control pin is set to perform general
-     * purpose functions. RedBoot may have changed the pin's operation. */
-    GPIO_0_FUNC_HI_REG &= PIN22_FUNC_GENERAL;
+    /* Make sure the LED control pin is set to operate as OUTPUT */
+    *(DDR_B) = *(DDR_B) | (LED_ROJO);
 
-    /* Set the LED control pin to operate as output. */
-    GPIO_0_DIRECTION_REG |= LED_ROJO;
 }
 \end{verbatim}
 
