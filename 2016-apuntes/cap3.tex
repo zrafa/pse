@@ -115,9 +115,10 @@ que transcurrieron coinciden con el número de parpadeos contados.
 Si se necesita mayor precisión simplemente cuente por mas tiempo la cantidad de 'apagados'.
 \vspace*{0.4cm} } }
 
-El primer paso es aprender a controlar el LED rojo que deseamos parpadear.
-En la placa arduino pro mini, el red rojo está localizado en el centro 
-de la placa (observe la Figura 3-1). Se debe utilizar los esquemáticos
+El primer paso es aprender a controlar el LED que deseamos parpadear.
+En la placa arduino pro mini, existe un led color rojo localizado entre los
+pines digitales etiquetados '10' y '11' 
+(observe la Figura 3-1). Se debe utilizar los esquemáticos
 para conocer el recorrido de la conexión, desde el LED al microcontrolador.
 Este es el método adecuado que necesita realizar cada vez que deba
 conocer cómo está conectado un LED.
@@ -126,8 +127,7 @@ conocer cómo está conectado un LED.
 \includegraphics{led.png}
 \end{center}
 
-El LED está controlado por la señal de salida PORTB5 del microcontrolador
-atmega328p, según los esquemáticos de la placa.
+En los esquematicos de la placa se puede observar que el LED está controlado por la señal de salida PORTB5 del microcontrolador atmega328p.
 El manual del microcontrolador informa que esa señal es controlada por
 un pin GPIO del microcontrolador, bit 5 del PORTB. Por lo tanto,
 se encesita poder alternar ese pin del microcontrolador HIGH y LOW
@@ -139,7 +139,7 @@ este asume que existen funciones llamadas ledInit, ledToggle, y delay\_ms
 para inicializar el pin GPIO que controla el LED, cambiar el estado del LED,
 y manejar el tiempo respectivamente. Esas funciones son descriptas en las 
 siguientes secciones, en las que realmente le encontraremos un
-sentido de lo que se siente al programar sistemas embebidos.
+sentido a lo que se siente al programar sistemas embebidos.
 
 \begin{verbatim}
 #include "led.h"
@@ -176,13 +176,13 @@ int main(void)
 \section *{La función ledInit}
 
 Antes de comenzar a utilizar un periférico particular se debe entender el 
-hardware utilizado para controlar ese periférico específico.
+hardware utilizado para poder controlarlo.
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
 NOTA: Toda la documentación del microcontrolador ATMEL AVR atmega328p, y 
 de la placa arduino pro mini se encuentra disponible. Incluye las hojas de datos,
-manuales de programación, esquemáticos, etc.
+los esquematicos y los manuales de programación.
 \vspace*{0.4cm} } }
 
 Como el LED que se necesita parpadear está conectado a uno de los pines
@@ -194,14 +194,15 @@ o para soportar funcionalidad particular dentro del procesador.
 Los registros de configuración se utilizan para establecer como la aplicación
 utilizará cada pin especifico de un puerto.
 
-En el atmega328p algunos pines de un puerto pueden ser configurado para
-uso por un periférico interno (llamado una funcion alternativa del pin)
-o por el usuario (llamado un pin de propósito general). Por cada GPIO pin
-existen varios registros de 8 bits. Estos registros
-permiten configurar y controlar cada pin GPIO.
+En el atmega328p algunos pines de ciertos puertos pueden tener mas de 
+una funcionalidad. En estos casos, un pin puede ser utilizado por el usuario
+(en cuyo caso se llama 'pin de propósito general') o por un periferico interno (llamado 'funcion alternativa del pin')
+Por cada pin GPIO 
+existen varios registros de 8 bits. 
+Estos registros permiten configurar y controlar cada pin GPIO.
 La descripción de los registros para el puerto GPIO que contiene el pin
 para el LED rojo se muestra en la Tabla 3-1. Estos registros son parte
-del atmega328p
+del atmega328p.
 
 
 
@@ -211,7 +212,7 @@ del atmega328p
 
 
 
-El manual del atmega328 establece que la configuración del pin GPIO para el
+El manual del atmega328 establece tambien que la configuración del pin GPIO para el
 LED es controlado por el bit 5 del registro DDRB (Data Direction Register).
 Los registros DDRX determinan si los pines se utilizarán como ENTRADA
 o como SALIDA.
