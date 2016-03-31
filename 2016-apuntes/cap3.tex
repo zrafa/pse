@@ -345,7 +345,7 @@ Si se desea conocer por software si el LED está encendido o apagado simplemente
 se puede leer el bit 5 de PORTB.
 
 Como este registro (PORTB) es de lectura escritura el estado de este bit
-5 puede ser cambiado con una única instrucción en C.
+5 podría ser cambiado con una única instrucción en C.
 
 \begin{verbatim}
 /**********************************************************************
@@ -364,8 +364,6 @@ void ledToggle(void)
     volatile unsigned char * PUERTO_B = 0x25;	/* direccion de PUERTO B */
     unsigned char valor_b;
 
-    /* Turn the GPIO pin voltage off, which will light the LED. This should
-     * be done before the pins are configured. */
     valor_b = *(PUERTO_B);
 
     valor_b ^= LED_ROJO;
@@ -435,7 +433,7 @@ o la plataforma es reiniciada, cualquiera que suceda primero.
 Además, la mayoría de los sistemas embebidos ejecutan únicamente una sola
 pieza de software. Aunque el hardware sea importante, el sistema
 no es un reloj digital o un celular o un horno microondas sin el software.
-Y si el software para la ejecución, el hardware se convierte en inútil.
+Y sin el software para la ejecución, el hardware es, simplemente, inútil.
 Por lo tanto, las partes funcionales de un programa embebido están siempre
 encerradas por un bucle infinito que se asegura de que el programa
 se ejecutará por siempre.
@@ -447,6 +445,29 @@ parpadeado una única vez.
 
 Michael Barr. Programming Embedded Systems in C and C++ 1st Edition. ISBN-13: 978-1565923546
 ISBN-10: 1565923545. O'Reilly Media; 1 edition (February 9, 1999)
+
+
+\subsection*{Licencia y notas de la traducción}
+
+Este apunte es una traducción del libro de referencia, para
+ser utilizado como apunte en la materia de grado
+'Programación de Sistemas Embebidos' de la Facultad de Informática,
+Universidad Nacional del Comahue.
+Se han realizado modificaciones
+al contenido para aclarar ciertos detalles o agregar partes nuevas.
+ Tambien se han
+modificado todos los archivos fuentes de código, ya que fueron
+portados a la plataforma Atmel atmega328.
+
+Autores : \\
+Rafael Ignacio Zurita ({\tt rafa@fi.uncoma.edu.ar}) \\
+Rodolfo del Castillo ({\tt rdc@fi.uncoma.edu.ar})
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+Esta es una obra derivada del libro de referencia que aún NO ha obtenido permiso de publicación.
+\vspace*{0.4cm} } }
+
 
 
 \include{licGASL}
