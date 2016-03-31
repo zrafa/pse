@@ -30,7 +30,7 @@
 \fancyhf{} % clear all header and footer fields
 \fancypagestyle{plain}{\fancyhf{}}
   	\pagestyle{fancy}
- 	\lhead{\footnotesize Compilacion, vinculacion y localizacion - Departamento de Ingeniería de Computadoras}
+ 	\lhead{\footnotesize Compilación, vinculación y localización - Departamento de Ingeniería de Computadoras}
  	\rhead{\footnotesize \thepage\ }	% ''Page 1 of 2''
 
 \def\ti#1#2{\texttt{#1} & #2 \\ }
@@ -54,7 +54,7 @@ to get along without any software that is not free.}
 
 En este capítulo se examinan los pasos involucrados en la preparación
 del software para la ejecución en un sistema embebido.
-Tambien se dan detalles de las herramientas de desarrollo asociadas
+También se dan detalles de las herramientas de desarrollo asociadas
 al proceso, y se proporciona, como ejemplo, la
 construcción del programa Blinking LED estudiado en el Capítulo anterior.
 
@@ -84,7 +84,7 @@ de desarrollo se ejecutan en una máquina (host) diferente a la plataforma
 de hardware destino (target).
 Cuando la plataforma destino es la misma que la de desarrollo (host), y está
 bien definida, las herramientas de
-desarrollo de software pueden realizar varias cosas automaticamente.
+desarrollo de software pueden realizar varias cosas automáticamente.
  
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
@@ -127,11 +127,11 @@ Cada uno de estos pasos del proceso de compilación de software embebido
 es una transformación realizada por software ejecutado en una computadora
 de propósito general. Para distinguir esta computadora de desarrollo (usualmente una 
 PC o estación de trabajo UNIX) del sistema embebido destino se utiliza el término host computer.
-En esta computadora es donde se ejecuta el compilador, ensamblador, vinculador y se realiza la localizacion (locator).
+En esta computadora es donde se ejecuta el compilador, ensamblador, vinculador y se realiza la localización (locator).
 Aunque, como ya mencionado, estas herramientas trabajan en conjunto
 para producir una imagen binaria que puede ser ejecutada
-unicamente en el sistema embebido destino. Esta división de responsabilidades
-se represetan en la Figura 4-2
+únicamente en el sistema embebido destino. Esta división de responsabilidades
+se representan en la Figura 4-2
 
 En este libro se utilizan las herramientas de desarrollo del proyecto GNU
 (compilador, ensamblador, vinculador y debugger) las cuales son software libre
@@ -144,11 +144,11 @@ de desarrollo equivalentes (comerciales o no).
 
 La tarea de un compilador es, principalmente, traducir programas escritos en 
 algún lenguaje leíble por personas en un conjunto equivalente
-de codigos de operación para algún procesador particular. En ese sentido,
+de códigos de operación para algún procesador particular. En ese sentido,
 el ensamblador es también un compilador (generalmente se lo llama
 compilador de lenguaje ensamblador), pero su tarea es mas sencilla, ya que
-realiza una traducción de uno a uno, de nemotécnicos leible por personas
-en sus equivalentes codigos de operación de la CPU. El resto de lo explicado en esta sección
+realiza una traducción de uno a uno, de nemotécnicos leíble por personas
+en sus equivalentes códigos de operación de la CPU. El resto de lo explicado en esta sección
 aplica a compiladores y ensambladores. En conjunto, estas herramientas
 realizan el primer paso del proceso de construcción de software embebido
 ya mencionado.
@@ -160,13 +160,13 @@ casi siempre se ejecuta en la computadora host. Simplemente no tiene sentido,
 la mayoría de las veces, ejecutar el compilador en el sistema embebido.
 Un compilador que realiza esta tarea -se ejecuta en una plataforma  y produce
 código para otra- es llamado un compilador cruzado (cross-compiler). El uso de
-un compilador cruzado es una de las caracteristicas de desarrollo de software
+un compilador cruzado es una de las características de desarrollo de software
 embebido.
 
 El compilador C GNU (gcc) y el ensamblador (as) pueden ser configurados y compilados
 como compiladores nativos o compiladores cruzados. Estas herramientas soportan
 un impresionante conjunto de combinaciones host-target. El compilador gcc ha sido
-portado a todos los sistemas operativos Mac y PC. Tambien, el soporte de procesadores destino
+portado a todos los sistemas operativos Mac y PC. También, el soporte de procesadores destino
 es extenso, e incluye AVR, Intel x86, MIPS, PowerPC, ARM y SPARC. Información
 adicional puede ser encontrada online en http://gcc.gnu.org
 
@@ -179,7 +179,7 @@ contiene código ejecutable el archivo objeto no puede ser ejecutado directament
 
 
 El contenido de un archivo objeto puede ser imaginado como una estructura de datos
-muy grande y flexible. La estructura del archivo está definida en un formato estandar, 
+muy grande y flexible. La estructura del archivo está definida en un formato estándar, 
 por ejemplo, Common Object File Format (COFF) o Executable and Linkable Format (ELF).
 Si se utiliza más de un compilador (i.e. se está escribiendo diferentes partes de un programa
 en diferentes lenguajes fuente) se debe estar seguro que el compilador es capaz
@@ -191,19 +191,19 @@ Si se utilizan compiladores de este último grupo se necesita obtener todas
 las restantes herramientas de desarrollo desde el mismo proveedor.
 
 
-La mayoria de los archivos objetos comienzan con un encabezado que describe las secciones
-que siguen. Cada una de esas secciones contienen uno o mas bloques de codigo o datos que 
+La mayoría de los archivos objetos comienzan con un encabezado que describe las secciones
+que siguen. Cada una de esas secciones contienen uno o mas bloques de código o datos que 
 provienen de los archivos fuentes. De cualquier manera, el compilador tiene reagrupado
 esos bloques en secciones relacionadas. Por ejemplo, gcc agrupa todos los bloques de
-cógido en una sección llamada text, todas las variables globales inicializadas (y sus
+código en una sección llamada text, todas las variables globales inicializadas (y sus
 valores iniciales) en una sección llamada data, y todas las variables globales sin 
 inicializar en una sección llamada bss.
 
-Hay tambien, usualmente, una tabla de símbolos en el archivo objeto, que contiene
+Hay también, usualmente, una tabla de símbolos en el archivo objeto, que contiene
 los nombres y las ubicaciones de todas las variables y funciones referenciadas dentro
 del archivo fuente. Partes de esta tabla podría estar incompleta, debido a que
 no todas las variables y funciones son siempre definidas en el mismo archivo fuente. 
-Esos son los simbolos que hacen referencia a variables y funciones definidas en 
+Esos son los símbolos que hacen referencia a variables y funciones definidas en 
 otro archivo fuente distinto. Es trabajo del vinculador resolver todas esas referencias
 no resueltas.
 
@@ -211,11 +211,11 @@ no resueltas.
 
 Todos los archivos objetos que fueron el resultado del paso uno del proceso deben
 ser vinculados. Los archivos objetos individualmente están incompletos, por lo que
-alguna de las refencias a variables y funciones internas aún no han sido resueltas.
+alguna de las referencias a variables y funciones internas aún no han sido resueltas.
 La tarea del vinculador (linker) es combinar esos archivos objetos, y en el proceso,
-resolver todos los simbolos no resueltos.
+resolver todos los símbolos no resueltos.
 
-La salida del vinculador es un nuevo archivo objeto, que contiene todo el codigo y datos
+La salida del vinculador es un nuevo archivo objeto, que contiene todo el código y datos
 de los archivos objetos de entrada (en el mismo formato).
 Eso es logrado al combinar las secciones text, data y bss de los archivos de entrada.
 Cuando el vinculador finaliza, todo el código en lenguaje máquina de todos los archivos
@@ -224,34 +224,34 @@ inicializadas o no en las secciones nuevas data y bss respectivamente.
 
 Mientras el vinculador está en el proceso de integrar 
 los contenidos de las secciones también 
-busca los simbolos sin resolver. Por ejemplo, si un archivo objeto contiene 
+busca los símbolos sin resolver. Por ejemplo, si un archivo objeto contiene 
 una referencia no resuelta a  una variable llamada foo, y una variable con 
 el mismo nombre está declarada en uno de los archivos objetos, el vinculador
 integrará ambas. La referencia no resuelta sera reemplazada con la referencia
 a la variable encontrada. Por ejemplo, si foo está ubicada a 14 bytes de desplazamiento
-de donde comienza la sección de datos, su entrada en la tabla de simbolos ahora
+de donde comienza la sección de datos, su entrada en la tabla de símbolos ahora
 contendrá esa dirección.
 
 El vinculador (ld) GNU se está portado a todas las mismas plataformas en donde
 fue portado el compilador GNU (gcc). Esta es una herramienta de la linea de comandos
 que toma como argumentos de entrada todos los nombres de los archivos objeto, 
 y posiblemente bibliotecas a ser vinculadas.
-Con software embebido, un archivo objeto especial que contiene el codigo de 
-inicialización (startup code), debe también ser incluído dentro de esta
+Con software embebido, un archivo objeto especial que contiene el código de 
+inicialización (startup code), debe también ser incluido dentro de esta
 lista de archivos que procesa ld (se darán mas detalles sobre el código
 de inicialización en secciones siguientes). Finalmente, cabe mencionar
 que el vinculador GNU tiene un lenguaje de scripting que puede ser utilizado
 para controlar cómo debe ser el archivo objeto de salida.
 
-Si el mismo simbolo es declarado en más de un archivo objeto de los que 
+Si el mismo símbolo es declarado en más de un archivo objeto de los que 
 procesa ld entonces se finalizará el proceso inmediatamente, mostrando un mensaje
 de error al usuario explicando el error de programación.
 
-Por el contrario, si una referencia a un simbolo queda sin resolver luego de
+Por el contrario, si una referencia a un símbolo queda sin resolver luego de
 procesado todos los archivos objetos el vinculador intentará resolver la misma
 por su cuenta.
-La referencia podría ser una funcion, tal como memcpy, strlen o malloc, que son
-parte de la biblioteca de C estandar, por lo que ld abrirá cada uno de las
+La referencia podría ser una función, tal como memcpy, strlen o malloc, que son
+parte de la biblioteca de C estándar, por lo que ld abrirá cada uno de las
 bibliotecas descriptas como argumentos en la línea de comandos (en el orden
 en que se mencionaron) y examina sus tablas de símbolos. 
 Si el vinculador descubre una función o variable con ese nombre la referencia
@@ -260,7 +260,7 @@ archivos objeto de salida.
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
-NOTA: Este último procedimiento realizado por ld es unicamente para vinculación
+NOTA: Este último procedimiento realizado por ld es únicamente para vinculación
 estática. Cuando se realiza vinculación dinámica de bibliotecas el código 
 y datos asociados con la rutina de biblioteca no son insertadas dentro
 del programa.
@@ -273,23 +273,23 @@ otras funciones sin referenciar afuera de la imagen de salida
 del vinculador.
 \vspace*{0.4cm} } }
 
-Desafortunadamente, las rutinas de la biblioteca estandar frecuentemente requiere 
+Desafortunadamente, las rutinas de la biblioteca estándar frecuentemente requiere 
 algunos (o muchos) cambios antes que pueda ser utilizada en un sistema embebido.
-Un problema es que las bibliotecas estandar provistas con la mayoria de las 
-suites de herramientas de desarrollo de software vienen unicamente en forma objeto.
+Un problema es que las bibliotecas estándar provistas con la mayoría de las 
+suites de herramientas de desarrollo de software vienen únicamente en forma objeto.
 Raramente tienes acceso al código fuente de la biblioteca para hacer los 
 cambios necesarios. Pero, existen algunas alternativas. Una de ellas es
-la provista por la compañia Cygnus (la cual es ahora parte de Red Hat),
-la cual creó una versión freeware de la biblioteca de C estandar para utilizar 
+la provista por la compañía Cygnus (la cual es ahora parte de Red Hat),
+la cual creó una versión freeware de la biblioteca de C estándar para utilizar 
 en sistemas embebidos.
 Este paquete es llamado newlib. Simplemente se necesita descargar el código fuente
-para esta bilbioteca desde la web (actualmente ubicada en http://sourceware.org/newlib),
-implementar unas pocas funciones especificas para el hardware destino y complilar.
+para esta biblioteca desde la web (actualmente ubicada en http://sourceware.org/newlib),
+implementar unas pocas funciones especificas para el hardware destino y compilar.
 La biblioteca puede luego ser vinculada con nuestras aplicaciones embebidas
-para resolver cualquier llamada a la biblioteca estandar sin resolver previamente.
+para resolver cualquier llamada a la biblioteca estándar sin resolver previamente.
 
-Luego de intgegrar todas las secciones de código y datos, y de resolver todas
-las referencias a simbolos, el vinculador genera un archivo objeto que es
+Luego de integrar todas las secciones de código y datos, y de resolver todas
+las referencias a símbolos, el vinculador genera un archivo objeto que es
 una copia "reubicable" (relocatable) especial del programa. En otras palabras,
 el programa ya está completo, con la excepción de una cosa: todavía
 resta definir las direcciones de memoria asignadas a las secciones de código y 
@@ -298,20 +298,20 @@ sistema embebido entonces el programa estaría listo para ejecutarse.
 
 Pero, los programadores de sistemas embebidos aún deben realizar una
 tarea más en este punto, ya que 
-las direcciones de los simbolos en el proceso de vinculación son relativas.
+las direcciones de los símbolos en el proceso de vinculación son relativas.
 Aun si tu sistema embebido incluye un sistema operativo aun es necesario
 que la imagen binaria final sea ubicada de manera absoluta (y no relativa).
 De hecho, si existe un sistema operativo en el proyecto del sistema embebido,
-el codigo y datos del mismo mayormentes esttará en el programa reubicable 
+el código y datos del mismo mayormente estará en el programa reubicable 
 también.
 La aplicación embebida completa -incluyendo el sistema operativo- es
 frecuentemente vinculada en conjunto y ejecutada como una imagen binaria
 individual.
 
-\subsubsection *{Codigo de inicialización (Startup code)}
+\subsubsection *{Código de inicialización (Startup code)}
 
 Una de las acciones que las herramientas de software tradicional realizan
-es agregar automaticamente el codigo de incialización: un pequeño bloque
+es agregar automáticamente el código de inicialización: un pequeño bloque
 de código en lenguaje ensamblador que prepara el camino para la ejecución
 del software escrito en un lenguaje de alto nivel. Cada lenguaje de alto
 nivel tiene un conocimiento propio acerca del ambiente de ejecución.
@@ -322,43 +322,43 @@ asignadas al código de inicialización para programas en C.
 
 La mayoría de los compiladores cruzados (cross-compilers) para sistemas
 embebidos incluyen un archivo en lenguaje ensamblador llamado startup.asm, crt0s
-(abreviatura de C runtime), o algun nombre similar. La ubicación y contenido de este
+(abreviatura de C runtime), o algún nombre similar. La ubicación y contenido de este
 archivo está usualmente descripto en el manual suministrado con el compilador.
 
-El codigo de inicialización para programas en C usualmente consiste de la siguiente
+El código de inicialización para programas en C usualmente consiste de la siguiente
 lista de acciones:
 
 \begin{enumerate}
 \item Deshabilitar las interrupciones.
 \item Copiar cualquier dato inicializado desde la ROM a RAM.
-\item Poner en cero el area de datos sin inicializar.
+\item Poner en cero el área de datos sin inicializar.
 \item Reservar espacio e inicializar la pila.
 \item Inicializar el puntero de pila del procesador.
 \item Llamar a main.
 \end{enumerate}
 
-Tipicamente, el codigo de inicialización tambien incluye unas pocas
-instrucciones despues de llamar a main. Estas instrucciones serán ejecutadas
+Típicamente, el código de inicialización también incluye unas pocas
+instrucciones después de llamar a main. Estas instrucciones serán ejecutadas
 sólo en el caso de que el programa en el lenguaje de alto nivel finalice (i.e.
 la llamada a main retorne). Dependiendo de la naturaleza del sistema embebido
 se podría utilizar estas instrucciones para realizar un halt del procesador, 
 reiniciar el sistema entero, o transferir el control a una herramienta
 de verificación (debug tool).
 
-En general, el código de inicialización no es insertado automaticamente, y el
+En general, el código de inicialización no es insertado automáticamente, y el
 programador debe ensamblar e incluir el archivo objeto resultante a la 
 lista de archivos de entrada del vinculador. Además, el programador
 podría necesitar indicarle al vinculador una opción en la línea de comandos especial
 para prevenir que ld intente insertar el código de inicialización provisto
 por el toolchain.
-Codigo de inicialización funcional para una variedad de procesadores puede
+Código de inicialización funcional para una variedad de procesadores puede
 ser encontrado en el paquete GNU llamado libgloss.
 
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
 
-{\tb Debug Monitors}
+{\sf Debug Monitors}
 
 En algunos casos, un debug monitor (o ROM monitor) es el primer código
 ejecutado cuando la placa es encendida. En el caso del arduino pro mini
@@ -366,7 +366,7 @@ existe un bootloader provisto por el proyecto Arduino que es ejecutado
 primero.
 Esta pieza de software que se ejecuta primero puede ser utilizado
 para descargar software, y ubicar el mismo en la memoria FLASH, dirección 0x00.
-Si el bootlodaer no recibe ordenes desde el puerto serial ejecuta la aplicación
+Si el bootloader no recibe ordenes desde el puerto serial ejecuta la aplicación
 actual en FLASH.
 \vspace*{0.4cm} } }
 
@@ -375,7 +375,7 @@ actual en FLASH.
 La herramienta que realiza la conversión de un programa reubicable a
 una imagen binaria ejecutable es llamada un locator.
 Este realiza el paso mas fácil del proceso de compilación. De hecho, 
-el programador debe hacer la mayoria del trabajo en este paso, informando
+el programador debe hacer la mayoría del trabajo en este paso, informando
 detalles acerca de la memoria de la plataforma destino, como entrada
 a el locator. EL locator utiliza esta información para asignar direcciones
 de memoria físicas a las secciones de código y datos dentro del programa
@@ -384,12 +384,12 @@ una imagen de memoria binaria que puede ser descargada dentro del sistema
 embebido destino.
 
 Cuando se escribe software para una computadora de propósito general o
-sistema embebido, en algun punto las secciones del programa reubicable
+sistema embebido, en algún punto las secciones del programa reubicable
 deben tener asignadas direcciones concretas. Algunas veces el software
 que está en la computadora destino realiza esta tarea (por ejemplo un sistema
 operativo o bootloader). No es el caso del arduino pro mini, aunque por suerte,
 las herramientas de desarrollo GNU para arquitectura AVR traen estos detalles 
-incorporadas, como asi tambien el código de inicialización para la mayoría
+incorporadas, como así también el código de inicialización para la mayoría
 de los microcontroladores de AVR de Atmel.
 Cuando se realiza el paso de vinculación y localización para arquitectura AVR,
 con el vinculador GNU ld, se agrega el código de inicialización y se 
@@ -397,12 +397,12 @@ resuelven las direcciones reales de acuerdo al microcontrolador destino.
 
 Si se debe suministrar, manualmente, información de la memoria de la plataforma destino
 al vinculador  GNU, se debe escribir un linker script.
-Estos scripts son utilizados aglunas veces para controlar el orden exacto de
+Estos scripts son utilizados algunas veces para controlar el orden exacto de
 las secciones de código y datos dentro del programa reubicable, y establecer
 la ubicación física de cada sección en memoria.
 
 
-Debajo se muestra un ejemplo extraido y resumido de un linker script
+Debajo se muestra un ejemplo extraído y resumido de un linker script
 para un microcontrolador Atmel de arquitectura AVR. El archivo script
 completo es utilizado por avr-ld en la compilación el ejemplo Blinking LED
 presentado en el Capítulo 3.
@@ -440,21 +440,21 @@ SECTIONS
 \end{verbatim}
 
 El script informa al locator incluido en el vinculador GNU acerca de las ubicaciones
-fisicas de las secciones del programa en la memoria del sistema embebido destino.
+físicas de las secciones del programa en la memoria del sistema embebido destino.
 El script instruye a ld a ubicar la sección de texto en la dirección física 0x00,
 y a la sección de datos en la dirección 0x800100.
 
-Nombres en el archivo de comandos del vinculador que comienzan con un guion bajo
+Nombres en el archivo de comandos del vinculador que comienzan con un guión bajo
 (ejemplo \_\_ctors\_start) pueden ser referenciado similarmente a variables ordinarias
-desde dentro de el codigo fuente. El vinculador utilizará estos simbolos
+desde dentro de el código fuente. El vinculador utilizará estos símbolos
 para resolver referencias en los archivos objeto de entrada.
-Por lo que, por ejemplo, podria existir una parte del software embebido (usualmente
-dentro del codigo de inicializacion) que copia valores iniciales de las variables
+Por lo que, por ejemplo, podría existir una parte del software embebido (usualmente
+dentro del código de inicialización) que copia valores iniciales de las variables
 inicializadas desde ROM a la sección data en RAM.
 
-Un script para el vinculador puede tambien utilizar varios otros comandos
+Un script para el vinculador puede también utilizar varios otros comandos
 para instruir al vinculador a que realice otras operaciones.
-Informacion adicional y opciones de los archivos script para el vinculador GNU ld
+Información adicional y opciones de los archivos script para el vinculador GNU ld
 puede ser leída desde http://www.gnu.org.
 
 La salida de este paso final del proceso de compilación es una imagen binaria
@@ -467,15 +467,15 @@ GNU para microcontroladores AVR pueden realizar este ultimo paso automáticament
 
 \section *{Compilando el programa Blinking LED}
 
-En esta sección se muestra un ejemlpo del procedimiento de compilación 
-para el microcontrolador Ateml AVR atmega328p (placa arduino pro mini).
+En esta sección se muestra un ejemplo del procedimiento de compilación 
+para el microcontrolador Atmel AVR átamela328p (placa arduino pro mini).
 Si se utiliza otra plataforma, un proceso similar debería ser ejecutado
 utilizando las herramientas y convenciones que acompañan al hardware.
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
 NOTA: Los comandos que deben ser ejecutados desde un interprete de comandos
-UNIX (shell) serán indicados por el simbolo numeral (\#). 
+UNIX (shell) serán indicados por el símbolo numeral (\#). 
 \vspace*{0.4cm} } }
 
 \subsection {Compilar, ensamblar y vincular}
@@ -514,18 +514,18 @@ ser especificados en la linea de comandos, para asegurar que la imagen sea
 vinculada apropiadamente.
 \vspace*{0.4cm} } }
 
-El orden de los archivos objetos determinan su ubicacion en memoria.
-Debido a que no estamos vinculando ningun codigo de inicialización explicitamente
+El orden de los archivos objetos determinan su ubicación en memoria.
+Debido a que no estamos vinculando ningún código de inicialización explícitamente
 el orden de los archivos objetos es irrelevante.
-Si se incluyera codigo de inicialización se debe ubicar el archivo objeto 
+Si se incluyera código de inicialización se debe ubicar el archivo objeto 
 en la dirección apropiada. El archivo script para el vinculador puede ser 
 utilizado para especificar donde debe residir la rutina de inicialización
 en memoria. Además, puede utilizar el archivo script para 
-especificar las direcciones exactas para otros codigo o datos, pero debe
+especificar las direcciones exactas para otros código o datos, pero debe
 verificar si es realmente necesario o no.
 
 Como se observa en el comando de vinculación, los dos archivos objetos -led.o y blink.o-
-son los ultimos argumentos de la linea de comandos para el vinculador.
+son los últimos argumentos de la linea de comandos para el vinculador.
 El resultado de este comando es la creación de la imagen binaria ejecutable
 en formato elf, llamada led.elf.
 
@@ -539,7 +539,7 @@ en el proceso de compilación para la plataforma destino.
 
 Para nuestra plataforma de ejemplo se necesita utilizar la herramienta
 objcopy del componente binutils del toolchain para cross-compiling avr. 
-objcopy es capaz de copiar el contenido d eun archivo objeto en otro 
+objcopy es capaz de copiar el contenido d un archivo objeto en otro 
 archivo objeto, con diferente formato.
 Lo utilizaremos en nuestro ejemplo de esta manera :
 
@@ -550,14 +550,14 @@ Lo utilizaremos en nuestro ejemplo de esta manera :
 En este caso, lo utilizamos para convertir el programa Blinking LED 
 en formato ELF a una imagen en formato Intel Hex. Intel Hex 
 es un formato de archivo ASCII muy utilizado en algunas plataformas
-para almacenar y descargar imagenes binarias.
+para almacenar y descargar imágenes binarias.
 
 El comando utiliza la opción -O ihex para especificar el formato 
 de archivo de salida como Intel Hex.a El archivo de entrada es led.elf
 y objcopy se encarga de determinar el tipo de archivo. El archivo de salida
 será un nuevo archivo llamado led.hex
 
-Algunas otras herramientas de binutils GNU son utiles para obtener 
+Algunas otras herramientas de binutils GNU son útiles para obtener 
 información acerca de la imagen binaria construida.
 Por ejemplo, el utilitario size, el cual lista el tamaño de las secciones
 para un archivo objeto especificado. El siguiente ejemplo es presentado
@@ -570,7 +570,7 @@ para nuestro programa Blinking LED construido :
 \end{verbatim}
 
 El programa Blinking LED contiene 200 bytes utilizados para la sección de text, y
-ningun byte para las secciones data y bss. La columna dec muestra el tamaño
+ningún byte para las secciones data y bss. La columna dec muestra el tamaño
 total de la imagen, en decimal, y la columna hex en hexadecimal.
 
 
