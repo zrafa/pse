@@ -183,14 +183,13 @@ como compiladores nativos o compiladores cruzados. Estas herramientas soportan
 un impresionante conjunto de combinaciones host-target. El compilador gcc ha sido
 portado a todos los sistemas operativos Mac y PC. También, el soporte de procesadores destino
 es extenso, e incluye AVR, Intel x86, MIPS, PowerPC, ARM y SPARC. Información
-adicional puede ser encontrada online en http://gcc.gnu.org
+adicional puede ser encontrada online en {\tt http://gcc.gnu.org}.
 
 Cualquiera sea el lenguaje de entrada (C, C++, ensamblador o cualquier otro), la salida
 de un compilador cruzado será un archivo objeto. Este es un archivo binario con
 formato especial que contiene el conjunto de instrucciones y datos
 resultado del proceso de traducción del lenguaje. Aunque partes de este archivo
 contiene código ejecutable el archivo objeto no puede ser ejecutado directamente.
-[COMPLETAR]
 
 
 El contenido de un archivo objeto puede ser imaginado como una estructura de datos
@@ -247,7 +246,7 @@ a la variable encontrada. Por ejemplo, si foo está ubicada a 14 bytes de despla
 de donde comienza la sección de datos, su entrada en la tabla de símbolos ahora
 contendrá esa dirección.
 
-El vinculador (ld) GNU se está portado a todas las mismas plataformas en donde
+El vinculador (ld) GNU está portado a todas las mismas plataformas en donde
 fue portado el compilador GNU (gcc). Esta es una herramienta de la linea de comandos
 que toma como argumentos de entrada todos los nombres de los archivos objeto, 
 y posiblemente bibliotecas a ser vinculadas.
@@ -298,14 +297,14 @@ la provista por la compañía Cygnus (la cual es ahora parte de Red Hat),
 la cual creó una versión freeware de la biblioteca de C estándar para utilizar 
 en sistemas embebidos.
 Este paquete es llamado newlib. Simplemente se necesita descargar el código fuente
-para esta biblioteca desde la web (actualmente ubicada en http://sourceware.org/newlib),
+para esta biblioteca desde la web (actualmente ubicada en {\tt http://sourceware.org/newlib}),
 implementar unas pocas funciones especificas para el hardware destino y compilar.
 La biblioteca puede luego ser vinculada con nuestras aplicaciones embebidas
 para resolver cualquier llamada a la biblioteca estándar sin resolver previamente.
 
 Luego de integrar todas las secciones de código y datos, y de resolver todas
 las referencias a símbolos, el vinculador genera un archivo objeto que es
-una copia "reubicable" (relocatable) especial del programa. En otras palabras,
+una copia 'reubicable' (relocatable) especial del programa. En otras palabras,
 el programa ya está completo, con la excepción de una cosa: todavía
 resta definir las direcciones de memoria asignadas a las secciones de código y 
 datos. Si no se estuviera realizando el proceso para ejecutarse en un 
@@ -314,7 +313,7 @@ sistema embebido entonces el programa estaría listo para ejecutarse.
 Pero, los programadores de sistemas embebidos aún deben realizar una
 tarea más en este punto, ya que 
 las direcciones de los símbolos en el proceso de vinculación son relativas.
-Aun si tu sistema embebido incluye un sistema operativo aun es necesario
+Aun si tu sistema embebido incluye un sistema operativo es necesario
 que la imagen binaria final sea ubicada de manera absoluta (y no relativa).
 De hecho, si existe un sistema operativo en el proyecto del sistema embebido,
 el código y datos del mismo mayormente estará en el programa reubicable 
@@ -360,9 +359,9 @@ se podría utilizar estas instrucciones para realizar un halt del procesador,
 reiniciar el sistema entero, o transferir el control a una herramienta
 de verificación (debug tool).
 
-En general, el código de inicialización no es insertado automáticamente, y el
-programador debe ensamblar e incluir el archivo objeto resultante a la 
-lista de archivos de entrada del vinculador. Además, el programador
+En general, el código de inicialización no es insertado automáticamente al desarrollar sistemas embebidos. El
+programador debe ensamblar el código fuente del mismo e incluir el archivo objeto resultante a la 
+lista de archivos de entrada del vinculador explícitamente. Además, el programador
 podría necesitar indicarle al vinculador una opción en la línea de comandos especial
 para prevenir que ld intente insertar el código de inicialización provisto
 por el toolchain.
@@ -377,24 +376,23 @@ ser encontrado en el paquete GNU llamado libgloss.
 
 En algunos casos, un debug monitor (o ROM monitor) es el primer código
 ejecutado cuando la placa es encendida. En el caso del arduino pro mini
-existe un bootloader provisto por el proyecto Arduino que es ejecutado
-primero.
-Esta pieza de software que se ejecuta primero puede ser utilizado
-para descargar software, y ubicar el mismo en la memoria FLASH, dirección 0x00.
-Si el bootloader no recibe ordenes desde el puerto serial ejecuta la aplicación
+existe un bootloader provisto por el proyecto Arduino que se ejecuta en primer lugar.
+Esta pieza de software puede ser utilizada
+para descargar software, y ubicar el mismo en la memoria FLASH de la placa, en la dirección 0x00.
+Si el bootloader no recibe ordenes desde el puerto serial simplemente ejecuta la aplicación
 actual en FLASH.
 \vspace*{0.4cm} } }
 
 \subsection *{Localización}
 
 La herramienta que realiza la conversión de un programa reubicable a
-una imagen binaria ejecutable es llamada un locator.
+una imagen binaria ejecutable es llamada reubicador (locator).
 Este realiza el paso mas fácil del proceso de compilación. De hecho, 
 el programador debe hacer la mayoría del trabajo en este paso, informando
-detalles acerca de la memoria de la plataforma destino, como entrada
-a el locator. El locator utiliza esta información para asignar direcciones
+detalles acerca de la memoria de la plataforma destino, como entrada.
+El reubicador utiliza esta información para asignar direcciones
 de memoria físicas a las secciones de código y datos dentro del programa
-reubicable. Entonces, el locator produce un archivo de salida que contiene
+reubicable. Finalmente, el reubicador produce un archivo de salida que contiene
 una imagen de memoria binaria que puede ser descargada dentro del sistema
 embebido destino.
 
@@ -454,7 +452,7 @@ SECTIONS
 }
 \end{verbatim}
 
-El script informa al locator incluido en el vinculador GNU acerca de las ubicaciones
+El script informa al reubicador incluido en el vinculador GNU acerca de las ubicaciones
 físicas de las secciones del programa en la memoria del sistema embebido destino.
 El script instruye a ld a ubicar la sección de texto en la dirección física 0x00,
 y a la sección de datos en la dirección 0x800100.
