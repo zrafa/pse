@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 
+
 \usepackage{apuntes-estilo}
 \usepackage{fancyhdr,lastpage}
 \usepackage{color,colortbl}
@@ -116,14 +117,22 @@ dentro del programa reubicable en un proceso llamado reubicación (relocation).
 El resultado del paso final es un archivo que contiene una imagen binaria
 que está lista para ser ejecutada en el sistema embebido.
 
-El proceso recién descripto está representado en la Figura 4-1.
-En la figura se observan los tres pasos comenzado desde arriba hacia abajo,
-en conjunto con las herramientas utilizadas, que aparecen en la figura
-mostradas en los recuadros con esquinas redondeadas.
-Cada una de estas herramientas de desarrollo toma uno o más archivos como entrada
-y produce un archivo individual como salida. 
+El proceso recién descripto está representado en la Figura \ref{fig:compilacion}.
+Allí se se observan los tres pasos comenzado desde arriba hacia abajo,
+en conjunto con las herramientas utilizadas (que aparecen
+en los recuadros con esquinas redondeadas).
+Estas herramientas de desarrollo toman uno o más archivos como entrada
+y producen un archivo individual como salida. 
 
-Cada uno de estos pasos del proceso de compilación de software embebido
+\begin{figure}
+\includegraphics[width=\linewidth]{compilacion.png}
+\caption{El proceso de desarrollo de software embebido.}
+\label{fig:compilacion}
+\end{figure}
+
+
+
+Cada paso del proceso de compilación de software embebido
 es una transformación realizada por software ejecutado en una computadora
 de propósito general. Para distinguir esta computadora de desarrollo (usualmente una 
 PC o estación de trabajo UNIX) del sistema embebido destino se utiliza el término host computer.
@@ -131,7 +140,13 @@ En esta computadora es donde se ejecuta el compilador, ensamblador, vinculador y
 Aunque, como ya mencionado, estas herramientas trabajan en conjunto
 para producir una imagen binaria que puede ser ejecutada
 únicamente en el sistema embebido destino. Esta división de responsabilidades
-se representan en la Figura 4-2
+se representan en la Figura \ref{fig:compilacion2}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{compilacion2.png}
+\caption{Computadora de desarrollo (host) y computador destino (target).}
+\label{fig:compilacion2}
+\end{figure}
 
 En este libro se utilizan las herramientas de desarrollo del proyecto GNU
 (compilador, ensamblador, vinculador y debugger) las cuales son software libre
@@ -377,7 +392,7 @@ una imagen binaria ejecutable es llamada un locator.
 Este realiza el paso mas fácil del proceso de compilación. De hecho, 
 el programador debe hacer la mayoría del trabajo en este paso, informando
 detalles acerca de la memoria de la plataforma destino, como entrada
-a el locator. EL locator utiliza esta información para asignar direcciones
+a el locator. El locator utiliza esta información para asignar direcciones
 de memoria físicas a las secciones de código y datos dentro del programa
 reubicable. Entonces, el locator produce un archivo de salida que contiene
 una imagen de memoria binaria que puede ser descargada dentro del sistema
@@ -468,15 +483,9 @@ GNU para microcontroladores AVR pueden realizar este ultimo paso automáticament
 \section *{Compilando el programa Blinking LED}
 
 En esta sección se muestra un ejemplo del procedimiento de compilación 
-para el microcontrolador Atmel AVR átamela328p (placa arduino pro mini).
+para el microcontrolador Atmel AVR atmega328p (placa arduino pro mini).
 Si se utiliza otra plataforma, un proceso similar debería ser ejecutado
 utilizando las herramientas y convenciones que acompañan al hardware.
-
-\fcolorbox{black}{grey}{
-\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
-NOTA: Los comandos que deben ser ejecutados desde un interprete de comandos
-UNIX (shell) serán indicados por el símbolo numeral (\#). 
-\vspace*{0.4cm} } }
 
 \subsection {Compilar, ensamblar y vincular}
 
@@ -486,11 +495,15 @@ La estructura básica para el compilador gcc es :
 
 \begin{verbatim}
 avr-gcc [opciones] archivo
+\end{verbatim}
 
+Compilamos y vinculamos nuestro programa con :
+
+\begin{verbatim}
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o led.o led.c
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o blink.o blink.c
 avr-gcc -mmcu=atmega328p led.o blink.o -o led.elf
-\begin{verbatim}
+\end{verbatim}
 
 Las opciones utilizadas son :
 
@@ -498,9 +511,9 @@ Las opciones utilizadas son :
 \item -D para definir una macro. En este caso, es una macro muy utilizada
 con el compilador avr-gcc, ya que define la velocidad del reloj del microcontrolador
 a utilizar.
-\item -mmcu= para seleccionar el microcontrolador destino 
+\item -mmcu= para seleccionar el modelo del microcontrolador destino 
 \item -c compilar y ensamblar, pero no vincular
-\begin{itemize}
+\end{itemize}
 
 
 \fcolorbox{black}{grey}{
@@ -527,20 +540,21 @@ verificar si es realmente necesario o no.
 Como se observa en el comando de vinculación, los dos archivos objetos -led.o y blink.o-
 son los últimos argumentos de la linea de comandos para el vinculador.
 El resultado de este comando es la creación de la imagen binaria ejecutable
-en formato elf, llamada led.elf.
+en formato ELF, llamada led.elf.
 
 \subsection *{Dar formato al archivo de salida}
 
-En ciertos casos, el archivo binario ejecutable elf producido en el 
+En ciertos casos, el archivo binario ejecutable ELF producido en el 
 ejemplo de la sección anterior es suficiente para descargar en el sistema 
-embebido y ejecutar. En ciertos casos (como lo es para el arduino pro mini
-y su bootloader) puede necesitar darle formato a la imagen obtenida
-en el proceso de compilación para la plataforma destino.
+embebido y ejecutar. En otros casos (como lo es para el arduino pro mini
+y su bootloader) se necesita dar formato, para la plataforma destino,
+ a la imagen obtenida
+en el proceso de compilación.
 
-Para nuestra plataforma de ejemplo se necesita utilizar la herramienta
-objcopy del componente binutils del toolchain para cross-compiling avr. 
-objcopy es capaz de copiar el contenido d un archivo objeto en otro 
-archivo objeto, con diferente formato.
+Para nuestra plataforma de ejemplo necesita utilizar la herramienta
+objcopy, que es un programa de binutils.
+objcopy es capaz de copiar el contenido de un archivo objeto en otro 
+archivo objeto, pero con diferente formato.
 Lo utilizaremos en nuestro ejemplo de esta manera :
 
 \begin{verbatim}
@@ -550,17 +564,17 @@ Lo utilizaremos en nuestro ejemplo de esta manera :
 En este caso, lo utilizamos para convertir el programa Blinking LED 
 en formato ELF a una imagen en formato Intel Hex. Intel Hex 
 es un formato de archivo ASCII muy utilizado en algunas plataformas
-para almacenar y descargar imágenes binarias.
+para descargar y almacenar imágenes binarias.
 
 El comando utiliza la opción -O ihex para especificar el formato 
-de archivo de salida como Intel Hex.a El archivo de entrada es led.elf
+de archivo de salida como Intel Hex. El archivo de entrada es led.elf
 y objcopy se encarga de determinar el tipo de archivo. El archivo de salida
 será un nuevo archivo llamado led.hex
 
 Algunas otras herramientas de binutils GNU son útiles para obtener 
 información acerca de la imagen binaria construida.
 Por ejemplo, el utilitario size, el cual lista el tamaño de las secciones
-para un archivo objeto especificado. El siguiente ejemplo es presentado
+para un archivo objeto. El siguiente ejemplo es presentado
 para nuestro programa Blinking LED construido :
 
 \begin{verbatim}
