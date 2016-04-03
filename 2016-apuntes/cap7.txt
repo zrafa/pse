@@ -87,4 +87,28 @@ confundible al pensar mucho en el tema. Solamente recuerde que la ubicación
 de un registro es fija aunque su contenido podría no serlo. Por lo que, si se
 utiliza la palabra clave volatile, el compilador asumirá lo mismo.
 
+La principal desventaja de los demás tipos de registros, registros mapeados
+a E/S, es que no hay una manera estandar de acceder a ellos desde C o C++. 
+Estos registros son unicamente accesibles con la ayuda de instrucciones
+de lenguaje máquina especiales. Y estas instrucciones especificas del procesador
+no son soportadas por los estandares del lenguaje C o C++. Por lo tanto
+es necesario utilizar rutinas de bibliotecas especiales, o codigo en lenguaje
+ensamblador entre lineas, para leer y escribir los registros de un
+dispositivo mapeado al espacio de E/S.
+
+
+La filosofia del controlador de dispositivo
+------------
+
+
+NOTA: En el disenio de controladores (drivers) de dispositivos se debe
+siempre enfocar una meta común : ocultar el hardware completamente.
+
+Cuando se finaliza, el modulo controlador de dispositivo debe ser la unica
+pieza de software en el sistema entero que lee o escribe a los registros
+de estado y control particular directamente. Además, si el dispositivo 
+genera interrupciones, la rutina de servicio de interrupciones que 
+atiende las mismas debe ser una parte integral del controlador de dispositivo.
+En esta sección se explica el por qué se recomienda esta filosofía y de cómo
+puede ser lograda.
 
