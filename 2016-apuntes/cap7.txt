@@ -61,9 +61,9 @@ variable no cambiará a menos que el programa modifique la misma explicitamente.
 Por esa razón, se dice que el contenido de un registro de dispositivo
 es volátil, o sujeto a cambiar sin notificación previa.
 
-La palabra clave volatile en C y C++ se debería utilizar cuando se 
+En C y C++ se debe utilizar la palabra clave volatile cuando se 
 declaran punteros a registros de dispositivos.
-Esto le indica al compilador que no puede realizar suposiciones acerca
+La misma le indica al compilador que no puede realizar suposiciones acerca
 del dato almacenado en esa dirección. Por ejemplo, si el compilador
 observa una escritura a una ubicación volátil y luego inmediatamente 
 le sigue otra instrucción de escritura a la misma ubicación, el compilador 
@@ -71,3 +71,20 @@ no asume  que la primer escritura es innecesaria. En otras palabras, la
 palabra clave volatile instruye a la fase de optimización del compilador 
 a tratar a esa variable como volátil, y que su conducta no puede ser
 predecida en tiempo de compilación.
+
+Prosiguiendo con el ejemplo anterior, se muestra aquí debajo el uso 
+de volatile para advertir al compilador acerca del registro PORTB :
+
+volatile unsigned char * puerto_B = (unsigned char *) 0x25;
+
+Es importante notar que es erróneo interpretar, en esta declaración,
+que el puntero en si mismo es volátil. De hecho, el valor de la
+variable puerto_B tendrá el valor 0x25 durante toda la ejecución del programa
+(a menos que el valor sea modificado por alguna instrucción del programa, por
+supuesto). Mas bien es el dato apuntado el que está sujeto a cambiar
+sin que el programa intervenga. Este detalle es muy sutil y es facilmente
+confundible al pensar mucho en el tema. Solamente recuerde que la ubicación
+de un registro es fija aunque su contenido podría no serlo. Por lo que, si se
+utiliza la palabra clave volatile, el compilador asumirá lo mismo.
+
+
