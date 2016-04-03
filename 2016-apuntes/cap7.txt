@@ -1,0 +1,55 @@
+ 
+Perifericos
+
+Además del procesador y memoria, la mayoría de los sitemas embebidos
+contienen unos pocos dispositivos de hardware extra. Algunos de estos
+dispositios son específicos a la aplicación, mientras que otros -como los
+relojes y puertos seriales- son útiles en una gran variedad de sistemas.
+Los que residen junto con el procesador dentro del mismo chip se los
+denomina periféricos internos, u on-chip. Los que se encuentran fuera
+del chip donde está el procesador se los denomina de manera opuesta,
+es decir, periféricos externos. En este capítulo se detalla la
+mayoría de los probemas de software comunes que surgen cuando se programan
+periféricos de ambos tipos.
+
+Registros de estado y de control
+----
+
+La interfaz básica entre un procesador embebido y un dispositivo periférico
+es un conjunto de registro de estado y control. Estos registros son parte
+del hardware del periférico, y sus ubicaciones, tamanio y significados
+individuales son característicos de los periféricos. Por ejemplo, 
+el significado de los bis de los registros de un controlador serial son muy diferentes a los
+de los contadores o relojes. En esta sección se encuentra explicado la 
+manera de manipular el contenidos de los registros de estado y control
+directamente desde programas en C/C++.
+
+Dependiendo del disenio del procesador y la placa, los dispsitios perifericos
+se encuentran localizacos en el espacio de memoria del procesador o dentro
+del espacio de E/S. De hecho, es comun en sistemas embebidos  que se incluyan
+periféricos de ambos tipos. Se los denomina periféricos mapeados en memoria
+y periféricos mapeados en E/S respectivamentes. De los dos tipos, los periféricos
+mapeados en memoria son los más fácies de utilizar y por lo tanto su popularidad
+aumenta.
+
+Los registros de estado y control de periféricos mapeados en memoria se pueden
+parecer a variables ordinarias. Por ejemplo, es posible simplemente declarar 
+declarar un puntero en C a un registro o bloque de registros, y establecer
+la dirección (valor del puntero) explícitamente. Por ejemplo, el registro
+PORTB utilizado en el capítulo 2 es mapeado en memoria en la dirección 
+física 0x25. Por tal motivo la función toggleLed puede ser escrita completamente
+en C, somo se muestra a continuación.
+
+unsigned char * puerto_B = (unsigned char *) 0x25;
+
+void toggleLed(void)
+{
+    *puerto_B ^= LED_ROJO;    /* Read, xor, and modify. */
+}    /* toggleLed() */
+
+Un puntero a un registro de 8 bits es declarado y explicitamente inicializado
+a la dirección 0x25. A partir de este momento el puntero al registro
+trabaja como cualquier puntero a una variable de tipo char de 8 bits.
+
+
+Note, de cualquier manera
