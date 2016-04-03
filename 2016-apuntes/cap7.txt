@@ -52,4 +52,22 @@ a la dirección 0x25. A partir de este momento el puntero al registro
 trabaja como cualquier puntero a una variable de tipo char de 8 bits.
 
 
-Note, de cualquier manera
+Note, de cualquier manera, que existe una diferencia muy importante entre 
+registros de dispositivos y variables ordinarias. El contenido de un registro
+de dispositivo puede cambiar sin que el programa intervenga o se notifique
+del cambio. Esto sucede porque el contenido del registro puede ser modificado
+por el hardware del dispositivo. De manera contraria, el contenido de una
+variable no cambiará a menos que el programa modifique la misma explicitamente.
+Por esa razón, se dice que el contenido de un registro de dispositivo
+es volátil, o sujeto a cambiar sin notificación previa.
+
+La palabra clave volatile en C y C++ se debería utilizar cuando se 
+declaran punteros a registros de dispositivos.
+Esto le indica al compilador que no puede realizar suposiciones acerca
+del dato almacenado en esa dirección. Por ejemplo, si el compilador
+observa una escritura a una ubicación volátil y luego inmediatamente 
+le sigue otra instrucción de escritura a la misma ubicación, el compilador 
+no asume  que la primer escritura es innecesaria. En otras palabras, la
+palabra clave volatile instruye a la fase de optimización del compilador 
+a tratar a esa variable como volátil, y que su conducta no puede ser
+predecida en tiempo de compilación.
