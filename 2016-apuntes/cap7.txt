@@ -140,4 +140,49 @@ de red provista por el sistema operativo y no tienen acceso directo a la
 placa en si misma. En este caso la meta de ocultar el hardware completamente
 es alcanzada facilmente.
 
+En contraste, el software de aplicación en un sistema embebido  puede acceder al
+hardware facilmente. De hecho, debido a que todo el software es
+vinculado en conjunto en una imagen binaria individual, raramente existe
+una
+distinción entre la aplicación, sistema operativo, y controladores
+de dispositios.
+Esta distinción, como la aplicación de restricciones de acceso al hardware,
+son meramente responsabilidades de los desarrolladores de software.
+Ambas son decisiones de disenio que los desarrolladores deben realizar
+concienzudamente. En otras palabras, los implementadores de software 
+embebido pueden tener más flexibilidad en el disenio del software
+que sus pares no embebidos.
+
+Los beneficios de un buen disenio de controlador de dispositivo son tres.
+Primero, debido a la modularización, la estructura de todo el software
+se comprende más facilmente. Segundo, como hay unicamente un modulo 
+que interactua directamente con los registros del periférico, el estado
+del hardware puede ser verificado mas precisamente. Finalmente, el ultimo 
+beneficio pero no por eso menos imporante, los cambios en el software que
+resutan de los cambios en el hardware están localizados en el controlador
+de dispositivo. Todos estos beneficios ayudan a reducir el numero total
+de errores en el software embebido. 
+Pero se debe estar dispuesto a
+poner un poco de esfuerzo extra al momento del diseño con el fin de 
+alcanzar estos beneficios.
+
+Si acuerda con esta filosofía de ocultar todas las especificaciones del hardware
+e interacciones dentro del controlador de dispositivo usualmente debe 
+implementar y utilizar los cinco componentes de la lista presentada a continuación.
+Para realizar una implementación del controlador lo más simple e incremental
+como sea posible, se debería desarrollar estos elementos en el orden
+presentado.
+
+1. Una estructura de datos que se superpone a los registros de estado
+y de control del dispositivo mapeados en memoria.
+
+El primer paso en el proceso de desarrollo del driver es crear una estructrua
+(struct) al estilo del lenguaje C que represente de manera exacta los registros
+mapeados en memoria del dispositivo. Generalmente, se necesita estudiar
+el libro de datos para el periférico y crear una tabla para los registros
+de estado y de control con sus desplazamientos.
+Entonces, comenzando con el registro con la dirección más baja, se 
+va completando la tabla de la estructura. Si existen ubicaciones no 
+utilizada o reservada entre los registros se puede ubicar variables
+vacias para ocupar espacio adicional acorde.
 
