@@ -30,7 +30,7 @@
 \fancyhf{} % clear all header and footer fields
 \fancypagestyle{plain}{\fancyhf{}}
   	\pagestyle{fancy}
- 	\lhead{\footnotesize El primer programa embebido - Departamento de Ingeniería de Computadoras}
+ 	\lhead{\footnotesize El primer programa embebido - Programación de sistemas embebidos}
  	\rhead{\footnotesize \thepage\ }	% ''Page 1 of 2''
 
 \def\ti#1#2{\texttt{#1} & #2 \\ }
@@ -151,7 +151,7 @@ sentido a lo que se siente al programar sistemas embebidos.
  *
  * Function: main
  *
- * Description: Blink the green LED once a second.
+ * Description: Blink the red LED once a second.
  *
  * Notes:
  *
@@ -160,12 +160,12 @@ sentido a lo que se siente al programar sistemas embebidos.
  **********************************************************************/
 int main(void)
 {
-    /* Configure the green LED control pin. */
+    /* Configure the red LED control pin. */
     ledInit( );
 
     while (1)
     {
-        /* Change the state of the green LED. */
+        /* Change the state of the red LED. */
         ledToggle( );
 
         /* Pause for 500 milliseconds. */

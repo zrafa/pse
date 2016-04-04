@@ -112,3 +112,32 @@ atiende las mismas debe ser una parte integral del controlador de dispositivo.
 En esta sección se explica el por qué se recomienda esta filosofía y de cómo
 puede ser lograda.
 
+
+Por supuesto, intentar ocultar el hardware completamente es difícil. Sea la
+interfaz de programación que se seleccione siempre reflejará las
+características generales del dispositivo. Esa característica es esperada
+e inevitable. La meta tiene que ser que la interfaz de programación
+desarrollada no debería necesitar cambios is el periférico final es reemplazado
+con otro de su misma clase general. Por ejemplo, todos los dispositios de memoria
+Flash comparten los conceptos de sectores (aunque el tamanio del sector
+puede diferir entre chips). Una operación de borrado puede ser realizada
+unicamente en un sector entero, y una vez eliminado, bytes individuales
+de palabras pueden ser reescritos. Por lo tanto, la interfaz desarrollada
+en un controlador de memoria Flash debería ser util con cualquier
+dispositivo de memoria similar. 
+
+Controladores de dispositivos para sistemas embebidos son bastante
+diferentes con respecto a los controladores para estaciones de trabajo.
+En una compputadora moderna, los controladores de dispositivos estan
+desarrollados con el objetivo de satisfacer los requerimientos del sistema
+operativo. Por ejemplo, los sistema operativos de PC usualmente imponen
+requerimientos estrictos en la interfaz de software entre el SO y una
+placa de red. El controlador de dispositivo para una placa de red particular
+debe cumplir con la interfaz de software, sin importar las caracteristicas
+y capacidades del hardware subyacente. Los programas de aplicacion que 
+necesitan utilizar la placa de red están forzados a utilizar la API
+de red provista por el sistema operativo y no tienen acceso directo a la
+placa en si misma. En este caso la meta de ocultar el hardware completamente
+es alcanzada facilmente.
+
+
