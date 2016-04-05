@@ -212,3 +212,58 @@ definir mascaras de bits para usos comunes:
 #define CHARACTER_SIZE_1 0x40       /* UCSZ01 Numero de bits del dato de e/s */
 #define READY_TO_READ 0x80          /* RXC0 Dato listo para leer */
 #define READY_TO_WRITE 0x20         /* UDRE0 Buffer vacio listo para escribir */
+
+
+2. Un conjunto de variables para mantener el estado actual del hardware
+y del controlador del dispositivo
+
+El segundo paso en el proceso de desarrollo del controlador es definir
+qué variables se necesitan para mantener el estado del hardware y 
+del controlador del disposivo. Por ejemplo, en el caso del controlador 
+serial probablemente se necesita conocer si el
+hardware ha sido inicializado.
+
+Algunos controladores de dispositivos crean mas de un dispositivo de software.
+Esto es un dispositivo puramente lógico que es implementado por encima
+del hardware periférico básico. Por ejemplo, es facil imaginar
+que mas que un reloj por software puede ser implementado desde una
+unidad contador/rejoj (timer/counter). La unidad contador/reloj se configura
+para generar un tick de reloj periódico, y el controlador de dispositivo
+gestionaría un conjunto de relojes por software de varias duraciones,
+manteniendo información del estado de cada reloj software.
+
+3. Una rutina para incializar el hardware a un estado conocido
+
+Una vez que se conoce como mantener el estado de los dispositivos 
+lógicos y físicos es momento de comenzar a escribir las funciones que 
+interactuan y controlan el dispositivo. Es conveniente comenzar 
+con la rutina de inicialización del hardware. Además, necesitará
+esa rutina primero, y esa es una buena manera de entender como interactuar
+con el dispositivo.
+
+4. Un conjunto de rutinas que, en su conjunto, presentan una API 
+a los usuarios del controlador de dispositivo
+
+Luego de que se haya inicializado el dispositivo correctamente, es
+momento de agregar otras funcionalidades al controlador. Es en este
+paso en donde se deben establecer los nombres y propósitos de varias 
+rutinas, como así también sus respectivos parámetros y valores devueltos.
+Una vez definidas es el momento de implementar cada función junto
+con un caso de test mínimo. Se presentan ejemplos de tales rutinas
+en la siguiente sección.
+
+5. Una o varias rutinas de atención de interrupciones
+
+Es conveniente diseniar, implementar y verificar la mayoría de as rutinas
+del controlador de dispositivo antes de habilitar las interrupciones.
+Encontrar el origen de los problemas relacionados con las interrupciones
+es muy difícil. Además, si existen errores (bugs) en otros módulos
+controladores la búsqueda del problema relacionado con las interrupciones
+puede ser imposible de encontrar. Por lo que es mejor utilizar 
+E/S programada (polling) primero, para obtener el controlador funcionando.
+De esta manera se comprenderá cómo trabaja el dispositivo (y que 
+realmente esté funcionando) cuando se comienza a buscar la fuente
+de los problemas relacionados con las interrupciones. Finalmente, cabe
+decir que suele haber casi siempre problemas relacionados con las interrupciones.
+
+
