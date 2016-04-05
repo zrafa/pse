@@ -173,7 +173,7 @@ Para realizar una implementación del controlador lo más simple e incremental
 como sea posible, se debería desarrollar estos elementos en el orden
 presentado.
 
-1. Una estructura de datos que se superpone a los registros de estado
+1. Una estructura de datos que se superpone (overlay) a los registros de estado
 y de control del dispositivo mapeados en memoria.
 
 El primer paso en el proceso de desarrollo del driver es crear una estructrua
@@ -265,5 +265,74 @@ De esta manera se comprenderá cómo trabaja el dispositivo (y que
 realmente esté funcionando) cuando se comienza a buscar la fuente
 de los problemas relacionados con las interrupciones. Finalmente, cabe
 decir que suele haber casi siempre problemas relacionados con las interrupciones.
+
+Un controlador de dispositivo serial
+---------
+
+El ejemplo de controlador de dispositivo que se presenta está diseniado
+para controlar un puerto serial. El hardware para este controlador
+de dispositivo utiliza un periférico UART (pronunciado "you-art" y es el acrónimo de
+Universal Asynchronous Receiver Transmitter) que se encuentra en el atmega328p.
+Un UART es un componente que recibe y envía de manera serial y asincrónica
+información. Asincrónico significa que el dato puede llegar en cualquier
+momento, similar a la entrada provista por un teclado. Un UART acepta
+un byte de forma paralela desde el procesador. El byte es serializado,
+y cada bit es transmitido en el momento apropiado. La recepción trabaja
+a la inversa.
+
+Es importante aclarar que el atmega328p tiene en su chip un USART (Universal Synchronous and Asynchronous serial Receiver and Transmitter) que puede trabajar
+en modo sincrónico, y tambien, como periférico SPI maestro. En nuestro
+controlador utilizamos unicamente el modo asincrónico no SPI.
+
+Antes de diseniar y desarrollar ell controlador de dispositvo 
+es importante entender el diagrama de bloques del hardware -el cual
+presenta cómo las seniales van y vienen desde el periférico al exterior del mismo.
+Tipicamente, esta tarea se logra  observando las porciones relevantes de los
+esquemáticos, y leyendo las hojas de datos de los diferentes integrados.
+Un diagrama de bloques para el puerto serial se muestra en la Figura 71.
+
+Qué integrados se necesitan programar para controlar el periférico?
+Para este ejemplo de controlador serial unicamente nos enfocamos
+en el USART. La información de los registros está localizada en la hoja
+de datos del microcontrolador atmega328p. Mientras se lee esta información
+se debe tener en cuenta que la meta es entender varios conceptos. Algunos
+de ellos son :
+- La estructura de los registros para controlar el periférico, que incluye
+el cómo configurar las comunicaciones y como obtener y enviar
+datos desde el periférico.
+- Las direcciones de los registros de estado y de control.
+- El método que se debe utilizar para la operación del periférico (E/S 
+programada o con interrupciones).
+- Si se utilizan interrupcinoes entonces se debe entender qué condiciones
+pueden causar interrupciones, cómo el controlador de software se informa
+de las mismas, y cómo debe atenderlas.
+
+Se debe obtener un control claro sobre lo que necesita el controlador 
+de dispositivo para llevar adelante la tarea del periférico dentro del
+sistema. Una vez que estos pasos iniciales están completos, 
+se puede continuar con la tarea de escribir el controlador de software 
+para el dispositivo.
+
+Registros interfaz
+-----
+
+El primer paso para el controlador de dispositivo serial es definir
+la interfaz de los registros. Para este ejemplo, utilizamos 
+una estructura que se superponga a los registros del USART, los cuales
+están mapeados a memoria. La estructura uart_t se muestra a continuación :
+
+
+typedef struct 
+{
+	uint8_t data_es;	/* udr0 i/o data */
+	uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+	uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
+	uint8_t _reserved;    /* espacio sin utilizar */
+	uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
+	uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
+	uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
+} volatile uart_t
+
+
 
 
