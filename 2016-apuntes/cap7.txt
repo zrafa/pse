@@ -186,3 +186,29 @@ va completando la tabla de la estructura. Si existen ubicaciones no
 utilizada o reservada entre los registros se puede ubicar variables
 vacias para ocupar espacio adicional acorde.
 
+Un ejemplo de una estructura de datos del estilo se presenta a continuación.
+La misma describe los registros de uno de los puertos presentes dentro
+del atmega328p. El dispositivo tiene tres registros, dispuestos como se muestra
+a continuación en la estructura de datos puerto_b. Cada registro es de 
+8 bits y deberían ser manipulados como un unsigned char.
+
+struct puerto_b
+{
+	unsigned char data_es;	/* udr0 i/o data */
+	unsigned char baud_rate_h;    /* ubrr0h baud rate high */
+	unsigned char baud_rate_l;    /* ubrr0l baud rate low */;
+	unsigned char _reserved;    /* espacio sin utilizar */
+	unsigned char status_control_c;    /* ucsr0c USART Control and Status C */
+	unsigned char status_control_b;    /* ucsr0b USART Control and Status B */
+	unsigned char status_control_a;    /* ucsr0a USART Control and Status A */
+}
+
+Para leer y escribir bits individuales mas facilmente es una practica comun
+definir mascaras de bits para usos comunes:
+
+#define RECEIVER_ENABLE 0x10        /* RXEN0 Habilitar la recepcion */
+#define TRANSMITTER_ENABLE 0x08     /* TXEN0 Habilitar la transmicion */
+#define CHARACTER_SIZE_0 0x20       /* UCSZ00 Numero de bits del dato de e/s */
+#define CHARACTER_SIZE_1 0x40       /* UCSZ01 Numero de bits del dato de e/s */
+#define READY_TO_READ 0x80          /* RXC0 Dato listo para leer */
+#define READY_TO_WRITE 0x20         /* UDRE0 Buffer vacio listo para escribir */
