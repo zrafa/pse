@@ -447,3 +447,62 @@ arriba al puerto seria, este es enviado nuevamente a través de un 'eco'.
 Si el usuario presiona 'q' en el programa terminal de la PC e programa
 embebido finaliza. De otra manera, el bucle contnua y comprueba si otro
 caracter de entrada arriba.
+
+
+
+EJEMPLO MAIN
+
+
+Extendiendo la funcionalidad del controlador del dispositivo serial
+----------------
+
+
+Aunque el controlador es muy básico, tiene funcionalidad básica que permite
+desarrollar un programa mas robusto (y útil). Este controlador de dispositivo 
+presenta unaplataforma para aprender acerca de la operacion de los UARTs.
+La lista siguiente son posibes extensiones que puede realizarse
+para agregar funcionaidad a este controlador. 
+
+NOTA: Mantenga esta lista en mente para otros controladores que desarrolle tambien.
+
+Configuracion seleccionable
+--
+
+Se puede cambiar serial_init para que obtenga parametros de entrada,
+que permita a a aplicación que utiliza el controlador a especificar
+los parametros de comunicacion iniciales. Por ejemplo, baud rate para
+el puerto serial.
+
+Error checking
+
+Es importante para los controladores de hardware realizar un adecuado
+chequeo de errores. Por lo que una mjora podría ser definir codigos
+de erroes (por ejemplo, errores en los parámetros, errores de hardware, etc)
+en la API de controlador.
+Las funciones del controlador utilizarían estos códigos para devolver
+el estado de la operación fallida. De esta manera, la aplicación embebida
+utilizando el controlador puede realizar acciones de alto nivel con respecto
+a fallas, y por ejemplo, reintentar la operación.
+
+APIs adicionanles
+
+Agregando serial_get_str y serial_put_str (el cual require buffer de
+los datos del receptor y transmisor) podría ser util. La implementación
+de las funciones de cadenas podrían hacer uso de las funciones
+serial_get_char y serial_put_char, si fuese razonablemente eficiente
+hacer.
+
+Uso de FIFO
+
+tipicamente, UARTs contienen FIFOs para los datos recibidos y transmitidos.
+Utilizando FIFOs agrega buffer a ambos canales de recepción y transmisión,
+logrando que el controlador UART  sea mmas robusto.
+
+Interrupciones
+
+Implementando interrupciones UART para la recepción y transmisión es
+usualmente  mejor que utilizar E/S programada. Por ejemplo, en la fucnión
+serial_get_char, usando interrupciones elminaria la necesidad
+de que el controlador se quede esperando el caracter entrante. 
+Por lo tanto, el software de la aplicación es capaz de realizar
+otras tareas mientras se espera que el dato sea recibido. 
