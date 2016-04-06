@@ -506,3 +506,45 @@ serial_get_char, usando interrupciones elminaria la necesidad
 de que el controlador se quede esperando el caracter entrante. 
 Por lo tanto, el software de la aplicación es capaz de realizar
 otras tareas mientras se espera que el dato sea recibido. 
+
+El disenio del controlador de dispositivos
+------------------
+
+La mayoria de los sistemas embebidos tienen mas de un controlador de dispositivo.
+De hecho, algunas veces pueden tener muchos controladores. En cuanto
+mejore con la experiencia necesita entender la manera en que los
+diferentes controladores en el sistema interactuan entre ellos. 
+Tambien es importante entender muy bien como el software de aplicación 
+utiliza el controlador de dispositivo para que se pueda diseniar apropiadas
+APIs.
+
+Es necesario tener un buen entendimiento de todo el disenio
+del software para conocer de todos los posibles problemas en el mismo.
+Obtener entradas desde multiples fuentes puede generar 
+Algunas areas a considerar cuando se realiza el disenio de la arquitectura
+del software que incluye varios controladores de software son :
+
+Prioridades en las interrupciones
+
+si se utilizan interrupciones en los controladores de dispositivos
+de un sistema necesita deteerminar un conjunto apropiado de niveles
+de priridades.
+
+
+Uso de recursos
+
+Es importante comprender qué recursos son necesarios para cada controlador.
+Por ejemplo, imagine el desarrollo de un controlador ethernet para un 
+sistema con muy poca memoria.
+Esta limitación afectaría al esquema de buffer implementado.
+El controlador podria manejar el almacenamiento de unicamente unos
+pocos paquetes entrantes, el cual afectaria el rendimiento de la interfaz etehernet.
+
+Compartir recursos
+
+Debe tener presente que en ciertas situaciones puede tener multiple
+controladores de dispositivos que necestan acceder a hardware común 
+(tales como pines de E/S) o memoria comun. 
+Esto puede hacer difícil localizar errores si el
+esquema de divisiones de responsabilidades y uso de recursos
+no se piensa a fondo antes.
