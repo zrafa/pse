@@ -360,9 +360,9 @@ que contiene los parametros del controlador serial, llamado serialparams_t.
 Tambien, se crea una variable global que contendrá los valores 
 de configuración actual definidos en la estructura anterior.
 
-Una variable llamada initialized se define, para mantener el estado de si el 
+Una variable más, llamada initialized se define, para mantener el estado 
+de si el 
 controlador del dispositivo está inicializado o no.
-el estado del hardware
 
 typedef struct
 {
@@ -393,24 +393,25 @@ API del controlador del dispositivo
 -------------
 
 
-Ahora funcionalidad adicional puede ser incorporada, definiendo otras
+Ahora ya es posible incorporar funcionalidad adicional, definiendo otras
 funcionas en el controlador del dispositivo serial.
-Una API para el controlador de dispositivo serial deberia tener, al menos,
+La API para el controlador de dispositivo serial deberia tener, al menos,
 funciones para enviar y recibir caracteres. Para enviar caracteres
-se implementa, en estes ejemplo, la funcion serial_put_char, para recibir
+se implementa, en estes ejemplo, la funcion serial_put_char, y para recibir
 caracteres la funcion serial_get_char;
 
 
 La funcion serial_put_char espera hasta el que transmisor esté listo, y 
-luego envia un caracter individual a través del puerto serial. La
+luego envia un caracter individual a través del puerto serial (E/S programada).
+La
 transmisión es realizada al escribir el dato al registro de datos del USART.
 El siguiente código muestra la función serial_put_char.
 
 FUNCION 
 
 
-La funcion serial_get_char espera hasta que un caracter es recibido y 
-entonces es posible leer un caracter individual desde el puerto serial. 
+La funcion serial_get_char debe esperar hasta que un caracter es recibido, y 
+luego es posible leer el caracter individual desde el puerto serial. 
 Para determinar si un caracter ha sido recibido, se puede verificar
 el bit data ready, del registro de estado del USART. El caracter
 recibido es devuelto a la funcion llamadora. 
@@ -421,23 +422,23 @@ FUNCIOn
 Debido a que este controlador de dispositivo serial no utiliza interrupciones
 el paso final en la filosofía de controlador de dispositivo (implementar
 la rutinas que atienden las interrupciones del controlaador de dispositivo)
-no se implementan.
+no se implementa.
 
 
 Verificando (testing) el controlador de dispositivo serial
 ----------------
 
 Ahora que el controlador de dispositivo está implementado, necesita verificar
-que funciona correctamente. Es importante verificar las funciones individuales
-de la nueva API antes de integrar el controlador dentro de sistema
-de software.
+que funciona correctamente. Es importante verificar las funciones de la nueva
+API de manera individual, 
+antes de integrar el controlador dentro del sistema de software.
 
 Para verificar el controlador debe conectar el puerto serial de la placa
 arduino pro min a la PC. Debido a que los pines del puerto serial de la placa
 funcionan con logica ttl, se debe utilizar un adaptador. Un adaptador
 comun en estos dias es el que adapta estos niveles ttl a USB, que toda PC
-actual tiene. 
-Luego de conectar el hardware, se necesita un programa "terminal", tal
+actual tiene.
+Luego de conectar el hardware se necesita un programa "terminal", tal
 como minicom, picocom, o screen desde la PC. Ejecute uno de estos programas
 y configure el puerto serial del sistema operativo en la PC y la
 velocidad de la comunicación, que debe ser la misma que la del driver 
@@ -446,19 +447,18 @@ implementado.
 La funcion main demuestra como ejecutar las funcionalidades implementadas
 en el controlador del dispositivo.
 
-
 Primero, el controlador del dispositivo serial es inicializado llamando 
-a serial_init. Then varios caracteres son emitidos hacia la PC, para 
+a serial_init. Luego se envían varios caracteres hacia la PC, para 
 verificar la función serial_put_char. Si el controlador de dispositivo serial
 opera correctamente se obtiene el mensaje 'start' en la pantalla terminal
 de la PC.
 
-Luego, un bucle while es ejecutado, chequeando si un caracter
-ha sido recibido (llamando a serial_get_char). Si un caracter
-arriba al puerto seria, este es enviado nuevamente a través de un 'eco'.
-Si el usuario presiona 'q' en el programa terminal de la PC e programa
-embebido finaliza. De otra manera, el bucle contnua y comprueba si otro
-caracter de entrada arriba.
+Finalmente un bucle while es ejecutado, chequeando si un caracter
+ha sido recibido (llamando a serial_get_char). Si se recibe un caracter
+en el puerto serial, este es enviado nuevamente a través de un 'eco'.
+Si el usuario presiona 'q' en el programa terminal de la PC el programa
+embebido finaliza. De otra manera, el bucle continua y comprueba si otro
+caracter de entrada arriba volviendo a realizar el 'eco'.
 
 
 
@@ -469,52 +469,53 @@ Extendiendo la funcionalidad del controlador del dispositivo serial
 ----------------
 
 
-Aunque el controlador es muy básico, tiene funcionalidad básica que permite
-desarrollar un programa mas robusto (y útil). Este controlador de dispositivo 
-presenta unaplataforma para aprender acerca de la operacion de los UARTs.
-La lista siguiente son posibes extensiones que puede realizarse
-para agregar funcionaidad a este controlador. 
+Aunque el controlador es muy básico, tiene funcionalidad como para
+escribir una aplicación minima util.
+Además, el controlador de dispositivo 
+presentado permite  aprender acerca de la operacion de los UARTs.
+La lista a continuacion son posibes extensiones que puede realizar
+si se desea agregar funcionaidad extra.
 
-NOTA: Mantenga esta lista en mente para otros controladores que desarrolle tambien.
+NOTA: Mantenga esta lista en mente para otros controladores que desarrolle.
 
 Configuracion seleccionable
 --
 
 Se puede cambiar serial_init para que obtenga parametros de entrada,
-que permita a a aplicación que utiliza el controlador a especificar
+que permita a la aplicación que utiliza el controlador especificar
 los parametros de comunicacion iniciales. Por ejemplo, baud rate para
 el puerto serial.
 
 Error checking
 
 Es importante para los controladores de hardware realizar un adecuado
-chequeo de errores. Por lo que una mjora podría ser definir codigos
-de erroes (por ejemplo, errores en los parámetros, errores de hardware, etc)
+chequeo de errores. Por lo que una mejora podría ser definir codigos
+de errores (por ejemplo, errores en los parámetros, errores de hardware, etc)
 en la API de controlador.
 Las funciones del controlador utilizarían estos códigos para devolver
-el estado de la operación fallida. De esta manera, la aplicación embebida
+el estado de la operación si existe un error. De esta manera, la aplicación embebida
 utilizando el controlador puede realizar acciones de alto nivel con respecto
 a fallas, y por ejemplo, reintentar la operación.
 
 APIs adicionanles
 
 Agregando serial_get_str y serial_put_str (el cual require buffer de
-los datos del receptor y transmisor) podría ser util. La implementación
+los datos del receptor y transmisor) podría también ser util. La implementación
 de las funciones de cadenas podrían hacer uso de las funciones
 serial_get_char y serial_put_char, si fuese razonablemente eficiente
-hacer.
+hacerlo.
 
 Uso de FIFO
 
-tipicamente, UARTs contienen FIFOs para los datos recibidos y transmitidos.
+Tipicamente, UARTs contienen FIFOs para los datos recibidos y transmitidos.
 Utilizando FIFOs agrega buffer a ambos canales de recepción y transmisión,
-logrando que el controlador UART  sea mmas robusto.
+logrando que el controlador UART  sea mas robusto.
 
 Interrupciones
 
 Implementando interrupciones UART para la recepción y transmisión es
-usualmente  mejor que utilizar E/S programada. Por ejemplo, en la fucnión
-serial_get_char, usando interrupciones elminaria la necesidad
+usualmente mejor que utilizar E/S programada. Por ejemplo, si en la fucnión
+serial_get_char se utiliza interrupciones se eliminaria la necesidad
 de que el controlador se quede esperando el caracter entrante. 
 Por lo tanto, el software de la aplicación es capaz de realizar
 otras tareas mientras se espera que el dato sea recibido. 
@@ -526,13 +527,12 @@ La mayoria de los sistemas embebidos tienen mas de un controlador de dispositivo
 De hecho, algunas veces pueden tener muchos controladores. En cuanto
 mejore con la experiencia necesita entender la manera en que los
 diferentes controladores en el sistema interactuan entre ellos. 
-Tambien es importante entender muy bien como el software de aplicación 
-utiliza el controlador de dispositivo para que se pueda diseniar apropiadas
-APIs.
+Tambien es importante entender muy bien cómo el software de aplicación 
+utiliza los controladores de dispositivo para que pueda diseniar APIs apropiadas
+.
 
-Es necesario tener un buen entendimiento de todo el disenio
-del software para conocer de todos los posibles problemas en el mismo.
-Obtener entradas desde multiples fuentes puede generar 
+Tambien, con respecto al manejo de errores, es necesario tener un buen entendimiento de todo el disenio
+del software, para conocer los posibles problemas que pueden surgir.
 Algunas areas a considerar cuando se realiza el disenio de la arquitectura
 del software que incluye varios controladores de software son :
 
@@ -548,15 +548,16 @@ Uso de recursos
 Es importante comprender qué recursos son necesarios para cada controlador.
 Por ejemplo, imagine el desarrollo de un controlador ethernet para un 
 sistema con muy poca memoria.
-Esta limitación afectaría al esquema de buffer implementado.
-El controlador podria manejar el almacenamiento de unicamente unos
-pocos paquetes entrantes, el cual afectaria el rendimiento de la interfaz etehernet.
+Es muy probable que esta limitación afecte al esquema de buffer implementado.
+El controlador podria manejar el almacenamiento de unos
+pocos paquetes entrantes, el cual afectaria al rendimiento de la 
+interfaz ethernet.
 
 Compartir recursos
 
 Debe tener presente que en ciertas situaciones puede tener multiple
-controladores de dispositivos que necestan acceder a hardware común 
-(tales como pines de E/S) o memoria comun. 
-Esto puede hacer difícil localizar errores si el
+controladores de dispositivos que necestan acceder a un hardware común 
+(tales como pines de E/S) o memoria compartida.
+Esto hará difícil localizar errores si el
 esquema de divisiones de responsabilidades y uso de recursos
 no se piensa a fondo antes.
