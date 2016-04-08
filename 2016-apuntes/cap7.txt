@@ -2,9 +2,10 @@
 Perifericos
 
 Además del procesador y memoria, la mayoría de los sitemas embebidos
-contienen unos pocos dispositivos de hardware extra. Algunos de estos
+contienen varios dispositivos de hardware extra. Algunos de estos
 dispositios son específicos a la aplicación, mientras que otros -como los
-relojes y puertos seriales- son útiles en una gran variedad de sistemas.
+relojes y puertos seriales- son útiles de una manera general a una gran 
+variedad de sistemas distintos.
 Los que residen junto con el procesador dentro del mismo chip se los
 denomina periféricos internos, u on-chip. Los que se encuentran fuera
 del chip donde está el procesador se los denomina de manera opuesta,
@@ -16,29 +17,31 @@ Registros de estado y de control
 ----
 
 La interfaz básica entre un procesador embebido y un dispositivo periférico
-es un conjunto de registro de estado y control. Estos registros son parte
-del hardware del periférico, y sus ubicaciones, tamanio y significados
-individuales son característicos de los periféricos. Por ejemplo, 
-el significado de los bis de los registros de un controlador serial son muy diferentes a los
+es un conjunto de registros de estado y control. Estos registros son parte
+del hardware del periférico, y sus ubicaciones, tamanio (en bits) y significado
+individuales son característicos de cada dispositivo. Por ejemplo, 
+el significado de los bis de los registros de un controlador serial son 
+muy diferentes a los
 de los contadores o relojes. En esta sección se encuentra explicado la 
 manera de manipular el contenidos de los registros de estado y control
 directamente desde programas en C/C++.
 
-Dependiendo del disenio del procesador y la placa, los dispsitios perifericos
+Dependiendo del disenio del procesador y la placa, los dispositivos perifericos
 se encuentran localizacos en el espacio de memoria del procesador o dentro
-del espacio de E/S. De hecho, es comun en sistemas embebidos  que se incluyan
+del espacio de E/S. De hecho, es comun en sistemas embebidos que se incluyan
 periféricos de ambos tipos. Se los denomina periféricos mapeados en memoria
-y periféricos mapeados en E/S respectivamentes. De los dos tipos, los periféricos
+y periféricos mapeados en E/S respectivamente. De los dos tipos, los periféricos
 mapeados en memoria son los más fácies de utilizar y por lo tanto su popularidad
 aumenta.
 
 Los registros de estado y control de periféricos mapeados en memoria se pueden
-parecer a variables ordinarias. Por ejemplo, es posible simplemente declarar 
-declarar un puntero en C a un registro o bloque de registros, y establecer
-la dirección (valor del puntero) explícitamente. Por ejemplo, el registro
-PORTB utilizado en el capítulo 2 es mapeado en memoria en la dirección 
-física 0x25. Por tal motivo la función toggleLed puede ser escrita completamente
-en C, somo se muestra a continuación.
+parecer a variables comunes en un programa. Por ejemplo, es posible 
+declarar un puntero en C a un registro o bloque de registros, 
+y establecer
+la dirección (valor del puntero) explícitamente. Supongamos el registro
+PORTB utilizado en el capítulo 2, el cual es mapeado en memoria en la dirección 
+física 0x25. La función toggleLed estudiada en ese capitulo puede ser 
+escrita completamente en C, somo se muestra a continuación.
 
 unsigned char * puerto_B = (unsigned char *) 0x25;
 
@@ -47,12 +50,15 @@ void toggleLed(void)
     *puerto_B ^= LED_ROJO;    /* Read, xor, and modify. */
 }    /* toggleLed() */
 
-Un puntero a un registro de 8 bits es declarado y explicitamente inicializado
-a la dirección 0x25. A partir de este momento el puntero al registro
+Aquí se declara un puntero a un registro de 8 bits y explicitamente se lo
+inicializa con  la dirección 0x25. A partir de este momento el puntero al 
+registro
 trabaja como cualquier puntero a una variable de tipo char de 8 bits.
 
 
-Note, de cualquier manera, que existe una diferencia muy importante entre 
+Uso de volatile en C o C++
+
+NOTe que existe una diferencia muy importante entre 
 registros de dispositivos y variables ordinarias. El contenido de un registro
 de dispositivo puede cambiar sin que el programa intervenga o se notifique
 del cambio. Esto sucede porque el contenido del registro puede ser modificado
@@ -84,7 +90,7 @@ variable puerto_B tendrá el valor 0x25 durante toda la ejecución del programa
 supuesto). Mas bien es el dato apuntado el que está sujeto a cambiar
 sin que el programa intervenga. Este detalle es muy sutil y es facilmente
 confundible al pensar mucho en el tema. Solamente recuerde que la ubicación
-de un registro es fija aunque su contenido podría no serlo. Por lo que, si se
+de un registro es fija aunque su contenido podría no serlo. Por lo tanto, si se
 utiliza la palabra clave volatile, el compilador asumirá lo mismo.
 
 La principal desventaja de los demás tipos de registros, registros mapeados
@@ -100,16 +106,17 @@ dispositivo mapeado al espacio de E/S.
 La filosofia del controlador de dispositivo
 ------------
 
-
 NOTA: En el disenio de controladores (drivers) de dispositivos se debe
 siempre enfocar una meta común : ocultar el hardware completamente.
 
-Cuando se finaliza, el modulo controlador de dispositivo debe ser la unica
-pieza de software en el sistema entero que lee o escribe a los registros
-de estado y control particular directamente. Además, si el dispositivo 
+Cuando se completa un proyecto, el modulo controlador de dispositivo debe 
+ser la unica
+pieza de software en el sistema entero que lee o escribe directamente a los 
+registros de estado y control particular de un periférico. Además, si el 
+dispositivo 
 genera interrupciones, la rutina de servicio de interrupciones que 
 atiende las mismas debe ser una parte integral del controlador de dispositivo.
-En esta sección se explica el por qué se recomienda esta filosofía y de cómo
+En esta sección se explica el por qué se recomienda esta filosofía y cómo
 puede ser lograda.
 
 
