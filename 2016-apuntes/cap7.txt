@@ -119,23 +119,22 @@ atiende las mismas debe ser una parte integral del controlador de dispositivo.
 En esta sección se explica el por qué se recomienda esta filosofía y cómo
 puede ser lograda.
 
-
-Por supuesto, intentar ocultar el hardware completamente es difícil. Sea la
-interfaz de programación que se seleccione siempre reflejará las
+Por supuesto, intentar ocultar el hardware completamente es difícil. Sea cual
+sea la interfaz de programación que se seleccione siempre reflejará las
 características generales del dispositivo. Esa característica es esperada
 e inevitable. La meta tiene que ser que la interfaz de programación
-desarrollada no debería necesitar cambios is el periférico final es reemplazado
+desarrollada no debería necesitar cambios si el periférico final es reemplazado
 con otro de su misma clase general. Por ejemplo, todos los dispositios de memoria
 Flash comparten los conceptos de sectores (aunque el tamanio del sector
 puede diferir entre chips). Una operación de borrado puede ser realizada
 unicamente en un sector entero, y una vez eliminado, bytes individuales
 de palabras pueden ser reescritos. Por lo tanto, la interfaz desarrollada
 en un controlador de memoria Flash debería ser util con cualquier
-dispositivo de memoria similar. 
+dispositivo de memoria similar.
 
-Controladores de dispositivos para sistemas embebidos son bastante
+Los controladores de dispositivos para sistemas embebidos son bastante
 diferentes con respecto a los controladores para estaciones de trabajo.
-En una compputadora moderna, los controladores de dispositivos estan
+En una computadora general, los controladores de dispositivos estan
 desarrollados con el objetivo de satisfacer los requerimientos del sistema
 operativo. Por ejemplo, los sistema operativos de PC usualmente imponen
 requerimientos estrictos en la interfaz de software entre el SO y una
@@ -145,16 +144,17 @@ y capacidades del hardware subyacente. Los programas de aplicacion que
 necesitan utilizar la placa de red están forzados a utilizar la API
 de red provista por el sistema operativo y no tienen acceso directo a la
 placa en si misma. En este caso la meta de ocultar el hardware completamente
-es alcanzada facilmente.
+es alcanzada más facilmente.
 
 En contraste, el software de aplicación en un sistema embebido  puede acceder al
-hardware facilmente. De hecho, debido a que todo el software es
+hardware directamente. De hecho, debido a que todo el software es
 vinculado en conjunto en una imagen binaria individual, raramente existe
 una
 distinción entre la aplicación, sistema operativo, y controladores
 de dispositios.
-Esta distinción, como la aplicación de restricciones de acceso al hardware,
-son meramente responsabilidades de los desarrolladores de software.
+Esta distinción, como asi también la aplicación de restricciones de acceso 
+al hardware,
+son meramente responsabilidades de los desarrolladores de software embebido.
 Ambas son decisiones de disenio que los desarrolladores deben realizar
 concienzudamente. En otras palabras, los implementadores de software 
 embebido pueden tener más flexibilidad en el disenio del software
@@ -168,8 +168,8 @@ del hardware puede ser verificado mas precisamente. Finalmente, el ultimo
 beneficio pero no por eso menos imporante, los cambios en el software que
 resutan de los cambios en el hardware están localizados en el controlador
 de dispositivo. Todos estos beneficios ayudan a reducir el numero total
-de errores en el software embebido. 
-Pero se debe estar dispuesto a
+de errores en el software embebido.
+Pero, se debe estar dispuesto a
 poner un poco de esfuerzo extra al momento del diseño con el fin de 
 alcanzar estos beneficios.
 
@@ -184,31 +184,32 @@ presentado.
 y de control del dispositivo mapeados en memoria.
 
 El primer paso en el proceso de desarrollo del driver es crear una estructrua
-(struct) al estilo del lenguaje C que represente de manera exacta los registros
+(struct), al estilo del lenguaje C, que represente de manera exacta los registros
 mapeados en memoria del dispositivo. Generalmente, se necesita estudiar
-el libro de datos para el periférico y crear una tabla para los registros
-de estado y de control con sus desplazamientos.
+la hoja de datos del periférico y crear una tabla para los registros
+de estado y de control junto con sus desplazamientos (en memoria).
 Entonces, comenzando con el registro con la dirección más baja, se 
 va completando la tabla de la estructura. Si existen ubicaciones no 
 utilizada o reservada entre los registros se puede ubicar variables
 vacias para ocupar espacio adicional acorde.
 
 Un ejemplo de una estructura de datos del estilo se presenta a continuación.
-La misma describe los registros de uno de los puertos presentes dentro
-del atmega328p. El dispositivo tiene tres registros, dispuestos como se muestra
-a continuación en la estructura de datos puerto_b. Cada registro es de 
+La misma describe los registros del hardware serial USART presente dentro
+del atmega328p. El dispositivo tiene seis registros, dispuestos como se muestra
+a continuación en la estructura de datos serial_st. Cada registro es de 
 8 bits y deberían ser manipulados como un unsigned char.
 
-struct puerto_b
+struct seria_st
 {
-	unsigned char data_es;	/* udr0 i/o data */
-	unsigned char baud_rate_h;    /* ubrr0h baud rate high */
-	unsigned char baud_rate_l;    /* ubrr0l baud rate low */;
-	unsigned char _reserved;    /* espacio sin utilizar */
-	unsigned char status_control_c;    /* ucsr0c USART Control and Status C */
-	unsigned char status_control_b;    /* ucsr0b USART Control and Status B */
-	unsigned char status_control_a;    /* ucsr0a USART Control and Status A */
+	uint8_t data_es;	/* udr0 i/o data */
+	uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+	uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
+	uint8_t _reserved;    /* espacio sin utilizar */
+	uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
+	uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
+	uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
 }
+
 
 Para leer y escribir bits individuales mas facilmente es una practica comun
 definir mascaras de bits para usos comunes:
@@ -231,10 +232,10 @@ serial probablemente se necesita conocer si el
 hardware ha sido inicializado.
 
 Algunos controladores de dispositivos crean mas de un dispositivo de software.
-Esto es un dispositivo puramente lógico que es implementado por encima
+Esto es un dispositivo puramente lógico, que es implementado por encima
 del hardware periférico básico. Por ejemplo, es facil imaginar
-que mas que un reloj por software puede ser implementado desde una
-unidad contador/rejoj (timer/counter). La unidad contador/reloj se configura
+que mas de un reloj por software puede ser implementado desde una
+unidad contador/rejoj (timer/counter). El dispositio contador/reloj se configura
 para generar un tick de reloj periódico, y el controlador de dispositivo
 gestionaría un conjunto de relojes por software de varias duraciones,
 manteniendo información del estado de cada reloj software.
@@ -253,7 +254,7 @@ a los usuarios del controlador de dispositivo
 
 Luego de que se haya inicializado el dispositivo correctamente, es
 momento de agregar otras funcionalidades al controlador. Es en este
-paso en donde se deben establecer los nombres y propósitos de varias 
+paso es en donde se deben establecer los nombres y propósitos de varias 
 rutinas, como así también sus respectivos parámetros y valores devueltos.
 Una vez definidas es el momento de implementar cada función junto
 con un caso de test mínimo. Se presentan ejemplos de tales rutinas
@@ -261,29 +262,32 @@ en la siguiente sección.
 
 5. Una o varias rutinas de atención de interrupciones
 
-Es conveniente diseniar, implementar y verificar la mayoría de as rutinas
+Es conveniente diseniar, implementar y verificar la mayoría de las rutinas
 del controlador de dispositivo antes de habilitar las interrupciones.
 Encontrar el origen de los problemas relacionados con las interrupciones
 es muy difícil. Además, si existen errores (bugs) en otros módulos
-controladores la búsqueda del problema relacionado con las interrupciones
-puede ser imposible de encontrar. Por lo que es mejor utilizar 
+controladores, la búsqueda del problema relacionado con las interrupciones
+puede no tener fin. Por lo que es mejor utilizar 
 E/S programada (polling) primero, para obtener el controlador funcionando.
 De esta manera se comprenderá cómo trabaja el dispositivo (y que 
 realmente esté funcionando) cuando se comienza a buscar la fuente
 de los problemas relacionados con las interrupciones. Finalmente, cabe
-decir que suele haber casi siempre problemas relacionados con las interrupciones.
+decir que, desafortunadamente, suele haber casi siempre problemas 
+relacionados con las interrupciones cuando se implementa el control por 
+software de las mismas.
 
 Un controlador de dispositivo serial
 ---------
 
 El ejemplo de controlador de dispositivo que se presenta está diseniado
 para controlar un puerto serial. El hardware para este controlador
-de dispositivo utiliza un periférico UART (pronunciado "you-art" y es el acrónimo de
+de dispositivo utiliza un periférico UART 
+(pronunciado "you-art" y es el acrónimo de
 Universal Asynchronous Receiver Transmitter) que se encuentra en el atmega328p.
 Un UART es un componente que recibe y envía de manera serial y asincrónica
 información. Asincrónico significa que el dato puede llegar en cualquier
 momento, similar a la entrada provista por un teclado. Un UART acepta
-un byte de forma paralela desde el procesador. El byte es serializado,
+un byte de forma paralela desde el procesador, el cual es serializado,
 y cada bit es transmitido en el momento apropiado. La recepción trabaja
 a la inversa.
 
@@ -291,7 +295,7 @@ Es importante aclarar que el atmega328p tiene en su chip un USART (Universal Syn
 en modo sincrónico, y tambien, como periférico SPI maestro. En nuestro
 controlador utilizamos unicamente el modo asincrónico no SPI.
 
-Antes de diseniar y desarrollar ell controlador de dispositvo 
+Antes de diseniar y desarrollar el controlador de dispositvo 
 es importante entender el diagrama de bloques del hardware -el cual
 presenta cómo las seniales van y vienen desde el periférico al exterior del mismo.
 Tipicamente, esta tarea se logra  observando las porciones relevantes de los
