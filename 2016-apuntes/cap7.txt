@@ -311,24 +311,24 @@ de ellos son :
 - La estructura de los registros para controlar el periférico, que incluye
 el cómo configurar las comunicaciones y como obtener y enviar
 datos desde el periférico.
-- Las direcciones de los registros de estado y de control.
+- Las direcciones de memoria de los registros de estado y de control.
 - El método que se debe utilizar para la operación del periférico (E/S 
 programada o con interrupciones).
-- Si se utilizan interrupcinoes entonces se debe entender qué condiciones
-pueden causar interrupciones, cómo el controlador de software se informa
+- Si se utilizan interrupciones entonces se debe entender bajo qué condiciones
+se producen las interrupciones, cómo el controlador de software se informa
 de las mismas, y cómo debe atenderlas.
 
 Se debe obtener un control claro sobre lo que necesita el controlador 
 de dispositivo para llevar adelante la tarea del periférico dentro del
 sistema. Una vez que estos pasos iniciales están completos, 
-se puede continuar con la tarea de escribir el controlador de software 
+se puede continuar con la tarea de escribir el software del controlador
 para el dispositivo.
 
 Registros interfaz
 -----
 
 El primer paso para el controlador de dispositivo serial es definir
-la interfaz de los registros. Para este ejemplo, utilizamos 
+la interfaz de los registros. Para este ejemplo, utilizamos
 una estructura que se superponga a los registros del USART, los cuales
 están mapeados a memoria. La estructura uart_t se muestra a continuación :
 
@@ -345,7 +345,8 @@ typedef struct
 } volatile uart_t
 
 La variable puertoSerial se utiliza para acceder a los registros
-en la dirección 0xc6 y es definida así :
+en la dirección 0xc6 (que es la dirección mas baja del registro data_es),
+y es definida así :
 
 uart_t *puertoSerial = (uart_t *) (0xc6);
 
