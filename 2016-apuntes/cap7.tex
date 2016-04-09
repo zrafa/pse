@@ -65,10 +65,10 @@ La interfaz básica entre un procesador embebido y un dispositivo periférico
 es un conjunto de registros de estado y control. Estos registros son parte
 del hardware del periférico, y sus ubicaciones, tamaño (en bits) y significado
 individuales son característicos de cada dispositivo. Por ejemplo, 
-el significado de los bis de los registros de un controlador serial son 
+el significado de los bits de los registros de un controlador serial son 
 muy diferentes a los
 de los contadores o relojes. En esta sección se encuentra explicado la 
-manera de manipular el contenidos de los registros de estado y control
+manera de manipular el contenido de los registros de estado y control
 directamente desde programas en C/C++.
 
 Dependiendo del diseño del procesador y la placa, los dispositivos periféricos
@@ -89,11 +89,11 @@ física 0x25. La función toggleLed estudiada en ese capitulo puede ser
 escrita completamente en C, como se muestra a continuación.
 
 \begin{verbatim}
-unsigned char * puerto_B = (unsigned char *) 0x25;
+unsigned char * puerto_b = (unsigned char *) 0x25;
 
 void toggleLed(void)
 {
-    *puerto_B ^= LED_ROJO;    /* Read, xor, and modify. */
+    *puerto_b ^= LED_ROJO;    /* Read, xor, and modify. */
 }    /* toggleLed() */
 \end{verbatim}
 
@@ -123,13 +123,13 @@ le sigue otra instrucción de escritura a la misma ubicación, el compilador
 no asume  que la primer escritura es innecesaria. En otras palabras, la
 palabra clave volatile instruye a la fase de optimización del compilador 
 a tratar a esa variable como volátil, y que su conducta no puede ser
-predecidle en tiempo de compilación.
+predecible en tiempo de compilación.
 
 Prosiguiendo con el ejemplo anterior, se muestra aquí debajo el uso 
 de volatile para advertir al compilador acerca del registro PORTB :
 
 \begin{verbatim}
-volatile unsigned char * puerto_B = (unsigned char *) 0x25;
+volatile unsigned char * puerto_b = (unsigned char *) 0x25;
 \end{verbatim}
 
 Es importante notar que es erróneo interpretar, en esta declaración,
@@ -193,7 +193,7 @@ placa de red. El controlador de dispositivo para una placa de red particular
 debe cumplir con la interfaz de software, sin importar las características
 y capacidades del hardware subyacente. Los programas de aplicación que 
 necesitan utilizar la placa de red están forzados a utilizar la API
-de red provista por el sistema operativo y no tienen acceso directo a la
+de red provista por el sistema operativo, y no tienen acceso directo a la
 placa en si misma. En este caso la meta de ocultar el hardware completamente
 es alcanzada más fácilmente.
 
@@ -209,7 +209,8 @@ son meramente responsabilidades de los desarrolladores de software embebido.
 Ambas son decisiones de diseño que los desarrolladores deben realizar
 concienzudamente. En otras palabras, los programadores de software 
 embebido pueden tener más flexibilidad en el diseño del software
-que sus pares no embebidos.
+que sus pares no embebidos (lo cual no significa que esto sea
+una ventaja).
 
 Los beneficios de un buen diseño de controlador de dispositivo son tres.
 Primero, debido a la modularización, la estructura de todo el software
@@ -251,15 +252,15 @@ a continuación en la estructura de datos serial\_st. Cada registro es de
 8 bits y deberían ser manipulados como un unsigned char.
 
 \begin{verbatim}
-struct seria_st
+struct serial_st
 {
-	uint8_t data_es;	/* udr0 i/o data */
-	uint6_t baud_rate_h;    /* ubrr0h baud rate high */
-	uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
-	uint8_t _reserved;    /* espacio sin utilizar */
-	uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
-	uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
-	uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
+    uint8_t data_es;	/* udr0 i/o data */
+    uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+    uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
+    uint8_t _reserved;    /* espacio sin utilizar */
+    uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
+    uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
+    uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
 }
 \end{verbatim}
 
@@ -307,9 +308,9 @@ con el dispositivo.
 4. Un conjunto de rutinas que, en su conjunto, presentan una API 
 a los usuarios del controlador de dispositivo
 
-Luego de que se haya inicializado el dispositivo correctamente, es
+Luego de que se haya inicializado el dispositivo correctamente es
 momento de agregar otras funcionalidades al controlador. Es en este
-paso es en donde se deben establecer los nombres y propósitos de varias 
+paso en donde se deben establecer los nombres y propósitos de varias 
 rutinas, como así también sus respectivos parámetros y valores devueltos.
 Una vez definidas es el momento de implementar cada función junto
 con un caso de test mínimo. Se presentan ejemplos de tales rutinas
@@ -336,7 +337,7 @@ software de las mismas.
 El ejemplo de controlador de dispositivo que se presenta está diseñado
 para controlar un puerto serial. El hardware para este controlador
 de dispositivo utiliza un periférico UART 
-(pronunciado "you-art" y es el acrónimo de
+(pronunciado 'you-art' y es el acrónimo de
 Universal Asynchronous Receiver Transmitter) que se encuentra en el atmega328p.
 Un UART es un componente que recibe y envía de manera serial y asincrónica
 información. Asincrónico significa que el dato puede llegar en cualquier
@@ -354,7 +355,14 @@ es importante entender el diagrama de bloques del hardware -el cual
 presenta cómo las señales van y vienen desde el periférico al exterior del mismo.
 Típicamente, esta tarea se logra  observando las porciones relevantes de los
 esquemáticos, y leyendo las hojas de datos de los diferentes integrados.
-Un diagrama de bloques para el puerto serial se muestra en la Figura 71.
+Un diagrama de bloques para el puerto serial se muestra en la Figura \ref{fig:usart-block}.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{usart-block.png}
+\caption{Diagrama de bloques del USART en el atmega328p.}
+\label{fig:usart-block}
+\end{figure}
+
 
 Qué integrados se necesitan programar para controlar el periférico?
 Para este ejemplo de controlador serial únicamente nos enfocamos
@@ -389,13 +397,13 @@ están mapeados a memoria. La estructura uart\_t se muestra a continuación :
 \begin{verbatim}
 typedef struct 
 {
-	uint8_t data_es;	/* udr0 i/o data */
-	uint6_t baud_rate_h;    /* ubrr0h baud rate high */
-	uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
-	uint8_t _reserved;    /* espacio sin utilizar */
-	uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
-	uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
-	uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
+    uint8_t data_es;	/* udr0 i/o data */
+    uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+    uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
+    uint8_t _reserved;    /* espacio sin utilizar */
+    uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
+    uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
+    uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
 } volatile uart_t
 \end{verbatim}
 
