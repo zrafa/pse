@@ -152,7 +152,7 @@ ensamblador entre lineas, para leer y escribir los registros de un
 dispositivo mapeado al espacio de E/S.
 
 
-\subsection *{La filosofía del controlador de dispositivo}
+\subsection *{Filosofía del controlador del dispositivo}
 
 \fcolorbox{black}{grey}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
@@ -160,13 +160,13 @@ NOTA: En el diseño de controladores (drivers) de dispositivos se debe
 siempre enfocar una meta común : ocultar el hardware completamente.
 \vspace*{0.4cm} } }
 
-Cuando se completa un proyecto, el modulo controlador de dispositivo debe 
+Cuando se completa un proyecto, el modulo controlador del dispositivo debe 
 ser la única
 pieza de software en el sistema entero que lee o escribe directamente a los 
 registros de estado y control particular de un periférico. Además, si el 
 dispositivo 
 genera interrupciones, la rutina de servicio de interrupciones que 
-atiende las mismas debe ser una parte integral del controlador de dispositivo.
+atiende las mismas debe ser una parte integral del controlador del dispositivo.
 En esta sección se explica el por qué se recomienda esta filosofía y cómo
 puede ser lograda.
 
@@ -189,7 +189,7 @@ En una computadora general, los controladores de dispositivos están
 desarrollados con el objetivo de satisfacer los requerimientos del sistema
 operativo. Por ejemplo, los sistema operativos de PC usualmente imponen
 requerimientos estrictos en la interfaz de software entre el SO y una
-placa de red. El controlador de dispositivo para una placa de red particular
+placa de red. El controlador del dispositivo para una placa de red particular
 debe cumplir con la interfaz de software, sin importar las características
 y capacidades del hardware subyacente. Los programas de aplicación que 
 necesitan utilizar la placa de red están forzados a utilizar la API
@@ -212,7 +212,7 @@ embebido pueden tener más flexibilidad en el diseño del software
 que sus pares no embebidos (lo cual no significa que esto sea
 una ventaja).
 
-Los beneficios de un buen diseño de controlador de dispositivo son tres.
+Los beneficios de un buen diseño del controlador del dispositivo son tres.
 Primero, debido a la modularización, la estructura de todo el software
 se comprende más fácilmente. Segundo, como hay únicamente un modulo 
 que interactúa directamente con los registros del periférico, el estado
@@ -226,7 +226,7 @@ poner un poco de esfuerzo extra al momento del diseño con el fin de
 alcanzar estos beneficios.
 
 Si acuerda con esta filosofía de ocultar todas las especificaciones del hardware
-e interacciones dentro del controlador de dispositivo usualmente debe 
+e interacciones dentro del controlador del dispositivo usualmente debe 
 implementar y utilizar los cinco componentes de la lista presentada a continuación.
 Para realizar una implementación del controlador lo más simple e incremental
 como sea posible, se debería desarrollar estos elementos en el orden
@@ -292,7 +292,7 @@ Esto es un dispositivo puramente lógico, que es implementado por encima
 del hardware periférico básico. Por ejemplo, es fácil imaginar
 que mas de un reloj por software puede ser implementado desde una
 unidad contador/reloj (timer/counter). El dispositivo contador/reloj se configura
-para generar un tick de reloj periódico, y el controlador de dispositivo
+para generar un tick de reloj periódico, y el controlador del dispositivo
 gestionaría un conjunto de relojes por software de varias duraciones,
 manteniendo información del estado de cada reloj software.
 
@@ -306,7 +306,7 @@ esa rutina primero, y esa es una buena manera de entender como interactuar
 con el dispositivo.
 
 4. Un conjunto de rutinas que, en su conjunto, presentan una API 
-a los usuarios del controlador de dispositivo
+a los usuarios del controlador del dispositivo
 
 Luego de que se haya inicializado el dispositivo correctamente es
 momento de agregar otras funcionalidades al controlador. Es en este
@@ -319,7 +319,7 @@ en la siguiente sección.
 5. Una o varias rutinas de atención de interrupciones
 
 Es conveniente diseñar, implementar y verificar la mayoría de las rutinas
-del controlador de dispositivo antes de habilitar las interrupciones.
+del controlador del dispositivo antes de habilitar las interrupciones.
 Encontrar el origen de los problemas relacionados con las interrupciones
 es muy difícil. Además, si existen errores (bugs) en otros módulos
 controladores, la búsqueda del problema relacionado con las interrupciones
@@ -332,10 +332,10 @@ decir que, desafortunadamente, suele haber casi siempre problemas
 relacionados con las interrupciones cuando se implementa el control por 
 software de las mismas.
 
-\subsection *{Un controlador de dispositivo serial}
+\subsection *{Controlador de dispositivo serial}
 
-El ejemplo de controlador de dispositivo que se presenta está diseñado
-para controlar un puerto serial. El hardware para este controlador
+El controlador de dispositivo que se presenta como ejemplo permite
+operar un puerto serial. El hardware para este controlador
 de dispositivo utiliza un periférico UART 
 (pronunciado 'you-art' y es el acrónimo de
 Universal Asynchronous Receiver Transmitter) que se encuentra en el atmega328p.
@@ -350,7 +350,7 @@ Es importante aclarar que el atmega328p tiene en su chip un USART (Universal Syn
 en modo sincrónico, y también, como periférico SPI maestro. En nuestro
 controlador utilizamos únicamente el modo asincrónico no SPI.
 
-Antes de diseñar y desarrollar el controlador de dispositivo 
+Antes de diseñar y desarrollar un controlador de dispositivo 
 es importante entender el diagrama de bloques del hardware -el cual
 presenta cómo las señales van y vienen desde el periférico al exterior del mismo.
 Típicamente, esta tarea se logra  observando las porciones relevantes de los
@@ -384,8 +384,8 @@ de las mismas, y cómo debe atenderlas.
 
 \subsubsection *{Registros interfaz}
 
-El primer paso para el controlador de dispositivo serial es definir
-la interfaz de los registros. Para este ejemplo, utilizamos
+El primer paso en el disenio de un controlador de dispositivo serial es definir
+la interfaz de los registros. En nuestro ejemplo utilizamos
 una estructura que se superponga a los registros del USART, los cuales
 están mapeados a memoria. La estructura uart\_t se muestra a continuación :
 
@@ -440,7 +440,7 @@ serialparams_t g_serial_params;
 \subsubsection *{Rutina de inicialización}
 
 La rutina de inicialización serial\_init configura los parámetros de comunicación
-predeterminados para el controlador de dispositivo serial.
+predeterminados.
 Los registros del USART son programados en la rutina serial\_config, el
 cual recibe como argumento los parámetros de la variable global g\_serial\_params.
 La variable initialized es utilizada para asegurar que el puerto
@@ -455,10 +455,10 @@ FUNCION INIT
 
 Ahora ya es posible incorporar funcionalidad adicional definiendo otras
 funciones en el controlador del dispositivo serial.
-La API para el controlador de dispositivo serial debería tener, al menos,
-funciones para enviar y recibir caracteres. Para enviar caracteres
-se implementa, en este ejemplo, la función serial\_put\_char, y para recibir
-caracteres la función serial\_get\_char;
+La API para el controlador del dispositivo serial debería tener, al menos,
+funciones para enviar y recibir caracteres. En nuestro ejemplo
+se implementan las funciones serial\_put\_char y serial\_get\_char, 
+para enviar y recibir caracteres respectivamente.
 
 
 La función serial\_put\_char debe esperar hasta el que transmisor esté listo, y 
