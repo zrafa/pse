@@ -427,9 +427,9 @@ controlador del dispositivo está inicializado o no.
 \begin{verbatim}
 typedef struct
 {
-    uint32_t dataBits;
-    uint32_t stopBits;
-    uint32_t baudRate;
+    uint8_t dataBits;
+    uint8_t stopBits;
+    uint8_t baudRate;
     parity_t parity;
 } serialparams_t;
 
