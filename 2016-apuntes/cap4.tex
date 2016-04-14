@@ -485,7 +485,7 @@ para el microcontrolador Atmel AVR atmega328p (placa arduino pro mini).
 Si se utiliza otra plataforma, un proceso similar debería ser ejecutado
 utilizando las herramientas y convenciones que acompañan al hardware.
 
-\subsection {Compilar, ensamblar y vincular}
+\subsection *{Compilar, ensamblar y vincular}
 
 El ejemplo Blinking LED consiste de dos archivos fuentes : led.c y blink.c.
 El primer paso en el proceso es compilar estos dos archivos.
@@ -586,8 +586,154 @@ ningún byte para las secciones data y bss. La columna dec muestra el tamaño
 total de la imagen, en decimal, y la columna hex en hexadecimal.
 
 
+\section *{Compilando Blinking LED para una plataforma MIPS}
+
+En esta sección se muestra un ejemplo del procedimiento de compilación 
+para el procesador MIPS 24K contenido en el sistema on-chip AR9331 de atheros
+(placa tplink mr3020).
+
+\subsection *{Compilar, ensamblar y vincular}
+
+El ejemplo Blinking LED para MIPS consiste del archivo fuente main.c y start.S
+(código de inicialización explicado en secciones anteriores).
+El primer paso en el proceso es compilar estos dos archivos.
+La estructura básica para el compilador gcc utilizando el toolchain openwrt
+de Linaro es :
+
+\begin{verbatim}
+mips-openwrt-linux-uclibc-gcc [opciones] archivo
+\end{verbatim}
+
+Compilamos los archivos fuentes con :
+
+\begin{verbatim}
+
+mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
+    -Wall -DRAMSIZE=0x00100000          -mips32 -c start.S -o start.o
+
+mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
+    -Wall -DRAMSIZE=0x00100000          -mips32 -c main.c -o main.o
+
+\end{verbatim}
+
+Hemos realizado la compilación inicial en dos pasos, pero es posible realizar
+esta acción utilizando un único comando.
+
+Ejecutar estos comandos permiten verificar que las herramientas de desarrollo
+están instaladas y configuradas correctamente. El resultado 
+de cada comando es la creación de un archivo objeto por comando, que tiene
+el mismo prefijo que el archivo .c, pero con extensión .o.
+Por lo tanto, si no hubieron errores en la programación, se obtiene
+los archivos main.o y start.o.
+
+\subsection *{Vincular y localizar}
+
+Ahora es el momento de realizar el segundo paso en el proceso de compilación.
+Para realizar la vinculación y localización utilizaremos el vinculador GNU,
+como se describió anteriormente.
+
+Para el tercer paso, utilizaremos un archivo script del vinculador, llamado
+barebone.lds, que será tambien parte de la entrada a ld. Este archivo lds
+permitirá establecer la ubicación de cada sección en la memoria del tplink
+mr3020.  La estructura básica de este archivo, como visto antes, es :
+
+\begin{verbatim}
+mips-openwrt-linux-uclibc-ld [opciones] archivo ...
+
+El comando utilizado en este caso es :
+
+mips-openwrt-linux-uclibc-ld -o barebone.elf -Tbarebone.lds \
+                -Ttext 0x80060000 start.o main.o
+
+mips-openwrt-linux-uclibc-objcopy -S -O srec --remove-section=.reginfo \
+                --remove-section=.mdebug barebone.elf barebone.srec
+
+mips-openwrt-linux-uclibc-objcopy -S -O binary --remove-section=.reginfo \
+                --remove-section=.mdebug barebone.elf barebone.bin
+\end{verbatim}
 
 
+El orden de los archivos determinan su ubicación en memoria. Observe
+que el código de inicializaciión (start.o) se encuentra primero, y que
+se le instruye a ld con la dirección exacta del segmento de texto,
+la cual es 0x80060000.
+
+Los siguientes comandos (objcopy) realizan la conversión de la imagen 
+binaria ejecutable
+en un formato adecuado para ser descargado en la memoria flash del tplink.
+Su funcionamiento es el mismo que el explicado anteriormente 
+para el microcontrolador atmge328p, pero en este caso el formato
+es acorde a este hardware destino (tplink mr3020).
+
+
+\subsubsection *{Código de inicialización (startup)}
+
+Se muestra a continuación el código de inicialización contenido en el archivo
+fuente start.S
+
+\begin{verbatim}
+
+LEAF(_start)
+        .set    mips2
+        .set    reorder
+
+        /* Disable interrupts */
+        mtc0    zero, CP0_STATUS
+
+        /* Disable watch exception. */
+        mtc0    zero, CP0_WATCHLO
+        mtc0    zero, CP0_WATCHHI
+
+
+        /* disable kernel mode cache */
+        mfc0    t0, CP0_CONFIG
+        and     t0, ~0x7
+        ori     t0, 0x2
+        mtc0    t0, CP0_CONFIG
+
+        /* set up stack */
+        li      sp, 0x80060000 + RAMSIZE - 16
+
+        /* jump to main */
+        jal     main
+
+loop:
+        j       loop
+        nop
+END(_start)
+\end{verbatim}
+
+\subsubsection *{Archivo script para ld (lds)}
+
+Se muestra a continuación el código de inicialización contenido en el archivo
+script barebone.lds (utilizado como entrada del vinculador ld). 
+
+\begin{verbatim}
+OUTPUT_FORMAT("elf32-tradbigmips")
+OUTPUT_ARCH("mips:isa32r2")
+ENTRY(_start)
+
+SECTIONS
+{
+  .text : {
+        *(.text)
+        *(.rodata)
+        *(.rodata1)
+        *(.rodata.str1.4)
+        }
+
+  .reginfo : { *(.reginfo) }
+
+  .date : {
+        *(.data)
+        }
+
+  .bss  : {
+        *(.dynbss)
+        *(.bss)
+  }
+}
+\end{verbatim}
 
 \section*{Referencias}
 
