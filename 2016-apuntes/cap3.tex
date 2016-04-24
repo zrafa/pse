@@ -1,0 +1,540 @@
+\documentclass[12pt]{article}
+
+\usepackage{apuntes-estilo}
+\usepackage{fancyhdr,lastpage}
+\usepackage{color,colortbl}
+\usepackage{verbatim}
+
+\def\maketitle{
+
+% Titulo 
+ \makeatletter
+ {\color{bl} \centering \huge \sc \textbf{
+ El primer programa embebido\\ 
+\large \vspace*{-8pt} \color{black} Programación de Sistemas Embebidos
+ \vspace*{8pt} }\par}
+ \makeatother
+
+
+% Autor
+ \makeatletter
+ {\centering \small 
+ 	Departamento de Ingeniería de Computadoras \\
+ 	Facultad de Informática - Universidad Nacional del Comahue \\
+ 	\vspace{20pt} }
+ \makeatother
+
+}
+
+% Custom headers and footers
+\fancyhf{} % clear all header and footer fields
+\fancypagestyle{plain}{\fancyhf{}}
+  	\pagestyle{fancy}
+ 	\lhead{\footnotesize El primer programa embebido - Programación de sistemas embebidos}
+ 	\rhead{\footnotesize \thepage\ }	% ''Page 1 of 2''
+
+\def\ti#1#2{\texttt{#1} & #2 \\ }
+
+
+
+\begin{document}
+
+\thispagestyle{empty}
+\maketitle
+\setlength{\parindent}{0pt}
+
+
+
+En este capítulo realizaremos programación embebida directa a través de un ejemplo.
+Nuestro ejemplo es similar, en espíritu, al programa 'Hello, World!' que puede encontrar al comienzo de la mayoría de los libros de programación
+También, explicaremos las razones por la cual seleccionamos el programa particular
+presentado en este capítulo, y especificamos las secciones de código que son dependientes del hardware.
+El capítulo únicamente contiene el código fuente del programa. Se explica como compilar y ejecutar el programa en el capítulo siguiente.
+
+\section *{Hello, World!}
+
+Pareciera que todo libro sobre programación comienza con el mismo ejemplo -un programa que imprime 'Hello, World!' en la pantalla del usuario. Un ejemplo como este tan utilizado podría parecer aburrido.
+Entre otras cosas, el ejemplo ayuda al lector a verificar la facilidad o dificultad con la que se pueden escribir programas sencillos en el ambiente de programación utilizado. En ese sentido, el programa 'Hello, World!' es muy útil como benchmark para los usuarios de lenguajes de programación y plataformas de computación.
+
+Los sistemas embebidos son las plataformas de computación mas desafiantes con las cuales trabajar si se iniciara el aprendizaje con el benchmark 'Hello, World!". Incluso, para algunos sistemas embebidos podría ser imposible implementar este programa. Y en los sistemas en que fuese posible, el hecho de imprimir mensajes de texto usualmente es más un punto de llegada que el comienzo del aprendizaje.
+
+Una presunción principal del ejemplo 'Hello, World!' es que existe algún tipo de dispositivo de salida en el cual las cadenas de caracteres puedan ser mostradas. Una ventana de texto en el monitor del usuario usualmente sirve para ese propósito. Pero, la mayoría de los sistemas embebidos no contienen un monitor o dispositivo de salida similar. Y para los que tengan, típicamente, requieren una pieza especial de software embebido llamado controlador de pantalla (display driver), que se debe implementar en primer lugar. Si este llegara a ser el caso para un primer programa para estas plataformas entonces sería una manera muy desafiante de comenzar una carrera en programación de sistemas embebidos.
+
+Una forma mucho mas conveniente es comenzar con una programa embebido portable,
+fácilmente implementable y pequeño. De esta manera hay pocas posibilidades de
+cometer errores. Por lo tanto, el ejemplo básico presentado en este libro elimina
+una de las variables si el programa no funciona correctamente la primera vez:
+el programa no contiene un error en el código, sino que el problema es con las
+herramientas de desarrollo o el proceso utilizado para crear el ejecutable.
+
+
+Los programadores de sistemas embebidos deberían desconfiar de todo. Siempre se debe comenzar cada nuevo proyecto con la 
+suposición de que nada funciona, y que lo único en que se puede confiar 
+es en la sintaxis básica de su lenguaje de programación.
+Incluso las rutinas de las bibliotecas estándar podrían no estar disponibles.
+Generalmente, estas funciones auxiliares se toman como parte de la
+sintaxis básica del lenguaje C estándar, y la mayoría de los demás programadores dan por sentado que cuentan con estas rutinas. De cualquier manera, 
+estas rutinas de bibliotecas son difíciles de portar a todas las posibles
+plataformas de computación, y ocasionalmente son ignoradas
+por los desarrolladores de compiladores para sistemas embebidos.
+
+Por lo que no utilizaremos un programa 'Hello, World!'. En cambio, escribiremos
+un programa en lenguaje C lo mas simple posible que podamos, sin suponer
+que tenemos hardware especializado (el cual requeriría de un controlador de dispositivo) o bibliotecas con funciones como printf.
+A medida que se avance con los diferentes temas agregaremos gradualmente
+rutinas de bibliotecas estándar, y el equivalente a un dispositivo de 
+salida de caracteres a nuestro repertorio.
+Para entonces, ya debería ser un experto en el campo de la programación de sistemas
+embebidos.
+
+\section *{El programa que parpadea un LED (Blinking LED)}
+
+Casi todo sistema embebido que hemos encontrado en nuestras respectivas
+carreras tienen al menos un LED que puede ser controlado por software.
+Si los diseñadores de hardware planean no colocar un LED al circuito intente
+realizar lobby fuertemente, para obtener uno conectado a un pin de propósito
+general (general-purpose I/O (GPIO)). Como se verá luego, este LED
+podría ser la herramienta de depuración (debugging) más valiosa con la que
+se cuenta.
+
+Un substituto popular al programa 'Hello, World!' es un programa que
+hace parpadear un LED en una tasa de una vez por segundo (prendido y apagado).
+Típicamente, el código requerido para encender y apagar un LED está
+acotado a unas pocas líneas de código. Por lo tanto, hay muy pocas posibilidades
+de cometer errores de programación. Además, como casi todo sistema
+embebido contiene un LED, el concepto de este programa básico es extremadamente
+portable.
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA: El programar exactamente el parpadeo para que el ciclo de prendido/apagado
+dure un segundo es difícil. Para conocer la precisión puede utilizar un
+cronómetro. Simplemente inicie un cronómetro, cuente la cantidad de veces
+que se apaga el LED, pare el cronómetro, y vea si el número de segundos
+que transcurrieron coinciden con el número de parpadeos contados.
+Si se necesita mayor precisión simplemente cuente por mas tiempo la cantidad de 'apagados'.
+\vspace*{0.4cm} } }
+
+El primer paso es aprender a controlar el LED que deseamos parpadear.
+En la placa arduino pro mini, existe un led color rojo localizado entre los
+pines digitales etiquetados '10' y '11' 
+(observe la Figura \ref{fig:ledrojo}. Se debe utilizar los esquemáticos
+para conocer el recorrido de la conexión, desde el LED al microcontrolador.
+Este es el método adecuado que necesita realizar cada vez que deba
+conocer cómo está conectado un LED.
+
+\begin{figure}
+\includegraphics{led.png}
+\caption{Ubicación del LED rojo en la placa Arduino Pro mini.}
+\label{fig:ledrojo}
+\end{figure}
+
+
+En los esquemáticos de la placa se puede observar que el LED está controlado por la señal de salida PORTB5 del microcontrolador atmega328p.
+El manual del microcontrolador informa que esa señal es controlada por
+un pin GPIO del microcontrolador, bit 5 del PORTB. Por lo tanto,
+se necesita poder alternar ese pin del microcontrolador HIGH y LOW
+para obtener un programa que realice el parpadeo adecuadamente.
+
+La estructura general del programa led\_blink.c se muestra a continuación.
+Esta parte del programa es independiente del hardware. De cualquier manera,
+este asume que existen funciones llamadas ledInit, ledToggle, y delay\_ms
+para inicializar el pin GPIO que controla el LED, cambiar el estado del LED,
+y manejar el tiempo respectivamente. Esas funciones son descriptas en las 
+siguientes secciones, en las que realmente le encontraremos un
+sentido a lo que se siente al programar sistemas embebidos.
+
+\begin{verbatim}
+#include "led.h"
+
+/**********************************************************************
+ *
+ * Function: main
+ *
+ * Description: Blink the red LED once a second.
+ *
+ * Notes:
+ *
+ * Returns: This routine contains an infinite loop.
+ *
+ **********************************************************************/
+int main(void)
+{
+    /* Configure the red LED control pin. */
+    ledInit( );
+
+    while (1)
+    {
+        /* Change the state of the red LED. */
+        ledToggle( );
+
+        /* Pause for 500 milliseconds. */
+        delay_ms(500);
+    }
+
+    return 0;
+}
+\end{verbatim}
+
+\section *{La función ledInit}
+
+Antes de comenzar a utilizar un periférico particular se debe entender el 
+hardware utilizado para poder controlarlo.
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA: Toda la documentación del microcontrolador ATMEL AVR atmega328p, y 
+de la placa arduino pro mini se encuentra disponible. Incluye las hojas de datos,
+los esquemáticos y los manuales de programación.
+\vspace*{0.4cm} } }
+
+Como el LED que se necesita parpadear está conectado a uno de los pines
+GPIO bidireccionales del microcontrolador, nos enfocamos en estos.
+Frecuentemente, como es el caso con el microcontrolador atmega328p, los
+pines de E/S de un procesador embebido tienen varias funciones.
+Esto permite que el mismo pin sea utilizado como E/S controlable por el usuario
+o para soportar funcionalidad particular dentro del procesador.
+Los registros de configuración se utilizan para establecer como la aplicación
+utilizará cada pin especifico de un puerto.
+
+En el atmega328p algunos pines de ciertos puertos pueden tener mas de 
+una funcionalidad. En estos casos, un pin puede ser utilizado por el usuario
+(en cuyo caso se llama 'pin de propósito general') o por un periférico interno (llamado 'función alternativa del pin')
+Por cada pin GPIO 
+existen varios registros de 8 bits. 
+Estos registros permiten configurar y controlar cada pin GPIO.
+La descripción del puerto que contiene los registros
+para configurar y controlar el pin del LED se muestra en la Figura \ref{fig:puertob}. 
+
+
+
+\begin{figure}
+\includegraphics[width=\linewidth]{descripcion-registro.png}
+\caption{Descripcion puerto B.}
+\label{fig:puertob}
+\end{figure}
+
+
+
+El manual del atmega328 establece también que la configuración del pin GPIO para el
+LED es controlado por el bit 5 del registro DDRB (Data Direction Register).
+Los registros DDRX determinan si los pines se utilizarán como ENTRADA
+o como SALIDA.
+La Figura \ref{fig:regpuertob} muestra la descripción de los bits 
+para los registros del puerto B, y en particular, se puede observar la ubicación del bit 5 en el registro DDRB. Este
+bit configura la dirección del pin GPIO que controla el LED rojo.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{portb-ddrb.png}
+\caption{Descripcion de los registros del puerto B.}
+\label{fig:regpuertob}
+\end{figure}
+
+
+\begin{center}
+\end{center}
+
+Estos registros de configuración y control están ubicados en el espacio de memoria, y sus direcciones se pueden observar en la Figura \ref{fig:regpuertob} presentada anteriormente (primer columna de la izquierda).
+Debido a que los registros están mapeados en memoria se los puede
+acceder fácilmente en C, de la misma manera que una ubicación de memoria
+es leída o escrita (utilizando la dirección entre paréntesis).
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA: Note, al leer el manual del atmega328, que ciertos registros
+contienen bits que están etiquetados como reservados.
+Esto es algo común en muchos registros dentro de un procesador.
+El manual debe indicar cómo se deben leer o escribir tales bits, por
+lo que es importante que no utilice esos bits para otros propósito, 
+o modifique los mismos sin leer el manual.
+\vspace*{0.4cm} } }
+
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA 2: Acceso a registros en espacio de E/S
+Si los registros para los pines GPIO se encuentran en el espacio de E/S
+se los puede acceder únicamente a través de código en lenguaje ensamblador.
+El lenguaje ensamblador para el 80x86, por ejemplo, tiene instrucciones 
+especificas para
+acceder al espacio de E/S, llamadas in y out. EL lenguaje C no tiene
+soporte nativo para estas operaciones. Funciones específicas en C
+llamadas inport y outport han sido escritas, pero son parte únicamente de los
+paquetes de bibliotecas estándar específicos para procesadores 80x86.
+\vspace*{0.4cm} } }
+
+La mayoría de los registros dentro de una CPU tienen una configuración
+predeterminada luego de un reset.
+Esto significa que antes de que se pueda controlar la salida de cualquier
+pin de E/S se debe asegurar que el pin está configurado correctamente.
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA: si se diera el caso que luego de un reset los pines están configurados
+como se necesitan también se debe verificar que no exista otro software 
+que no cambió la funcionalidad de estos pines GPIO (por ejemplo un bootloader).
+Por lo que es una buena práctica inicializar el hardware siempre, aun
+cuando se verifique que el comportamiento predeterminado es el deseado.
+\vspace*{0.4cm} } }
+
+En nuestro caso, se necesita configurar el pin GPIO 5 del puerto B como 
+salida, a través del bit 5 del puerto DDRB (Data direction register).
+La máscara de bits para el pin GPIO que controla el LED rojo en la
+placa arduino pro mini está definido en el programa como sigue :
+
+\begin{verbatim}
+#define LED_ROJO	(0x20)		/* 0b00100000 */
+\end{verbatim}
+
+Una técnica fundamental utilizada en la rutina ledInit es la lectura-modificación-escritura de un registro de hardware.
+Primero, se lee el contenido del registro, entonces se modifica el bit que controla el LED, y finalmente, se escribe el nuevo valor de vuelta en la ubicación
+del registro.
+El código en ledInit realiza esta operación de lectura-modificación-escritura,
+con el registro DDRB. Estas operaciones se realizan en lenguaje C utilizando
+las operaciones \&= y |=. El efecto de x \& = y es el mismo que el de
+x = x \& y. Se explica con un poco mas de detalle estas operaciones para manipulación
+de bits en el Capítulo 7.
+
+La función ledInit configura el microcontrolador atmega328 en la placa
+arduino pro mini para controlar el led rojo.
+En el código debajo note que se pone en cero el pin GPIO en el registro
+PORTB, para asegurarnos que el voltage de salida en el pin GPIO es 
+establecido a cero.
+
+
+\begin{verbatim}
+#define PIN22_FUNC_GENERAL (0xFFFFCFFF)
+
+/**********************************************************************
+ *
+ * Function: ledInit
+ *
+ * Description: Initialize the GPIO pin that controls the LED.
+ *
+ * Notes: This function is specific to the atmega328p.
+ *
+ * Returns: None.
+ *
+ **********************************************************************/
+
+void ledInit(void)
+{
+    volatile unsigned char * DDR_B = 0x24;	/* direccion de DDR B */
+    volatile unsigned char * PUERTO_B = 0x25;	/* direccion de PUERTO B */
+
+    /* Turn the GPIO pin voltage off, which will light the LED. This should
+     * be done before the pins are configured. */
+    *(PUERTO_B) = *(PUERTO_B) & (~ LED_ROJO);
+
+    /* Make sure the LED control pin is set to operate as OUTPUT */
+    *(DDR_B) = *(DDR_B) | (LED_ROJO);
+
+}
+\end{verbatim}
+
+
+\section *{La función ledToggle}
+
+Esta rutina es llamada desde un bucle infinito, y es responsable de cambiar
+el estado del LED. El estado del LED es controlado a través del registro
+PORTB. Activando (colocando un uno) el bit 5 de este puerto cambia el voltage 
+en el pin externo a 5v (HIGH), por lo que el LED rojo se enciende.
+Desactivando el bit 5 de PORTB realiza la función inversa, y el voltage cambia
+a 0V (LOW) y el LED se apaga.
+Si se desea conocer por software si el LED está encendido o apagado simplemente
+se puede leer el bit 5 de PORTB.
+
+Como este registro (PORTB) es de lectura escritura el estado de este bit
+5 podría ser cambiado con una única instrucción en C.
+
+\begin{verbatim}
+/**********************************************************************
+ *
+ * Function: ledToggle
+ *
+ * Description: Toggle the state of one LED.
+ *
+ * Notes: This function is specific to the atmega238p.
+ *
+ * Returns: None.
+ *
+ **********************************************************************/
+void ledToggle(void)
+{
+    volatile unsigned char * PUERTO_B = 0x25;	/* direccion de PUERTO B */
+    unsigned char valor_b;
+
+    valor_b = *(PUERTO_B);
+
+    valor_b ^= LED_ROJO;
+
+    *(PUERTO_B) = valor_b;
+}
+\end{verbatim}
+
+\section *{La función delay\_ms}
+
+También necesitamos implementar una espera de 500ms entre el encendido y apagado
+del LED. Esta acción se realiza por medio de una espera dentro de la rutina
+delay\_ms.
+Esta rutina acepta como entrada la longitud de la espera requerida, en milisegundos, como parámetro. Dentro se multiplica ese valor por la constante
+CYCLES\_PER\_MS para obtener el número total de iteraciones que el bucle
+while debe realizar, para lograr la espera en tiempo requerida.
+
+
+\begin{verbatim}
+
+/* Number of decrement-and-test cycles. */
+#define CYCLES_PER_MS (9000)
+
+/**********************************************************************
+ *
+ * Function: delay_ms
+ *
+ * Description: Busy-wait for the requested number of milliseconds.
+ *
+ * Notes: The number of decrement-and-test cycles per millisecond
+ * was determined through trial and error. This value is
+ * dependent upon the processor type, speed, compiler, and
+ * the level of optimization.  
+ *
+ * Returns: None.
+ *
+ **********************************************************************/
+void delay_ms(int milliseconds)
+{
+    long volatile cycles = (milliseconds * CYCLES_PER_MS);
+
+    while (cycles != 0)
+        cycles--;
+}
+\end{verbatim}
+
+La constante especifica del hardware CYCLES\_PER\_MS representa el numero
+de veces que el procesador debe iterar a través del bucle while en un milisegundo.
+Para determinar este valor puede utilizar prueba y error.
+En secciones futuras se explica como utilizar un contador de hardware para
+alcanzar una mejor precisión de tiempo. 
+
+Las cuatro funciones main, ledInit, ledToggle y delay\_ms realizan la tarea completa del programa que parpadea el LED. Todavía se necesita entender como construir y ejecutar este programa. En los próximos dos capítulos se explican estos temas.
+Pero primero, realizamos algunos comentarios con respecto a los bucles infinitos y su rol en sistemas embebidos.
+
+\section *{EL rol del bucle infinito}
+
+Una de las diferencias fundamentales entre programas desarrollados para sistemas
+embebidos y los desarrollados para otras plataformas de computación es que los programas
+embebidos casi siempre tienen un bucle infinito.
+Típicamente, este bucle rodea una parte significativa de la funcionalidad
+del programa, como sucede con el programa Blinking LED. El bucle infinito
+es necesario porque el software embebido nunca finaliza.
+La intención es que el programa se ejecute hasta que el mundo termine
+o la plataforma es reiniciada, cualquiera que suceda primero.
+
+Además, la mayoría de los sistemas embebidos ejecutan únicamente una sola
+pieza de software. Aunque el hardware sea importante, el sistema
+no es un reloj digital o un celular o un horno microondas sin el software.
+Y sin el software para la ejecución, el hardware es, simplemente, inútil.
+Por lo tanto, las partes funcionales de un programa embebido están siempre
+encerradas por un bucle infinito que se asegura de que el programa
+se ejecutará por siempre.
+
+Si no se coloca el bucle infinito en el programa Blinking LED el LED hubiese
+parpadeado una única vez.
+
+\section*{Referencias}
+
+Michael Barr. Programming Embedded Systems in C and C++ 1st Edition. ISBN-13: 978-1565923546
+ISBN-10: 1565923545. O'Reilly Media; 1 edition (February 9, 1999)
+
+
+\subsection*{Licencia y notas de la traducción}
+
+Este apunte es una traducción del libro de referencia, para
+ser utilizado como apunte en la materia de grado
+'Programación de Sistemas Embebidos' de la Facultad de Informática,
+Universidad Nacional del Comahue.
+Se han realizado modificaciones
+al contenido para aclarar ciertos detalles o agregar partes nuevas.
+ Tambien se han
+modificado todos los archivos fuentes de código, ya que fueron
+portados a la plataforma Atmel atmega328.
+
+Autores : \\
+Rafael Ignacio Zurita ({\tt rafa@fi.uncoma.edu.ar}) \\
+Rodolfo del Castillo ({\tt rdc@fi.uncoma.edu.ar})
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+Esta es una obra derivada del libro de referencia que ha obtenido permiso de O'Reilly para su publicación en en PEDCO.
+\vspace*{0.4cm} } }
+
+{\sf Permiso de publicación:}
+
+\begin{verbatim}
+From: Teri Finn <teri@oreilly.com>
+Date: Mon, 11 Apr 2016 15:48:58 -0700
+Message-ID: <CAOgscZ92-G9iT+=+nnuft4LCoHoe5o8SYPfVEKnS6AKXh8TLyQ@mail.gmail.com>
+Subject: Re: Question about permission to translate some parts
+To: Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
+Content-Type: multipart/alternative; boundary=94eb2c094eeedeba0005303d5a31
+
+--94eb2c094eeedeba0005303d5a31
+Content-Type: text/plain; charset=UTF-8
+
+Hi Rafael,
+
+Thank you for providing this further information.  O'Reilly Media is happy
+to grant you permission to translation the content you have proposed for
+posting to the Moddle site. We're happy you find this information helpful
+to the students.
+
+Best regards,
+
+Teri Finn
+O'Reilly Media, Inc.
+
+On Thu, Apr 7, 2016 at 10:56 AM, Rafael Ignacio Zurita <
+rafa@fi.uncoma.edu.ar> wrote:
+
+> Hi Teri,
+>   thanks for your mail, below to every question my answers
+>
+> On Thu, Apr 7, 2016 at 2:18 PM, Teri Finn <teri@oreilly.com> wrote:
+> > Hi Rafael,
+> >
+> > To further review your request could you please provide us with the
+> > following information:
+> >
+> > 1.   Which chapters and/or "sections" do you wish to translate
+>
+> We would wish to translate chapter 2 (Your First Embedded Program) and
+> chapter 3 (Compiling, Linking, and Locating). Also, the sections
+> 7.0 Peripherals 7.1 Control and Status Registers 7.2 The Device Driver
+> Philosophy (of chapter 7). And it might be useful for students some
+> sections of chapter 8 or 9 (those explain the source code of adeos
+> written by Michael Barr for the book), but these parts could be not
+> too neccesary.
+>
+> >
+> > 2.   How will the material be distributed?  (print/ password protected
+> > website/ other)
+>
+> Our university has a web site with the material of courses and classes
+> (http://pedco.uncoma.edu.ar , a moodle platform). This is a password
+> protected website, and just the students and theachers who are alredy
+> doing the course in the semester have access. We would like to put the
+> material there, together with the rest of the embedded course
+> material.
+> (if we get the neccesary permision from you of course).
+>
+> Best regards,
+>
+> Rafael Zurita
+\end{verbatim}
+
+
+
+\include{licGASL}
+
+\end{document}
+

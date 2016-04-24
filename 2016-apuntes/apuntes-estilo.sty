@@ -1,0 +1,37 @@
+%%% LaTeX Template: Article/Thesis/etc. with colored headings and special fonts
+%%%
+%%% Source: http://www.howtotex.com/
+
+\usepackage[a4paper,left=2.5cm,right=1.5cm,top=2.5cm,bottom=2.0cm]{geometry}
+
+\usepackage[utf8x]{inputenc}							
+\usepackage[spanish]{babel}							
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fix-cm}
+\definecolor{bl}{rgb}{0.0,0.2,0.6} 
+
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+
+\usepackage{epsfig}
+\usepackage{url}
+
+
+\usepackage{sectsty}
+\usepackage[compact]{titlesec} 
+\allsectionsfont{\color{bl}\scshape\selectfont}
+
+
+
+\definecolor{grey}{rgb}{0.9,0.9,0.9} 
+\def\cm#1#2{{\tt#1}\hfill#2\par}
+
+% para que haya un espacio entre parrafos
+\parskip 2ex
+% para que se pueda escribir en typewritter y bold
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
+
