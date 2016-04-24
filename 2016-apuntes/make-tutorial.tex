@@ -365,12 +365,87 @@ This article was originally published in September 2010 issue of the print magaz
 
 
 
+\section*{Makefile del driver serial}
 
+El archivo Makefile para la construcción del proyecto del driver serial
+se muestra a continuación:
 
+\begin{verbatim}
+CC=avr-gcc
+CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -c
+
+.PHONY: clean all
+
+EJECUTABLE = appserial.elf
+OBJETOS = serial.o main.o
+
+ARCHIVOHEX = appserial.hex
+
+all: $(EJECUTABLE)
+        avr-objcopy -O ihex -R .eeprom $(EJECUTABLE) $(ARCHIVOHEX)
+        # avrdude -v -v -v -v -p atmega328p -c arduino -P /dev/ttyUSB0 -b 57600 -D -U flash:w:$(ARCHIVOHEX):i
+
+$(EJECUTABLE): $(OBJETOS)
+        $(CC) $(OBJETOS) -o $@
+
+%.o: %.c
+        $(CC) $(CFLAGS) $< -o $@
+	
+clean:
+        rm $(EJECUTABLE) $(OBJETOS) $(ARCHIVOHEX)
+\end{verbatim}
+
+\fcolorbox{black}{grey}{
+\parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
+NOTA: Realizar copy-paste de este ejemplo desde el apunte PDF puede 
+ocasionar errores de sintaxis.
+Recuerde que la sintaxis para reglas es que luego de
+especificar el objetivo y los prerequisitos las recetas 
+de construcción comienzan con un TAB. Si al copiar y pegar encuentra problemas con make
+se debe verificar que los espacios en las recetas comienzan con una caracter TAB.
+\vspace*{0.4cm} } }
+
+Cabe aclarar que make elimina archivos intermedios en la construcción
+de un proyecto. Estos archivos son dependencias (prerequisitos) de reglas que comienzan 
+con el símbolo \%.
+
+Por ejemplo, si tuviésemos estas dos reglas :
+
+\begin{verbatim}
+%.elf: $(OBJETOS)
+        $(CC) $(OBJETOS) -o $@
+
+%.o: %.c
+        $(CC) $(CFLAGS) $< -o $@
+\end{verbatim}
+
+En este caso, \$(OBJETOS) es dependencia de una regla que comienza con \%.
+Y tambien son archivos intermedios, porque los archivos origen son los 
+\%.c presentado en la segunda regla. Para este caso make eliminará
+los archivo \$(OBJETOS).
+
+En el Makefile original presentado en esta sección los archivos objetos
+no son eliminados, porque no son dependencias de de ninguna regla que comience con \%.
+
+Para evitar que make en conjunto con este Makefile eliminen archivos
+intermedios en la cadena de reglas
+se puede utilizar una declaración '.SECONDARY: archivos', la cual instruye a make a no eliminar los archivos intermedios. Ejemplo
+
+\begin{verbatim}
+.SECONDARY: $(OBJETOS)
+\end{verbatim}
 
 \section*{Referencias}
 
+\begin{verbatim}
+Enlace original de este documento:
 http://opensourceforu.com/2012/06/gnu-make-in-detail-for-beginners/
+\end{verbatim}
+
+\begin{verbatim}
+Manual de GNU make:
+https://www.gnu.org/software/make/manual/
+\end{verbatim}
 
 \subsection*{Licencia y notas de la traducción}
 
