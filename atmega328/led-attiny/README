@@ -1,7 +1,40 @@
 
-Para prepocesar y reconocer como el compilador traduce nombre de puertos a direcciones se puede ejecutar :
+Como programar un attiny que esté virgen de fábrica
+===================================================
 
- avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -E led.c
+Necesitamos utilizar la interfaz icsp (in-circuit system programming) de los micros avr.
+
+Son 3 pasos (aunque el paso dos puede llevar mas pasos :)
+
+
+1- Construimos una placa con los pines expuestos del icsp (in-circuit system programming):
+
+RESET
+VCC
+GND
+CLK (SPI)
+MISO (SPI)
+MOSI (SPI)
+
+
+2- Preparamos un programador. Podemos usar un arduino y seguir las instrucciones en el
+directorio avrisp/
+
+3- Utilizamos el Makefile para compilar el programa en este directorio y utilizamos 
+avrdude (luego del paso 2).
+
+
+
+
+
+Otras consideraciones
+---------------------
+
+
+Para prepocesar y observar como el preprocesador del compilador traduce las macros 
+de nombre de puertos a direcciones se puede ejecutar :
+
+ avr-gcc -Os -DF_CPU=1000000UL -mmcu=atmega328p -E led.c
 
 
 
