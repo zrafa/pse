@@ -8,3 +8,5 @@ Arduino--------Attiny2313
 10------------>1  RESET
 5v------------>20 VCC
 GND----------->10 GND
+
+sudo avrdude -v -v -v -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:avriscp.hex:i
