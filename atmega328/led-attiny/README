@@ -7,7 +7,8 @@ Necesitamos utilizar la interfaz icsp (in-circuit system programming) de los mic
 Son 3 pasos (aunque el paso dos puede llevar mas pasos :)
 
 
-1- Construimos una placa con los pines expuestos del icsp (in-circuit system programming):
+1- Construimos una placa que contenga el attiny4313 con los pines expuestos 
+del icsp (in-circuit system programming):
 
 RESET
 VCC
