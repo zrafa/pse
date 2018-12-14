@@ -1,0 +1,10 @@
+
+Si utilizamos arduino como programador entonces 
+
+Arduino--------Attiny2313
+13------------>19 UCSK
+12------------>18 MISO
+11------------>17 MOSI
+10------------>1  RESET
+5v------------>20 VCC
+GND----------->10 GND

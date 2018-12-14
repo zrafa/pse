@@ -1,0 +1,13 @@
+
+Para prepocesar y reconocer como el compilador traduce nombre de puertos a direcciones se puede ejecutar :
+
+ avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -E led.c
+
+
+
+
+Blog con varios posts de informacion de C unicamente para arduinos :
+
+https://balau82.wordpress.com/2011/03/29/programming-arduino-uno-in-pure-c/
+
+
