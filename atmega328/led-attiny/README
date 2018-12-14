@@ -1,6 +1,8 @@
+Mini repo y documentacion de Como programar un attiny que esté virgen de fábrica
+================================================================================
 
-Como programar un attiny que esté virgen de fábrica
-===================================================
+Este directorio contiene el código fuente de un programa baremetal para un attiny4313 utilizando avr-libc. Tambien su Makefile (para compilar y transferir el firmware, ya que son detalles bastantes difíciles de conesguir).
+
 
 Necesitamos utilizar la interfaz icsp (in-circuit system programming) de los micros avr.
 
