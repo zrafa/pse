@@ -1,5 +1,25 @@
 
-Si utilizamos arduino como programador entonces 
+Si utilizamos el avr en una placa arduino como programador debemos seguir 
+3 pasos:
+
+1- instalar el firmware avrisp.hex al avr en el arduino 
+2- interconectar nuestra placa attiny4313 con el arduino (ahora convertido en programador)
+3- flashear la placa con el attiny con avrdude y usando el arduino como 
+programador
+
+Paso 1: instalar el firmware avrisp.hex al avr en el arduino
+------------------------------------------------------------
+
+Hay que instalar el firmware en el arduino para que se comporte como programador:
+
+(IMPORTANTE: el arduino No tiene que tener el capacitor en reset, es decir, le implantamos este firmware al avr en la placa arduino).
+
+sudo avrdude -v -v -v -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:avriscp.hex:i
+
+Paso 2: interconectar nuestra placa attiny4313 contra el arduino
+----------------------------------------------------------------
+
+(interconexión - pinout)
 
 Arduino--------Attiny2313
 13------------>19 UCSK
@@ -9,4 +29,10 @@ Arduino--------Attiny2313
 5v------------>20 VCC
 GND----------->10 GND
 
-sudo avrdude -v -v -v -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:avriscp.hex:i
+Colocar un capacitor 10uf entre reset del arduino y su tierra (gnd). 
+
+
+3- flashear la placa con el attiny con avrdude y usando el arduino como 
+-----------------------------------------------------------------------
+
+Ejecutar avrdude segun indica el Makefile en el proyecto led-attiny
