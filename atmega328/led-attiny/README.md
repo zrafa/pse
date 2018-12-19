@@ -16,7 +16,7 @@ ni otro software de ayuda.
 
  <figure>
   <img src="https://github.com/zrafa/pse/raw/master/atmega328/led-attiny/attiny.jpg" alt="Placa y foto de Candelaria." width="640">
-  <figcaption>[Placa y foto de Candelaria.]</figcaption>
+  <figcaption>[Placa con attiny4313 y foto de Candelaria.]</figcaption>
 </figure> 
 
 Como programar
