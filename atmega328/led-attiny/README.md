@@ -28,21 +28,24 @@ icsp (in-circuit system programming) de los micros avr.
 Son 3 pasos (aunque el paso dos puede llevar mas pasos :)
 
 
-1- Construimos una placa que contenga el attiny4313 con los pines expuestos 
+1. Construimos una placa que contenga el attiny4313 con los pines expuestos 
 del icsp (in-circuit system programming):
 
+```
 RESET
 VCC
 GND
 CLK (SPI)
 MISO (SPI)
 MOSI (SPI)
+```
 
 
-2- Preparamos un programador. Podemos usar un arduino y seguir las 
+
+2. Preparamos un programador. Podemos usar un arduino y seguir las 
 instrucciones en el directorio avrisp/
 
-3- Utilizamos el Makefile para compilar el programa en este directorio y 
+3. Utilizamos el Makefile para compilar el programa en este directorio y 
 utilizamos avrdude (luego del paso 2).
 
 
