@@ -16,8 +16,11 @@ ni otro software de ayuda.
 
  <figure>
   <img src="https://github.com/zrafa/pse/raw/master/atmega328/led-attiny/attiny.jpg" alt="Placa y foto de Candelaria." width="640">
-  <figcaption>Placa y foto de Candelaria.</figcaption>
+  <figcaption>[Placa y foto de Candelaria.]</figcaption>
 </figure> 
+
+Como programar
+--------------
 
 Para programar micros avr de fábrica necesitamos utilizar la interfaz 
 icsp (in-circuit system programming) de los micros avr.
