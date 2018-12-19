@@ -14,7 +14,7 @@ ni otro software de ayuda.
 
 ![alt text](https://github.com/zrafa/pse/raw/master/atmega328/led-attiny/attiny.jpg  | width=100)
 
-<img src="https://github.com/zrafa/pse/raw/master/atmega328/led-attiny/attiny.jpg" width="48">
+<img src="https://github.com/zrafa/pse/raw/master/atmega328/led-attiny/attiny.jpg" width="640">
 
 Para programar micros avr de fábrica necesitamos utilizar la interfaz 
 icsp (in-circuit system programming) de los micros avr.
