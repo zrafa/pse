@@ -29,6 +29,19 @@
 //                unsigned char sce   = 10);  /* enable      (display pin 5) */
 
 
+/* RAFA pinout 
+ nokia 1100 pin      avr (arduino) pin
+0 unused
+1 LED		     3.3v
+2 vdd                3.3v
+3 vddi               3.3v
+4 sclk (clock)       13
+5 sda (data)  	     11
+6 vss (gnd)          gnd
+7 xcs (chip select)  10
+8 xres (reset)       12
+*/
+
 
 #define SCLK_SET     PORTB |= (1<<PB5)
 #define SDA_SET      PORTB |= (1<<PB3)
@@ -245,6 +258,7 @@ Lcd_Write(CMD, LCD_VOB_LSB|(0x05 & 0x1F));
 _delay_ms(200);            // 5mS so says the stop watch(less than 5ms will not work)
 
 
+Lcd_Clear();
 
 // Lcd_Write(CMD,LCD_CHARGE_PUMP_ON); 
 
