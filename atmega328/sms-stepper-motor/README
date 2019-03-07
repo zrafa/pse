@@ -1,0 +1,12 @@
+
+SMS STEPPER MOTOR
+-----------------
+
+Candelaria Alvarez
+Martin Bucarey
+Alejandro Mora
+
+
+Control de un motor paso a paso via comandos sms.
+Escrito en lenguaje c.
+Microcontrolador avr 8 bits.
