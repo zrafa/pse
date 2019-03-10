@@ -176,15 +176,16 @@ void main(void)
 	goto_xy(0,0);
 	_delay_ms(100);
 	print_string("RAFA RAFA !!  RAFA of Nokia  1220 LCD ..");
-	_delay_ms(100);
+	_delay_ms(1000);
+	lcd_clear();
 	goto_xy(20,5);
 	_delay_ms(1000);
-	print_string("It works!!");
+	print_string("Prueba de funcionamiento Nokia 1220 LCD. Al fin! .....");
 	_delay_ms(1000);
  
 	while(1) {
-    		print_string("FUNCIONA!!");
-		_delay_ms(1000);
+    		print_string("  FUNCIONA!!  ");
+		_delay_ms(800);
   	}
 }
 
@@ -252,20 +253,23 @@ void lcd_init(void)
 	lcd_write(CMD, 0xA4);               /* no all pixels on mode */
 	lcd_write(CMD, 0xAF);               /* display on */
 	lcd_write(CMD, 0xAF);
-////
-//	/* ahora contraste y brillo */
+
+	/* ahora pruebas de contraste y brillo */
+
         /* lcd_write(CMD, 0x45);  */ /* NOP */ 
 	lcd_write(CMD, 0x00); /* NOP */
-////
+
 	lcd_write(CMD, 0x81); /* set vop: */
 	lcd_write(CMD, 0x3F); /* vop */
-////	// // lcd_write(CMD, 0x20 + 99); /*dd->curr_contrast*/
+	// // lcd_write(CMD, 0x20 + 99); /*dd->curr_contrast*/
 	lcd_write(CMD, 0xB4); /*dd->curr_contrast*/
 
 
-
+	/* CONTRASTE!: estos son los dos comandos. 
+	 * El segundo indica el valor. 0x99 es el maximo permitido
+ 	 */
 	lcd_write(CMD, 0x81); /*dd->curr_contrast*/
-	lcd_write(CMD, 0x90); /*dd->curr_contrast*/
+	lcd_write(CMD, 0x99); /*dd->curr_contrast*/
 
 
 
