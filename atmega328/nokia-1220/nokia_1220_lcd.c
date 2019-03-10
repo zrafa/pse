@@ -23,6 +23,7 @@
  * 
  */
 
+/*
 #define SCLK_SET     PORTB |= (1<<PB5)
 #define SDA_SET      PORTB |= (1<<PB3)
 #define CS_SET       PORTB |= (1<<PB2)
@@ -32,6 +33,17 @@
 #define SDA_RESET     PORTB &= ~(1<<PB3)
 #define CS_RESET      PORTB &= ~(1<<PB2)
 #define RST_RESET     PORTB &= ~(1<<PB4)
+*/
+
+#define SCLK_SET     PORTC |= (1<<PC2) // A2
+#define SDA_SET      PORTC |= (1<<PC0) // A0
+#define CS_SET       PORTC |= (1<<PC3) // A3
+#define RST_SET      PORTC |= (1<<PC1)
+
+#define SCLK_RESET    PORTC &= ~(1<<PC2)
+#define SDA_RESET     PORTC &= ~(1<<PC0)
+#define CS_RESET      PORTC &= ~(1<<PC3)
+#define RST_RESET     PORTC &= ~(1<<PC1)
 
 #define CMD     0
 #define DATA    1
@@ -156,7 +168,7 @@ void main(void)
 	MCUCR = 0x80;
 	MCUCR = 0x80;
 
-	DDRB=0xFF;
+	DDRC=0xFF;
 
 	lcd_init();
 
@@ -230,6 +242,7 @@ void lcd_init(void)
 
 	/* obtenido de pcf8511 de serdisplay.sf.net */
 
+
 	lcd_write(CMD, 0xE1);               /* exit powersave */
 	lcd_write(CMD, 0x2F);               /* hvgen on */
 	lcd_write(CMD, 0x81);               /* set vop: */
@@ -239,15 +252,20 @@ void lcd_init(void)
 	lcd_write(CMD, 0xA4);               /* no all pixels on mode */
 	lcd_write(CMD, 0xAF);               /* display on */
 	lcd_write(CMD, 0xAF);
-
-	/* ahora contraste y brillo */
+////
+//	/* ahora contraste y brillo */
         /* lcd_write(CMD, 0x45);  */ /* NOP */ 
 	lcd_write(CMD, 0x00); /* NOP */
-
+////
 	lcd_write(CMD, 0x81); /* set vop: */
 	lcd_write(CMD, 0x3F); /* vop */
-	// lcd_write(CMD, 0x20 + 99); /*dd->curr_contrast*/
-	lcd_write(CMD, 0x7F); /*dd->curr_contrast*/
+////	// // lcd_write(CMD, 0x20 + 99); /*dd->curr_contrast*/
+	lcd_write(CMD, 0xB4); /*dd->curr_contrast*/
+
+
+
+	lcd_write(CMD, 0x81); /*dd->curr_contrast*/
+	lcd_write(CMD, 0x90); /*dd->curr_contrast*/
 
 
 
@@ -277,14 +295,16 @@ lcd_write(CMD,0xa4);
 lcd_write(CMD,0x2f); 
 lcd_write(CMD,0xaf); 
 
-lcd_write(CMD, LCD_VOB_MSB|0x04);
-lcd_write(CMD, LCD_VOB_LSB|(0x05 & 0x1F));
-
-        lcd_write(CMD, LCD_MODE|DISPLAY|ON);
-        lcd_write(CMD, LCD_MODE|ALL|OFF);
-        lcd_write(CMD, LCD_MODE|INVERT|OFF);
-
 */
+
+//lcd_write(CMD, LCD_VOB_MSB|0x04);
+//lcd_write(CMD, LCD_VOB_LSB|(0x05 & 0x1F));
+
+ //       lcd_write(CMD, LCD_MODE|DISPLAY|ON);
+  //      lcd_write(CMD, LCD_MODE|ALL|OFF);
+   //     lcd_write(CMD, LCD_MODE|INVERT|OFF);
+
+// */
 	_delay_ms(200);            // 5mS so says the stop watch(less than 5ms will not work)
 
 // lcd_clear();
