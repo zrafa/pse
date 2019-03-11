@@ -348,7 +348,7 @@ void lcd_write(char cd,unsigned char c)
                     }
 		SCLK_SET;
 		c <<= 1;
-		_delay_ms(3);
+	//	_delay_ms(3);
 	}
 	CS_SET;
 }
