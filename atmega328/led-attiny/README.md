@@ -63,9 +63,3 @@ de nombre de puertos a direcciones se puede ejecutar :
 
 
 
-
-Blog con varios posts de informacion de C unicamente para arduinos :
-
-https://balau82.wordpress.com/2011/03/29/programming-arduino-uno-in-pure-c/
-
-
