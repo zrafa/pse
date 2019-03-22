@@ -1,34 +1,11 @@
 /******************************************************************************
 
-Program to demonstrate the use servo motors with AVR Microcontrollers.
-
-For More Details Visit: http://www.eXtremeElectronics.co.in
-
-Copyright (c) 2008-2010
-eXtreme Electronics, India
+servo motors with AVR Microcontrollers.
 
 Servo Motor: Futaba s3003
 Servo Control PIN (white): To OC1A PIN
 Crystal: 16MHz
-LOW Fuse: 0xFF
-HIGH Fuse: 0xC9
 
-Compiler:avr-gcc toolchain
-Project Manager/IDE: AVR Studio
-
-                                     NOTICE
-                           --------
-NO PART OF THIS WORK CAN BE COPIED, DISTRIBUTED OR PUBLISHED WITHOUT A
-WRITTEN PERMISSION FROM EXTREME ELECTRONICS INDIA. THE LIBRARY, NOR ANY PART
-OF IT CAN BE USED IN COMMERCIAL APPLICATIONS. IT IS INTENDED TO BE USED FOR
-
-HOBBY, LEARNING AND EDUCATIONAL PURPOSE ONLY. IF YOU WANT TO USE THEM IN 
-COMMERCIAL APPLICATION PLEASE WRITE TO THE AUTHOR.
-
-
-WRITTEN BY:
-AVINASH GUPTA
-me@avinashgupta.com
 
 *******************************************************************************/
 #include <avr/io.h>
@@ -61,17 +38,21 @@ void main()
    while(1)
    {
 
-      OCR1A=97;   //0 degree
+      // OCR1A=97;   //0 degree
+      OCR1A=700;   //0 degree
       Wait();
 
-      OCR1A=316;  //90 degree
+      // OCR1A=316;  //90 degree
+      OCR1A=250;  //90 degree
       Wait();
 
-      OCR1A=425;  //135 degree
-
+      // OCR1A=425;  //135 degree
+      OCR1A=500;  //135 degree
       Wait();
 
-      OCR1A=535;  //180 degree
+      // OCR1A=535;  //180 degree
+      OCR1A=1;  //90 degree
+      Wait();
       Wait();
    }
 }
