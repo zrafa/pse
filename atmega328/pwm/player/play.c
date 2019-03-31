@@ -24,45 +24,39 @@ void pwm_init(void)
     * set OC1A at BOTTOM, non-inverting mode
     * Fast PWM, 8bit
     */
-    TCCR1A = _BV(COM1A1) | _BV(WGM11);
+    TCCR1A = _BV(COM1A1) | _BV(WGM10);
    
     /*
-    * Fast PWM, ICR1 (modo 14)
-    * Prescaler: ninguno 
-    * PWM frequency = 16Mhz / 1000(registro ICR1) = 16kHz
+    * Fast PWM, 8bit
+    * Prescaler: clk/1 = 8MHz
+    * PWM frequency = 8MHz / (255 + 1) = 31.25kHz
     */
-    TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
+    TCCR1B = _BV(WGM12) | _BV(CS10);
+    //TCCR1B = _BV(WGM12) | _BV(CS11);
    
     /* set initial duty cycle to zero */
     OCR1A = 0;
-    ICR1 = 1000;
    
-    /* Queremos una interrupcion cada vez que llegue al TOP */
-    TIMSK1|=(1<<TOIE1);
-
-    sample_count = 2;
-
-    sei(); /* Enable interrupts */
+    /* Setup Timer0 */
+    TCCR0B|=(1<<CS00);
+    TCNT0=0;
+    TIMSK0|=(1<<TOIE0);
+    sample_count = 8;
+    sei(); //Enable interrupts
 }
 
 
 
-ISR(TIMER1_OVF_vect)
+ISR(TIMER0_OVF_vect)
 {
-	/* Cada dos interrupciones enviamos un nuevo valor (duty cycle)
- 	 * Esto permite hacer 8000 samples por segundo 8Mhz
-	 */
-	sample_count--;
-	if (sample_count == 0) {   
-
-		OCR1A = pgm_read_byte(&pcm_samples[sample]);
-
-		sample++;
-		if (sample > pcm_length) 	
-			sample=0;
-
-		sample_count = 2;
-	}
+    
+         sample_count--;
+         if (sample_count == 0)
+            {
+             sample_count = 8;          
+             OCR1A = pgm_read_byte(&pcm_samples[sample++]);
+             if(sample>pcm_length)sample=0;
+            }
 }
 
 
