@@ -1,0 +1,5 @@
+
+Ejemplo de pwm con interrupciones 
+para reproducir un audio wav de 8bit, 11000hz viniendo de serial!
+
+http://www.aidanmocke.com/blog/2018/11/19/pwm-audio/
