@@ -2,4 +2,86 @@
 Ejemplo de pwm con interrupciones 
 para reproducir un audio wav de 8bit, 11000hz viniendo de serial!
 
-http://www.aidanmocke.com/blog/2018/11/19/pwm-audio/
+
+Hardware
+--------
+
+El avr tiene conectado un conector de audio (audio jack).
+Este tipo de conectores funcionan aproximadamente con una tensión de 0v a 1.7v.
+Mayor voltage puede dañar el equipo que recibe el audio.
+
+EL conector de audio headset jack que utilizaremos tiene un esquemático 
+para conectarlo al avr. Se utiliza una resistencia y capacitor según
+el archivo: doc/esquematico-player-serial.jpg
+
+
+Teoría y software
+-----------------
+
+Recibimos el wav por el serial UART. Para esto:
+activamos el timer1 con una frecuencia de 11000hz. En cada perídodo
+contamos de 0 a 1000. Utilizanco el registro ICR1.
+
+Activamos Fast PWM y utilizamos el registro OCR1A para generar el voltage
+de 0 a 1.7v que necesita la salida de audio (el audio jack).
+El audio jack está conectado al pin de salida OC1A.
+
+Activamos las interrupciones del timer1 en overflow. Es decir,
+11khz (11000) interrupciones por segundo.
+
+En la rutina de atencion de interrupciones (en AVR es 
+Interrupt Service Rutine) le pedimos al driver serial que nos
+entregue un byte. Como hay 11000 interrupciones por segundo
+los bytes recibidos por UART son consumidos por la rutina
+de interrupciones casi sin pérdidas de bytes recibidos.
+Cada byte obtenido en la rutina de atención de interrupciones
+se lo asignamos al comparador del timer1 OCR1A.
+
+Recibimos el wav a reproducir por el uart. El wav tiene que 
+estar formateado en 11khz (11000hz). Y lo recibimos via serial 
+a 115200 bps. Es decir aproximadamente unos 11Kbytes/segundo.
+
+
+Se utiliza la macro 
+ISR(TIMER1_OVF_vect)
+{
+ /* rutina de atención de interrupción */
+}
+para desarrollar la rutina de atención de interrupciones
+y generar la entrada correcta en la tabla de vectores
+al compilar con avr-gcc
+
+El código fuente en C utiliza otra macro más de libc-avr 
+para activar un bit _BV(n). Ejemplo: PORTB = _BV(PB5);
+
+
+Como convertir un archivo wav y reproducirlo
+--------------------------------------------
+
+Para convertir un archivo wav compatible con este reproductor podemos usar
+ffmpeg en Linux. Ejemplo:
+ffmpeg  -i archivo_input.wav  -ar 11000 -acodec pcm_u8 -ac 1  archivo_output.wav
+
+Una vez que el programa está en funcionamiento en el avr debemos transferir el wav.
+En Linux podemos configurar el serial stty y usar cat. Ejemplo:
+
+stty -F /dev/ttyACM0   # nos muestra la configuracion
+stty -F /dev/ttyACM0 speed 115200  # configuramos el driver serial del Linux a 115200
+stty -F /dev/ttyACM0   # revisamos la nueva configuracion
+
+cat archivo_output.wav > /dev/ttyACM0      # enviamos el archivo wav al avr
+
+
+Fuente original
+---------------
+
+Idea original: http://avrpcm.blogspot.com/2010/11/playing-8-bit-pcm-using-any-avr.html
+El autor de esa idea utiliza dos timers. Me pareció innecesario y nuestro
+código utiliza sólo uno.
+
+Tampoco usa el serial, reproduce unos 3 segundos de un archivo wav que almacena
+en la flash junto con el código (en la flash del avr atmega328p podemos almacenar
+unos dos o tres segundos de audio wav como máximo).
+
+
+
