@@ -51,10 +51,11 @@ void main()
 
 	if (ticks>=125) {
 		toggle_led();
-		cli();
-		ticks = 0;
-		sei();
-	}
 
+		/* seccion critica */
+		cli();	/* deshabilitamos las interrupciones */
+		ticks = 0;
+		sei();	/* habilitamos las interrupciones */
+	}
    }
 }
