@@ -1,5 +1,7 @@
 /******************************************************************************
  *
+ * Driver timer0_contador0 (cero)
+ *
  * Ejemplo de uso de un reloj/contador con interrupciones y seccion critica
  * Programacion de Sistemas Embebidos (materia electiva)
  *
@@ -20,13 +22,6 @@
 /* para contar la cantidad de interrupciones */
 volatile int ticks = 0;
 
-/* mascara para el led en el arduino pro mini */
-#define LED_ROJO (0x20) /* 0b00100000 */
-
-/* PUERTO B - led en la placa */
-volatile unsigned char * puerto_b = (unsigned char *) 0x25;
-volatile unsigned char * ddr_b = (unsigned char *) 0x24; /* direccion de DDR B */
-
 typedef struct {
 	unsigned char tccr0a;
 	unsigned char tccr0b;
@@ -43,14 +38,7 @@ contador0_t * contador0 = (contador0_t *) (0x44);
 volatile unsigned char * contador0_timsk0 = (unsigned char *) 0x6e;
 
 
-
-
-void toggle_led() {
-	*puerto_b = *puerto_b ^ (LED_ROJO);
-}
-
-
-void main()
+void timer0_contador0_init()
 {
 
    /* Configurar timer 0 modo CTC; WGM02=0, WGM01=1, WGM00=0, tope ocr0a */
@@ -67,24 +55,6 @@ void main()
     */ 
    *contador0_timsk0 |= 0b00000010;
 
-   /* habilitamos el led rojo */
-   *ddr_b = *ddr_b | (LED_ROJO);
-   *puerto_b = *puerto_b | (LED_ROJO);
-
-   /* habilitamos las interrupciones */
-   sei();
-
-   while(1)
-   {
-
-	if (ticks>=125) {
-		toggle_led();
-		cli();
-		ticks = 0;
-		sei();
-	}
-
-   }
 }
 
 
