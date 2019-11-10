@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-void pwm_init()
+int main(void)
 {
     DDRD |= (1 << DDD6);
     // PD6 is now an output
@@ -21,20 +21,18 @@ void pwm_init()
 
     TCCR0B |= (1 << CS01);
     // set prescaler to 8 and starts PWM
-   
-}
 
-int main(void)
-{
-    pwm_init();
 
     while (1)
     {
-
+        /*int i;
+        for(i=0;i<255;i+=50){
+            OCR0A = i;
+            _delay_ms(500);
+        
+        }*/
         OCR0A = 0; _delay_ms(1500);
-        OCR0A = 60; _delay_ms(1500);
         OCR0A = 128; _delay_ms(1500);
-        OCR0A = 190; _delay_ms(1500);
         OCR0A = 255; _delay_ms(1500);
         
     }
