@@ -1,0 +1,6 @@
+
+Ejemplo de pwm con interrupciones 
+para reproducir un audio wav de 8bit, 8mhz
+
+ffmpeg -i input.wav -ar 8000 -ac 1 -acodec pcm_u8 output.wav’
+
