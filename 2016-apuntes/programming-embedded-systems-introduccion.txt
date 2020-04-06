@@ -573,12 +573,26 @@ The cost of the hardware and software design processes, known as nonrecurring en
 volume products), whereas on other projects, this is the only accurate measure of system cost
 (for the production of a small number of units).
 
+El costo de desarrollo
+
+El costo del proceso de diseńo del software y del hardware, conocido como nonrecurring engineering
+(NRE). 
+
 Lifetime
 
 How long the product is expected to stay in use. The required or expected lifetime affects all
 sorts of design decisions, from the selection of hardware components to how much system
 development and production is allowed to cost. How long must the system continue to function
 (on average)? A month, a year, or a decade?
+
+Tiempo de vida
+
+El tiempo esperado de uso del producto. El tiempo de vida requerido o esperado
+afecta a todas las decisiones de diseńo, desde la selección de los componentes
+de hardware a cuánto es posible invertir en el desarrollo del sistema y su 
+producción. La pregunta a responder es : Cuánto tiempo (en promedio) el sistema
+de funcionar? Un mes? Un ańo? Una década?
+
 
 Reliability
 
@@ -594,6 +608,9 @@ criteria are linked. For example, increases in required processing power could l
 production costs. Conversely, we might imagine that the same increase in processing power would have
 the effect of decreasing the development costs—by reducing the complexity of the hardware and
 software design. So the values in a particular column do not necessarily go together.
+
+Confiabilidad
+
 
 Table 1-1. Common design requirements for embedded systems
 Criterion
