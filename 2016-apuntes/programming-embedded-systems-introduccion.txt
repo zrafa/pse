@@ -196,6 +196,13 @@ One subclass of embedded systems deserves an introduction at this point. A real-
 constraints. The function of a real-time system is thus partly specified in terms of its ability to make
 certain calculations or decisions in a timely manner. These important calculations or activities have
 deadlines for completion.
+
+Una subclase de sistemas embebidos que merece una introducción son los sistemas de tiempo real,
+los cuales son sistemas con restricciones de tiempo de repuesta.
+La función de un sistema en tiempo real se define, en parte, por su capacidad para hacer
+ciertos cálculos o decisiones de manera oportuna. Estos cálculos o actividades 
+tienen plazos de finalización específicos.
+
 The crucial distinction among real-time systems lies in what happens if a deadline is missed. For
 example, if the real-time system is part of an airplane's flight control system, the lives of the passengers
 and crew may be endangered by a single missed deadline. However, if instead the system is involved in
@@ -206,22 +213,74 @@ system is a hard real-time system. Real-time systems at the other end of this co
 "soft" deadlines—a soft real-time system. Figure 1-1 shows some examples of hard and soft real-time
 systems.
 Figure 1-1. A range of example real-time systems
+
+Existen al menos en la literatura dos categorías de sistemas de tiempo real.
+La distinción crucial entre estos radica en lo que sucede si el sistema respondió o no antes
+del tiempo definido estricto de respuesta.
+Por ejemplo, si el sistema de tiempo real es parte del sistema de control de vuelo de un avión, 
+la vida de los pasajeros y la tripulación puede estar en peligro si el sistema no logra
+producir la salida antes del tiempo límite (missed deadline).
+
+Si en cambio el sistema está involucrado en la comunicación satelital, el daño podría 
+limitarse a la pérdida de un solo paquete de datos (que puede tener o no consecuencias 
+catastróficas dependiendo de la aplicación y el esquema de recuperación de errores). 
+Si las consecuencias son graves, los sistemas de tiempo real se especifican (y se categorizan)
+como sistemas de tiempo real duro (hard real time systems). En esta categoría, si el sistema falla una única vez
+en responder antes del tiempo límite (y aún si lo hizo bien por billones de veces) se dice que el 
+sistema falló, y no es de tiempo real duro.
+En el otro extremo se define la cateoría de los sistemas de tiempo real blandos (soft real time systems).
+En esta categoría, los tiempos límites de respuesta existen en la especificación, pero para
+ciertos eventos está permitido no cumplir el plazo de tiempo para una respuesta, y por lo tanto
+el sistema no falló si eso sucede.
+La Figura 1-1 muestra algunos ejemplos de sistemas de tiempo real duros y blandos.
+
+
+
+
+
 Real-time system design is not simply about speed. Deadlines for real-time systems vary; one deadline
 might be in a millisecond, while another is an hour away. The main concern for a real-time system is
 that there is a guarantee that the hard deadlines of the system are always met. In order to accomplish this
 the system must be predictable.
+
+
+En el diseño de un sistema de tiempo real no se trata simplemente de la
+velocidad de respuesta. Los plazos para los sistemas en tiempo real varían; 
+un tiempo límite puede estar en el orden de los milisegundos, mientras que otro 
+a una hora de distancia. El principal objetivo de un sistema en tiempo real es
+que garantice que siempre se cumplen los plazos estrictos del sistema. 
+Para lograr esto, el sistema debe ser predecible.
+
 The architecture of the embedded software, and its interaction with the system hardware, play a key role
 in ensuring that real-time systems meet their deadlines. Key software design issues include whether
 polling is sufficient or interrupts should be used, and what priorities should be assigned to the various
 tasks and interrupts. Additional forethought must go into understanding the worst-case performance
 requirements of the specific system activities.
+
+La arquitectura del software embebido y su interacción con el hardware juegan 
+un papel clave para garantizar que los sistemas de tiempo real cumplan con sus plazos. 
+En el diseño del software se debe decidir si el acceso a los dispositivos con E/S programada
+(polling) es suficiente, o si se debe utilizar interrupciones, y qué prioridades 
+se deben asignar a las diversas tareas y a las rutinas de atención de interrupciones. 
+Un análisis adicional debe hacerse: entender los requerimientos de rendimiento del peor caso
+(y o de varios si los hubiese).
+
 All of the topics and examples presented in this book are applicable to the designers of real-time
 systems. The designer of a real-time system must be more diligent in his work. He must guarantee
 reliable operation of the software and hardware under all possible conditions. And, to the degree that
 human lives depend upon the system's proper execution, this guarantee must be backed by engineering
 calculations and descriptive paperwork.
-Page 11Programming Embedded Systems Second Edition
+
+El diseñador de un sistema en tiempo real (o su equipo si el sistema es complejo) debe ser prestar
+mayor atención y cuidado, y ser eficaz en su trabajo; ya que debe 
+garantizar el funcionamiento confiable del software y hardware en todas 
+las condiciones posibles. Y, en la medida en que las vidas de las personas dependan 
+de la ejecución adecuada del sistema, esta garantía debe estar respaldada por 
+cálculos de ingeniería y documentación descriptiva completa.
+
+
 1.2. Variations on a Theme
+
 Unlike software designed for general-purpose computers, embedded software cannot usually be run on
 other embedded systems without significant modification. This is mainly because of the incredible
 variety of hardware in use in embedded systems. The hardware in each embedded system is tailored
@@ -231,7 +290,9 @@ In this section, you will learn which hardware features are common across all em
 why there is so much variation with respect to just about everything else. Later in the book, we will look
 at some techniques that can be used to minimize the impact of software changes so they are not needed
 throughout all layers of the software.
+
 1.2.1. Common System Components
+
 By definition, all embedded systems contain a processor and software, but what other features do they
 have in common? Certainly, in order to have software, there must be a place to store the executable code
 and temporary storage for runtime data manipulation. These take the form of read-only memory (ROM)
@@ -245,8 +306,9 @@ function of its inputs and several other factors (elapsed time, current temperat
 system usually take the form of sensors and probes, communication signals, or control knobs and
 buttons. The outputs are typically displays, communication signals, or changes to the physical world.
 See Figure 1-2 for a general example of an embedded system.
+
 Figure 1-2. A generic embedded system
-Page 12Programming Embedded Systems Second Edition
+
 With the exception of these few common features, the rest of the embedded hardware is usually unique
 and, therefore, requires unique software. This variation is the result of many competing design criteria.
 The software for the generic embedded system shown in Figure 1-2 varies depending on the
@@ -328,8 +390,9 @@ How long the product is expected to stay in use. The required or expected lifeti
 sorts of design decisions, from the selection of hardware components to how much system
 development and production is allowed to cost. How long must the system continue to function
 (on average)? A month, a year, or a decade?
+
 Reliability
-Page 15Programming Embedded Systems Second Edition
+
 How reliable the final product must be. If it is a children's toy, it may not have to work properly
 100 percent of the time, but if it's an antilock braking system for a car, it had sure better do what
 it is supposed to do each and every time.
@@ -404,6 +467,7 @@ board. This is just enough memory to bootstrap the machine to a state from which
 additional memory on the game cartridge.
 [ ]
 For example, Atari and Nintendo have designed some of their systems this way.
+
 Page 17Programming Embedded Systems Second Edition
 We can see from the case of the video game player that in high-volume products, a lot of development
 effort can be sunk into fine-tuning every aspect of a product.
