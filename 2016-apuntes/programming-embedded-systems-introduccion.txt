@@ -281,6 +281,8 @@ cálculos de ingeniería y documentación descriptiva completa.
 
 1.2. Variations on a Theme
 
+Caracterísitcas del Hardware
+
 Unlike software designed for general-purpose computers, embedded software cannot usually be run on
 other embedded systems without significant modification. This is mainly because of the incredible
 variety of hardware in use in embedded systems. The hardware in each embedded system is tailored
@@ -291,7 +293,23 @@ why there is so much variation with respect to just about everything else. Later
 at some techniques that can be used to minimize the impact of software changes so they are not needed
 throughout all layers of the software.
 
+
+A diferencia del software diseñado para PC, el software embebido no puede ser ejecutado
+otros sistemas embebidos sin realizar una modificación considerable. Esto se debe 
+principalmente a la increíble variedad de hardware en uso.
+El hardware de cada sistema embebido está diseñado específicamente para la aplicación, 
+a fin de mantener los costos del sistema lo más bajo posible. Como resultado, 
+se elimina toda la circuitería innecesaria, y los recursos de hardware se 
+aprovechan al máximo en la medida de lo posible.
+En esta sección, se detallan las características de hardware que son comunes 
+a todos los sistemas embebidos y por qué hay tanta variedad con respecto a casi 
+todo lo demás. Existen técnicas de desarrollo inicial para minimizar el impacto de 
+los cambios de software si el hardware llega a cambiar, de modo que no deberían
+hacerse modificaciones en todas las capas del software.
+
 1.2.1. Common System Components
+
+Componentes del Sistema Comunes
 
 By definition, all embedded systems contain a processor and software, but what other features do they
 have in common? Certainly, in order to have software, there must be a place to store the executable code
@@ -306,6 +324,29 @@ function of its inputs and several other factors (elapsed time, current temperat
 system usually take the form of sensors and probes, communication signals, or control knobs and
 buttons. The outputs are typically displays, communication signals, or changes to the physical world.
 See Figure 1-2 for a general example of an embedded system.
+
+Por definición, todos los sistemas embebidos contienen un procesador y software, 
+pero ¿qué otras características tienen en común?. En realidad, para poder tener software, 
+se debe contar con algún lugar donde almacenar el código ejecutable y tambien
+memoria temporal para las variables y el estado del programa en tiempo de ejecución. 
+Por lo que casi todos los sistemas embebidos incluyen una memoria de solo lectura (ROM) 
+para almacenar el programa, y una memoria de acceso aleatorio (RAM), para la vida
+de las variables en tiempo de ejecución. Si solo se requiere una pequeña cantidad 
+de memoria entonces usualmente ambas memorias están contenidas dentro del mismo chip que el procesador.
+De lo contrario, uno o ambos tipos de memoria residen en chips de memoria externos.
+
+Todos los sistemas embebidos también presentan entradas y salidas. Por ejemplo, 
+en nuestro ejemplo de horno microondas, las entradas son los botones en el panel 
+frontal y una sonda de temperatura, y las salidas son la pantalla (DISPLAY) 
+la radiación de microondas, y su control. Las salidas de un sistema embebido es 
+casi siempre una función de sus entradas plus otros factores (tiempo transcurrido, 
+temperatura actual, etc.). Las entradas al sistema generalmente toman 
+la forma de sensores y sondas, señales de comunicación o perillas, y botones de control. 
+Las salidas son típicamente pantallas, señales de comunicación o cambios en el mundo físico.
+
+Consulte la Figura 1-2 para ver un ejemplo general de un sistema integrado.
+Enviar comentarios
+
 
 Figure 1-2. A generic embedded system
 
