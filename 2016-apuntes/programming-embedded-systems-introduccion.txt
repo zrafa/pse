@@ -132,7 +132,14 @@ El primer sistema embebido no apareció hasta después de 1971, si nos guiamos p
 la definición presentada anteriormente En ese ańo Intel introdujo el primer microprocesador en el mundo
 que fue plasmado en un chip individual. Ese chip, el 4004, fue diseńado para ser utilizado 
 en una familia de calculadoras diferentes, producidas por una companía Japonesa llamada Busicom.
-En 1969, Busicom le preguntó a Intel si podría diseńar 
+En 1969, Busicom le preguntó a Intel si podría diseńar un conjunto de circuitos integrados,
+uno para cada una de sus calculadoras. El 4004 fue la respuesta de Intel. En vez de diseñar
+hardware específico para cada calculadora, Intel propuso un circuito de propósito-general
+que podría ser utilizado a través de toda la línea de calculadoras. Este procesador de propósito-general
+fue diseñado para leer y ejecutar un conjunto de instrucciones almacenadas en un chip de memoria
+externo al procesador. La idea de Intel fue que el software le daría a cada calculadora
+un conjunto único de características, y que el este estilo de diseño ayudaría al corazón de su 
+negocio que fueron los chips de memoria.
 
 
 The microprocessor was an overnight success, and its use increased steadily over the next decade. Early
@@ -145,6 +152,19 @@ printers, cash registers, and credit card readers) are embedded systems; over 6 
 microprocessors are used each year. Less than 2 percent (or about 100 million per year) of these
 microprocessors are used in general-purpose computers.
 
+El microprocesador fue un éxito, y su utilización se incrementó continuamente en la siguiente
+década. Las primeras aplicaciones embebidas incluyeron sondas espaciales no tripuladas, 
+semáforos computarizados y sistemas de control de vuelo de los aviones.
+En las décadas de 1980 y 1990, los sistemas embebidos estuvieron presentes silenciosamente
+en la era de las microcomputadoras, y luego hicieron que los microprocesadores
+pasaran a ser parte de nuestras vidas personales y profesionales.
+La mayoría de los dispositivos electrónicos en nuestras cocinas (las máquinas para fabricar pan, la procesadora,
+el hornos de microondas), en el living (televisores, equipos de música, controles remotos) y 
+en nuestros lugares de trabajo (impresoras laser, tarjetas RFID para ingreso, máquinas expendedoras de café,
+cajas registradoras, lectores de tarjetas de crédito) son sistemas embebidos.
+En el 2006 se utilizaron más de 6 mil millones de microprocesadores nuevos. 
+De ese número, menos del 2 por ciento (o aproximadamente 100 millones) de estos microprocesadores 
+se utilizan en computadoras personales.
 
 It seems inevitable that the number of embedded systems will continue to increase rapidly. Already there
 are promising new embedded devices that have enormous market potential: light switches and
@@ -155,9 +175,23 @@ and dashboard navigation systems that inform you of the best route to your desti
 traffic conditions. Clearly, individuals who possess the skills and the desire to design the next generation
 of embedded systems will be in demand for quite some time.
 
+Es inevitable que el número de sistemas embebidos continúe aumentando año tras año,
+nuevos dispositivos se incorporan día a día a nuestras vidas: interruptores de luz y termostatos 
+que están conectados en red y pueden ser controlados de forma inalámbrica por nuestros smartphones,
+sistemas inteligentes de airbags que no se activan cuando hay niños o adultos pequeños, 
+dispositivos médicos de monitoreo que pueden notificar a un médico si las condiciones 
+fisiológicas de un paciente se encuentran en niveles críticos, marcapasos de corazón que deben
+activarse con restricciones de tiempo muy rigurosas, y sistemas de navegación 
+en el tablero que le informan sobre la mejor ruta hacia su destino en las condiciones de 
+tráfico actuales. 
+Claramente, la demanda por ingenieros que poseen las habilidades y las ganas de diseñar 
+la próxima generación de sistemas embebidos está vigente, y lo estará por mucho tiempo.
 
 
 1.1.2. Real-Time Systems
+
+Sistemas de Tiempor Real 
+
 One subclass of embedded systems deserves an introduction at this point. A real-time system has timing
 constraints. The function of a real-time system is thus partly specified in terms of its ability to make
 certain calculations or decisions in a timely manner. These important calculations or activities have
