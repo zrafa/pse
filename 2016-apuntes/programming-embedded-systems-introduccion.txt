@@ -1039,7 +1039,7 @@ continue.
 
 Herramientas de desarrollo
 
-Las herramientas que utilizará a lo largo de su carrera 
+Las herramientas que se utilizan a lo largo de una carrera 
 como desarrollador embebido serán diferentes de una compañía a otra y, 
 a menudo, de un proyecto a otro. Esto significa que necesita
 aprender nuevas herramientas a medida que pasen los años.
@@ -1198,4 +1198,257 @@ no ha ganado mucho apoyo fuera de las industrias de defensa y aeroespaciales.
 E incluso ha estado perdiendo mercado allí mismo en los últimos años. 
 Esto es lamentable porque el lenguaje Ada tiene muchas características 
 que simplificarían el desarrollo de software embebido si se usa en lugar de C o C++.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fixed Width Integers: Sometimes Size Matters
+
+Notas importantes sobre el Lenguaje C
+
+Computer programmers don't always care how wide an integer is when held by the processor.
+
+Los programadores usualmente no prestan atención cuan grande
+es un entero cuando la CPU realiza operaciones.
+Sin embargo, en la programación de sistemas embebidos,
+es muy común cometer errores por desbordamientos no
+detectados. Por ejemplo, muchos microcontroladores son de 8 bits.
+Cuando un dato es leído, supongamos desde un conversor analógico a 
+digital, el dato estará en una variable de 8 bits y físicamente
+en un registro de 8 bits del procesador.
+Si el programador realiza una operación de este estilo:
+total = valor_entrada * 100 / 20;
+
+Para, tal vez, calcular el promedio, está inadvertidamente
+realizando un cálculo que dará un error silencioso.
+Las variables total y valor_entrada son seguramente de 8 bits,
+por lo que si el valor_entrada fue 200, cuando la CPU 
+realice el cálculo aritmético valor_entrada * 100 ya habrá
+un resultado intermedio incorrecto, ya que el registro
+intermedio no podrá almacenar el resultado completo (si este es de 8 bits).
+En lenguaje C, una variable de tipo int no indica explicitamente 
+cuál es su tamaño. En un procesador podría ser de 64 bits, mientras
+que en otro de 16.
+
+Aquí otro ejemplo :
+
+For example, when we write:
+int i;
+for (i = 0; i < N; i++)
+{
+	...
+}
+
+we generally expect our compiler to generate the most efficient code possible, whether that
+makes the loop counter an 8-, 16-, 32-, or even 64-bit quantity.
+As long as the integer is wide enough to hold the maximum value ( N , in the example just
+shown), we want the processor to be used in the most efficient way. And that's precisely what
+the ISO C and C++ standards tell the compiler writer to do: choose the most efficient integer
+size that will fulfill the specific request. Because of the variable size of integers on different
+processors and the corresponding flexibility of the language standards, the previous code may
+result in a 32-bit integer with one compiler but a 16-bit integer with another—possibly even
+when the very same processor is targeted.
+But in many other programming situations, integer size matters. Embedded programming, in
+particular, often involves considerable manipulation of integer data of fixed widths.
+In hindsight, it sure would've been nice if the authors of the C standard had defined some
+standard names and made compiler providers responsible for providing the appropriate
+typedef for each fixed-size integer type in a library header file. Alternatively, the C standard
+could have specified that each of the types short , int , and long has a standard width on all
+platforms; but that might have had an impact on performance, particularly on 8-bit processors
+that must implement 16- and 32-bit additions in multi-instruction sequences.
+Interestingly, it turns out the 1999 update to the International Organization for
+Standardization's (ISO) C standard (also referred to as C99) did just that. The ISO has finally
+put the weight of its standard behind a preferred set of names for signed and unsigned fixed-
+size integer data types. The newly defined type names are:
+
+8-bit: int8_t , uint8_t
+16-bit: int16_t , uint16_t
+32-bit: int32_t , uint32_t
+64-bit: int64_t , uint64_t
+
+
+En este ejemplo esperamos que el compilador genere el código más eficiente posible, 
+ya sea que el contador i del bucle sea una cantidad de 8, 16, 32 o incluso 64 bits.
+Mientras el entero sea lo suficientemente ancho como para contener el valor máximo 
+(N en el ejemplo), queremos que el procesador se use de la manera más eficiente. 
+Y eso es precisamente lo que los estándares ISO C y C++ le dicen al compilador: 
+"elija el tamaño de entero más eficiente". 
+Debido a que el tamaño de los enteros (int en C) son variables para diferentes procesadores, 
+y a la flexibilidad correspondiente de los estándares del lenguaje, 
+el código de ejemplo anterior puede dar como resultado un entero de 32 bits 
+con un compilador, pero un entero de 16 bits con otro. Incluso si el procesador destino es el mismo.
+Por lo tanto, en algunas situaciones de programación, la cantidad de bits con que 
+se representa un entero importa. 
+En la programación de sistemas embebidos, en particular, suele 
+utilizar muy a menudo una cantidad considerable de datos enteros 
+de anchos fijos.
+
+En retrospectiva, hubiese sido bueno para el lenguaje si los autores del estándar C 
+hubieran definido algunos nombres estándar y hubieran hecho responsables a 
+los proveedores de compiladores de proporcionar la definición de tipo apropiada 
+para cada tipo de entero de tamaño fijo en un archivo de encabezado de biblioteca. 
+Alternativamente, el estándar C podría haber especificado que cada uno de los 
+tipos short, int y long tuvieran un ancho estándar en todas las plataformas; 
+pero eso podría haber tenido un impacto en el rendimiento, 
+particularmente en los procesadores de 8 bits, que obligarían a implementar 
+adiciones de 16 y 32 bits en secuencias de múltiples instrucciones.
+
+Curiosamente, la actualización de 1999 del estándar C de la Organización 
+Internacional de Normalización (ISO) (también conocido como C99) 
+hizo exactamente eso. El ISO finalmente ha puesto el peso de su 
+estándar detrás de un conjunto preferido de nombres para tipos de datos 
+enteros de tamaño fijo con y sin signo. Los nombres de tipo recién definidos son:
+
+8-bit: int8_t , uint8_t
+16-bit: int16_t , uint16_t
+32-bit: int32_t , uint32_t
+64-bit: int64_t , uint64_t
+
+
+
+According to the updated standard, this required set of typedefs (along with some others) is to
+be defined by compiler vendors and included in the new header file stdint.h.
+If you're already using a C99-compliant compiler, this new language feature makes that
+declaration of a fixed-width integer variable or a register as straightforward as using one of
+the new type names.
+
+Even if you don't have an updated compiler, the inclusion of these names in the C99 standard
+suggests that it's time to update your coding standards and practices. Love them or hate them,
+at least these new names are part of an accepted international standard. As a direct result, it
+will be far easier in the future to port C programs that require fixed-width integers to other
+compilers and target platforms. In addition, modules that are reused or sold with source can
+be more easily understood when they conform to standard naming and typing conventions
+such as those in C99.
+
+If you don't have a C99-compliant compiler yet, you'll have to write your own set of typedefs,
+using compiler-specific knowledge of the char , short , and long primitive widths.
+For the examples in this book, we use the C99 style for variable types that require specific
+widths. We have generated our own stdint.h that is specific to the gcc variant targeting the
+ARM XScale processor. Our file may not work in other build environments.
+
+
+De acuerdo con el estándar actualizado, este conjunto requerido de 
+typedefs (junto con algunos otros) debe estar definido por los 
+proveedores del compilador e incluido en el nuevo archivo 
+de encabezado stdint.h. Si ya está utilizando un compilador 
+compatible con C99, esta nueva función de lenguaje hace 
+que la declaración de una variable entera de ancho fijo o de un registro 
+sea tan sencillo como usar uno de los nuevos nombres de tipo.
+
+Incluso, si no tiene un compilador actualizado, 
+la inclusión de estos nombres en el estándar C99 sugiere 
+que es hora de actualizar sus estándares y prácticas de programación. 
+Puede amar u odiar estos nuevos nombres, pero son parte de un estándar 
+internacional aceptado. Como resultado directo, es mucho más fácil 
+portar programas C que requieren enteros de ancho fijo a otros compiladores 
+y plataformas si se siguen estos nombres de tipos.
+Además, los módulos que se reutilizan o venden con archivos fuente 
+pueden entenderse más fácilmente cuando se ajustan 
+a las convenciones de nomenclatura y escritura estándar, como las de C99.
+
+Si aún no tiene un compilador compatible con C99, 
+tendrá que escribir su propio conjunto de definiciones de tipo, 
+utilizando el conocimiento específico del compilador 
+de los anchos primitivos char, short y long. 
+Si utiliza un compilador de C de GNU GCC entonces todos estos
+detalles ya están incluídos en los archivos de cabecera correspondiente (stdint.h).
+Sólo necesitar utilizar los nombres de tipos exactos para el ancho que
+necesite de una variable.
+
+
+1.5.3. Consistent Coding Practices
+Whatever language is selected for a given project, it is important to institute some basic coding
+guidelines or styles to be followed by all developers on a project. Coding guidelines can make reading
+code easier, both for you and for the next developer that has to inherit your code. Understanding exactly
+what a particular software routine is doing is difficult enough without having to fight through several
+changes in coding style that emerged because a number of different developers touched the same routine
+over the years, each leaving his own unique mark. Stylistic issues, such as how variables are named or
+where the curly brace should reside, can be very personal to some developers.
+There are a number of decent coding standards floating around on the Internet. One standard we like is
+located online at http://www.ganssle.com and was developed by Jack Ganssle. Another that we like, by
+Miro Samek, is located online at http://www.quantum-leaps.com.
+These standards give you guidelines on everything from directory structures to variable names and are a
+great starting point; you can incorporate into them the styles that you find necessary and helpful. If a
+coding standard for the entire team is not something you can sell your company on, use one yourself and
+stick to it.
+
+Independientemente del lenguaje de programación que se seleccione 
+para un proyecto, es importante instituir algunas pautas 
+o estilos básicos de programación, que deben seguir todos 
+los desarrolladores del proyecto. 
+Las pautas de codificación pueden facilitar la lectura del código, 
+tanto para usted como para el próximo desarrollador que 
+tiene que heredar su código. Comprender exactamente lo que está 
+haciendo una rutina de software en particular es bastante difícil,
+eso sin tener que lidiar con varios cambios en el estilo de programación
+que surgieron porque varios desarrolladores diferentes modificaron
+la misma rutina a lo largo de los años, cada uno dejando su propia marca. 
+Los problemas estilísticos, como por ejemplo los nombres de las
+variables, o dónde debe residir una llave, pueden ser 
+muy personales para algunos desarrolladores.
+Hay una serie de estándares de proramación decentes flotando en Internet. 
+Dos estándares muy utilizados y heredados por muchos proyectos son: 
+la guía de estilo de programación del proyecto del kernel Linux (http://www.kernel.org),
+y todas las recomendaciones del libro Estilos en la Programación, de Brian Kernighan.
+
+
+
+Page 24Programming Embedded Systems Second Edition
+1.6. A Few Words About Hardware
+It is the nature of programming that books about the subject must include examples. Typically, these
+examples are selected so that interested readers can easily experiment with them. That means readers
+must have access to the very same software development tools and hardware platforms used by the
+authors. Unfortunately, it does not make sense to run any of the example programs on the platforms
+available to most readers—PCs, Macs, and Unix workstations.
+Even selecting a standard embedded platform is difficult. As you have already learned, there is no such
+thing as a "typical" embedded system. Whatever hardware is selected, the majority of readers will not
+have access to it. But despite this rather significant problem, we do feel it is important to select a
+reference hardware platform for use in the examples. In so doing, we hope to make the examples
+consistent and, thus, the entire discussion more clear—whether you have the chosen hardware in front of
+you or not.
+In choosing an example platform, our first criterion was that the platform had to have a mix of
+peripherals to support numerous examples in the book. In addition, we sought a platform that would
+allow readers to carry on their study of embedded software development by expanding on our examples
+with more advanced projects. Another criterion was to find a development board that supported the
+GNU software development tools; with their open source licensing and coverage on a wide variety of
+embedded processors, the GNU development tools were an ideal choice.
+The chosen hardware consists of a 32-bit processor ( the XScale ARM), [ ] a hefty amount of memory
+(64 MB of RAM and 16 MB of ROM), and some common types of inputs, outputs, and peripheral
+components. The board we've chosen is called the VIPER-Lite and is manufactured and sold by Arcom.
+A picture of the Arcom VIPER-Lite development board (along with the add-on module and other
+supporting hardware) is shown in Figure 1-4. Additional information about the Arcom board and
+instructions for obtaining one can be found in Appendix A.
+[ ]
+The processor on the VIPER-Lite board is the PXA255 XScale processor, which is based on the
+ARM v.5TE architecture. The XScale processor was developed by an Intel Corporation embedded
+systems division that was sold to Marvell Technology Group in July 2006.
+Figure 1-4. The Arcom VIPER-Lite development boards
+Page 25Programming Embedded Systems Second Edition
+If you have access to the reference hardware, you will be able to work through the examples in the book
+as they are presented. Otherwise, you will need to port the example code to an embedded platform that
+you do have access to. Toward that end, we have made every effort to make the example programs as
+portable as possible. However, the reader should bear in mind that the hardware is different in each
+embedded system and that some of the examples might be meaningless on hardware different from the
+hardware we have chosen here. For example, it wouldn't make sense to port our flash memory driver to a
+board that had no flash memory devices.
+Although we will get into some basic details about hardware, the main focus of this book is embedded
+software. We recommend that you take a look at Designing Embedded Systems by John Catsoulis
+(O'Reilly). John has an extensive background on the subject and does a wonderful job presenting often
+difficult material in a very understandable way. It makes a great companion for this book.
+
+
+
 
