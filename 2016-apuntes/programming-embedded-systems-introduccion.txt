@@ -829,13 +829,41 @@ been worth an improved likelihood of success.
 
 1.3.3. Mars Rover
 
-En 1976, dos naves espaciales no tripuladas llegaron al planeta Marte. Como parte de su misión, debían recolectar muestras de la superficie marciana, analizar la composición química de cada una y transmitir los resultados a los científicos en la Tierra. Esas misiones vikingas fueron increíbles. Rodeado de computadoras personales que deben reiniciarse ocasionalmente, podríamos encontrar notable que hace más de 30 años, un equipo de científicos e ingenieros construyó con éxito dos computadoras que sobrevivieron a un viaje de 34 millones de millas y funcionaron correctamente durante media década. Claramente, la confiabilidad era uno de los requisitos más importantes para estos sistemas.
+En 1976, dos naves espaciales no tripuladas llegaron al planeta Marte. 
+Como parte de su misión, debían recolectar muestras de la superficie marciana, 
+analizar la composición química de cada una y transmitir los resultados a los 
+científicos en la Tierra. Esas misiones Vikingas fueron impresionantes. 
+Siendo que uno está rodeado de computadoras personales que deben reiniciarse 
+ocasionalmente, podríamos encontrar casi increíble que hace más de 30 años, 
+un equipo de científicos e ingenieros construyeron con éxito dos computadoras 
+que sobrevivieron a un viaje de 34 millones de millas y funcionaron 
+correctamente durante media década. 
+Claramente, la confiabilidad era uno de los requisitos más importantes para estos sistemas.
 
-¿Qué pasa si un chip de memoria ha fallado? ¿O el software contenía errores que lo habían bloqueado? ¿O se había roto una conexión eléctrica durante el impacto? No hay forma de evitar que ocurran tales problemas, y en otras misiones espaciales, estos problemas han resultado ser ruinosos. Entonces, todos estos puntos potenciales de falla y muchos otros tuvieron que ser eliminados agregando circuitos redundantes o funcionalidades adicionales:
-un procesador adicional aquí, diagnósticos especiales de memoria allí, un temporizador de hardware para reiniciar el sistema si el software se atasca, y así sucesivamente.
+¿Qué pasa si un chip de memoria falla? ¿O si el software contenía errores y se bloqueaba? 
+¿O si se hubiese roto una conexión eléctrica durante el impacto? 
+No hay forma de evitar que ocurran tales problemas, y en otras misiones espaciales, 
+estos problemas han resultado ser desastrosos. 
+Entonces, todos estos puntos potenciales de falla y muchos otros 
+tuvieron que ser eliminados agregando circuitos redundantes o 
+funcionalidades adicionales:
+un procesador adicional aquí, diagnósticos especiales de memoria por allá, 
+un temporizador de hardware para reiniciar el sistema si el software se 
+bloquea, y así sucesivamente.
 
-Más recientemente, la NASA lanzó la misión Pathfinder. Su objetivo principal era demostrar la viabilidad de llegar a Marte con un presupuesto. Por supuesto, dados los avances tecnológicos realizados desde mediados de los años 70, los diseñadores no tuvieron que renunciar demasiado para lograr esto. Es posible que hayan reducido un poco la cantidad de redundancia, pero aún así le dieron a Pathfinder más poder de procesamiento y memoria
-que vikingo El Mars Pathfinder era en realidad dos sistemas integrados: una nave de aterrizaje y un rover. La lancha de desembarco tenía un procesador de 32 bits y 128 MB de RAM; el rover, por otro lado, solo tenía un procesador de 8 bits y 512 KB de RAM. Estas elecciones reflejan los diferentes requisitos funcionales de los dos sistemas. El costo de producción probablemente no fue un gran problema en ninguno de los casos; cualquier inversión hubiera valido una mayor probabilidad de éxito.
+Más recientemente, la NASA lanzó la misión Pathfinder. Su objetivo principal era 
+demostrar la viabilidad de llegar a Marte con un cierto presupuesto. 
+Por supuesto, dados los avances tecnológicos realizados desde mediados de 
+los años 70, los diseñadores no tuvieron que quitar muchas caracterísitas del sistema (como uno esperaría)
+para lograr esto. Es posible que hayan reducido un poco la cantidad de 
+redundancia, pero aún así le dieron a Pathfinder más poder de procesamiento y memoria
+que al anciano Vikingo. El Mars Pathfinder estaba compuesto en realidad 
+por dos sistemas embebidos: una nave de aterrizaje y un rover. 
+La nave de aterrizaje tenía un procesador de 32 bits y 128 MB de RAM; 
+el rover, por otro lado, solo tenía un procesador de 8 bits y 512 KB de RAM. 
+Estas elecciones reflejan los diferentes requisitos funcionales de los dos 
+sistemas. El costo de producción probablemente no fue un gran problema en 
+ninguno de los casos.
 
 1.4. Life As an Embedded Software Developer
 
@@ -851,6 +879,24 @@ drivers are abstracted away from the actual hardware so that a developer writing
 application level doesn't know how a string gets output to the display, just that it happens when a
 particular routine is called with the proper parameters.
 
+1.4. La vida de un desarrollador de software embebido
+
+Veamos ahora brevemente algunas de las cualidades del software embebido, 
+que diferencian a los desarrolladores embebidos de otros tipos de desarrolladores de software. 
+Un desarrollador de software embebido es aqué que se ensucia las manos acercándose al hardware.
+
+El desarrollo de software embebidos, en la mayoría de los casos, requiere una estrecha interacción 
+con el mundo físico: la plataforma de hardware. Decimos "en la mayoría de los casos" 
+porque hay sistemas embebidos muy grandes que requieren que las personas trabajen 
+únicamente en el software de la capa de aplicación para el sistema. 
+Estos desarrolladores de aplicaciones generalmente no tienen ninguna 
+interacción con el hardware. Cuando se diseñan correctamente, los controladores 
+del dispositivo de hardware se abstraen del hardware real para que un 
+desarrollador que escribe el software a nivel de aplicación no sepa cómo se 
+genera una cadena en la pantalla, solo que sucede cuando se llama a una 
+rutina particular con los parámetros adecuados.
+
+
 Hardware knowledge
 
 The embedded software developer must become intimately familiar with the integrated circuits,
@@ -858,12 +904,30 @@ the boards and buses, and the attached devices used in order to write solid embe
 (also called firmware). Embedded developers shouldn't be afraid to dive into the schematics,
 grab an oscilloscope probe, and start poking around the circuit to find out what is going on.
 
+Conocimiento del hardware
+
+El desarrollador de software embebidos debe familiarizarse íntimamente con los 
+circuitos integrados, las placas de circuito impreso, los buses, y los dispositivos 
+que se utilizan para transferir y testear el software embebido sólido (también denominado firmware). 
+No se debe sentir temor por los esquemáticos, o tomar una sonda del osciloscopio y 
+comenzar a hurgar en el circuito para descubrir qué está sucediendo.
+
 Efficient code
 
 Because embedded systems are typically designed with the least powerful and most cost-
 effective processor that meets the performance requirements of the system, embedded software
 developers must make every line of code count. The ability to write efficient code is a great
 quality to possess as a firmware developer.
+
+Código eficiente
+
+Los desarrolladores de software embebido deben tener en cuenta
+cada línea de código fuente, ya que los sistemas embebidos 
+generalmente están diseñados con el procesador menos potente posible
+(pero que cumple con los requisitos de rendimiento del sistema). 
+La capacidad de escribir código eficiente es una gran cualidad
+que deben poseer los desarrolladores de firmware.
+
 
 Peripheral interfaces
 
@@ -878,6 +942,24 @@ by reading an 8-bit register in an external analog-to-digital converter; in anot
 might be extracted by controlling a serial bus that interfaces to the external sensor circuit via a
 single wire.
 
+Interfaces a los dispositivos
+
+A bajo nivel el firmware es muy especializado, porque cada componente o circuito 
+tiene su propia actividad que realizar y, además, su propia forma de realizar esa actividad. 
+Los desarrolladores embebidos necesitan saber cómo comunicarse con 
+los diferentes dispositivos o periféricos, para tener un control total de los mismos dentro
+del sistema. Saber como atender eventos provenientes de periféricos externos es una gran 
+parte del desarrollo de software embebido.
+
+Por ejemplo, en un horno microondas, el firmware puede obtener los datos 
+del sensor de temperatura leyendo un registro de 8 bits de un 
+conversor externo analógico a digital. En otro sistema, los datos 
+podrían provenir controlando un bus serie que se conecta al 
+circuito del sensor externo a través de un único cable.
+Dos maneras distinas en hardware y software en dos sistemas distintos
+para una misma funcionalidad de entrada.
+
+
 Robust code
 
 There are expectations that embedded systems will run for years in most cases. This is not a
@@ -885,6 +967,17 @@ typical requirement for software applications written for a PC or Mac. Now, ther
 However, if you had to keep unplugging your microwave in order to get it to heat up your lunch
 for the proper amount of time, it would probably be the last time you purchased a product from
 that company.
+
+Código robusto
+
+En muchos casos se espera que el sistema embebido funcione durante años.
+Este no es un requisito típico para las aplicaciones desarrolladas para PC, Mac o el smartphone (aunque hay excepciones).
+Por lo tanto, si luego de un tiempo la única manera de finalizar la
+coción en su horno microcondas es abriendo la puerta (porque el sistema de reloj ya no funciona
+o lo que fuese la causa) entonces es muy probable
+que ya no vuelva a comprar un producto de esa marca.
+
+
 
 Minimal resources
 
@@ -904,6 +997,15 @@ Quite often, in embedded software, a developer will allocate all memory needed b
 initialization time. This is safer than using dynamic memory allocation, though it cannot always
 be done.
 
+Recursos mínimos
+
+En la misma línea de crear un sistema más robusto, otro gran diferenciador entre el software incorporado y otros tipos de software son las limitaciones de recursos. Las reglas para escribir firmware son diferentes de las reglas para escribir software para una PC. Tome la asignación de memoria, por ejemplo. Una aplicación para una PC moderna puede dar por sentado que tendrá acceso a recursos prácticamente ilimitados. Pero en un sistema embebido, se quedará sin memoria si no planifica con anticipación y diseña el software correctamente.
+Un desarrollador de software integrado debe administrar de cerca los recursos, desde la memoria hasta la potencia de procesamiento, para que el sistema funcione según las especificaciones y no se produzcan fallas. Por ejemplo, el uso de funciones de asignación de memoria dinámica estándar puede causar fragmentación y, finalmente, el sistema puede dejar de funcionar. Esto requiere un reinicio ya que no tiene lugar para almacenar datos entrantes.
+
+Muy a menudo, en el software integrado, un desarrollador asignará toda la memoria que necesita el sistema en el momento de la inicialización. Esto es más seguro que usar la asignación dinámica de memoria, aunque no siempre se puede hacer.
+
+
+
 Reusable software
 
 As we mentioned before , code portability or code reuse—writing software so that it can be
@@ -913,6 +1015,10 @@ Throughout this book, we will look at basic methods to ensure that your embedded
 moved more easily from project to project. So if your next project uses an LCD for which you've
 previously developed a driver, you can drop in the old code and save some precious time in the
 schedule.
+
+Software reutilizable
+
+Como mencionamos anteriormente, la portabilidad del código o la reutilización del código —escribiendo software para que se pueda mover de la plataforma de hardware a la plataforma de hardware— es muy útil para ayudar a la transición a nuevos proyectos. Esto no siempre se puede hacer; Hemos visto cuán individual es cada sistema embebido. A lo largo de este libro, analizaremos métodos básicos para garantizar que su código incrustado se pueda mover más fácilmente de un proyecto a otro. Por lo tanto, si su próximo proyecto utiliza una pantalla LCD para la cual ha desarrollado previamente un controlador, puede colocar el código anterior y ahorrar un tiempo precioso en el cronograma.
 
 Development tools
 
@@ -991,3 +1097,38 @@ Despite being twice accepted as an international standard (Ada83 and Ada95), it 
 a foothold outside of the defense and aerospace industries. And it has been losing ground there in recent
 years. This is unfortunate because the Ada language has many features that would simplify embedded
 software development if used instead of C or C++.
+
+1.5.1. Otros lenguajes de programación para sistemas embebidos
+
+C no es el único lenguaje utilizado. Vale la pena mencionar con 
+más detalle al menos otros lenguajes: ensamblador, C ++, Forth, Ada, Lua y Python (o microPython).
+
+Antiguamente el software embebido se escribía exclusivamente utilizando lenguaje ensamblador.
+Era la única manera de tener el control completo del procesador y del hardware restante, pero a un precio.
+Los lenguajes ensambladores son dependientes de la arquitectura por lo que presentan muchas desventajas. 
+Una desventaja es que el costo de desarrollo es muy elevado (el código fuente es muy 
+dificil de leer y mantener), y el software no es portable. 
+Además, encontrar programadores que conozcan lenguaje ensamblador es bastante dificil hoy en día.
+El lenguaje ensamblador se utiliza principalmente como un complemento a los lenguajes de
+alto nivel. Se utiliza para escribir una porción del código de arranque de un sistema,
+o en pequeños fragmentos de código que deben ser extremadamente eficientes o ultracompactos.
+Forth es eficiente pero es de un nivel extremadamente bajo e inusual; aprender a trabajar 
+con Forth lleva más tiempo que con C.
+
+C++ es un superconjunto de C orientado a objetos que es cada vez más popular entre los programadores embebidos. 
+Todas las características principales del lenguaje son las mismas que C, y como un extra
+C++ es mas adecuado para estructuras de datos complejas y abstractas (es orientado a objetos).
+Estas características son muy útiles para los desarrolladores de software, pero 
+algunas de ellas reducen la eficiencia del programa ejecutable. 
+Por lo tanto, C ++ tiende a ser más popular entre los grandes equipos de 
+desarrollo, donde los beneficios para los desarrolladores superan la posible
+pérdida de eficiencia que pudiera tener el programa final.
+
+Ada también es un lenguaje orientado a objetos, aunque sustancialmente diferente de C++. 
+Ada fue diseñada originalmente por el Departamento de Defensa de los EE. UU. para 
+el desarrollo de software militar de misión crítica.  
+A pesar de ser dos veces aceptado como un estándar internacional (Ada83 y Ada95), 
+no ha ganado mucho apoyo fuera de las industrias de defensa y aeroespaciales. 
+E incluso ha estado perdiendo mercado allí mismo en los últimos años. 
+Esto es lamentable porque el lenguaje Ada tiene muchas características 
+que simplificarían el desarrollo de software embebido si se usa en lugar de C o C++.
