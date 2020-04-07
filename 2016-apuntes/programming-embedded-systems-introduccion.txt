@@ -576,7 +576,10 @@ volume products), whereas on other projects, this is the only accurate measure o
 El costo de desarrollo
 
 El costo del proceso de diseńo del software y del hardware, conocido como nonrecurring engineering
-(NRE). 
+(NRE). Es una inversión de única vez, y generalmente fija. El presupuesto para
+esta inversión tiene directa relación con la producción final. Si el volumen de productos
+será muy grande, el NRE puede tener un presupuesto alto. En cambio, para una producción
+de bajo volumen puede haber un presupuesto acotado.
 
 Lifetime
 
@@ -591,7 +594,7 @@ El tiempo esperado de uso del producto. El tiempo de vida requerido o esperado
 afecta a todas las decisiones de diseńo, desde la selección de los componentes
 de hardware a cuánto es posible invertir en el desarrollo del sistema y su 
 producción. La pregunta a responder es : Cuánto tiempo (en promedio) el sistema
-de funcionar? Un mes? Un ańo? Una década?
+debe funcionar? Un mes? Un ańo? Una década?
 
 
 Reliability
@@ -611,6 +614,29 @@ software design. So the values in a particular column do not necessarily go toge
 
 Confiabilidad
 
+Este requerimiento indicará cuán confiable debe ser el producto final. 
+Si es un juguete para chicos es posible que no tenga que funcionar correctamente el 100 por 
+ciento del tiempo, pero tal vez debe ser seguro (partes pequeñas sueltas podrían ser ingeridas por 
+un niño menor a 3 años). En cambio, si se trata de un sistema antibloqueo 
+de frenos para un automóvil, es necesario que funcione todas las veces
+que se necesite, y que lo haga como se requiere.
+Además de estos requisitos generales, cada sistema tiene requisitos funcionales 
+detallados específicos; que le dan al sistema embebido su identidad única (horno de microondas, marcapasos o consola de juegos).
+
+La Tabla 1-1 ilustra el rango de valores típicos para cada uno de los requisitos de diseño anteriores. 
+
+Las etiquetas "bajo", "medio" y "alto" tienen fines ilustrativos y no deben tomarse como límites estrictos. 
+Un producto real tiene una selección de cada fila. En algunos casos, dos o más de los criterios 
+podrían estar vinculados. Por ejemplo, un aumento en la potencia de procesamiento 
+requerida podrían generar mayores costos de producción. 
+Por el contrario, podríamos pensar que el mismo aumento en la potencia de 
+procesamiento tendrá el efecto de disminuir los costos de desarrollo, 
+al reducir la complejidad del diseño de hardware y software. 
+Por lo tanto, los valores en una columna en particular no necesariamente van juntos.
+
+
+
+
 
 Table 1-1. Common design requirements for embedded systems
 Criterion
@@ -626,6 +652,9 @@ Power consumption > 10 mW/MIPS 1 to 10 mW/MIPS < 1 mW/MIPS
 Lifetime Days, weeks, or months Years Decades
 
 Reliability May occasionally fail Must work reliably Must be fail-proof
+
+
+
 
 1.3. Embedded Design Examples
 
@@ -660,6 +689,49 @@ will be amortized over hundreds of thousands or even millions of watch sales.
 In the case of the digital watch, we see that software, especially when carefully designed, allows
 enormous flexibility in response to a rapidly changing and highly competitive market.
 
+1.3.1. Reloj digital
+
+En la cima actual del camino evolutivo que comenzó con relojes de sol, relojes de agua y relojes de arena está el reloj digital.
+Entre sus muchas características están la presentación de la fecha y la hora 
+(generalmente al segundo más cercano), la medición de la duración de un evento a la centésima de 
+segundo más cercana y la generación de un pequeño sonido molesto al comienzo de cada hora. 
+Como resultado, estas son tareas muy simples que no requieren mucha potencia de procesamiento o memoria. 
+De hecho, la única razón para emplear un procesador es admitir una gama de modelos y 
+características desde un solo diseño de hardware.
+El reloj digital típico contiene un procesador de 8 bits simple y económico. Debido a que estos procesadores 
+no pueden direccionar mucha memoria, contiene su propia pequeña ROM en el chip. 
+Y, si hay suficientes registros disponibles, es posible que esta aplicación 
+no requiera RAM en absoluto. De hecho, es probable que todos los componentes 
+electrónicos (procesador, memoria, contadores y relojes en tiempo real) sea el único hardware
+disponible en el chip.
+Los otros elementos de hardware del reloj son las entradas (botones) y las salidas (pantalla y altavoz).
+
+El objetivo de un diseñador de relojes digitales es crear un producto razonablemente 
+confiable, y que tenga un costo de producción extraordinariamente bajo. 
+Si, después de la producción, se descubre que algunos relojes mantienen un 
+tiempo más confiable que los demás, se pueden vender bajo una marca mas cara.
+Por lo demás, aún se pueden obtener ganancias vendiendo el reloj a través 
+de un canal de venta con descuento. Para las versiones de menor costo, 
+los botones del cronómetro o el altavoz podrían eliminarse. 
+Esto limitaría la funcionalidad del reloj, pero podría requerir pocos o incluso 
+ningún cambio de software. Y, por supuesto, el costo de todo este esfuerzo de 
+desarrollo puede ser bastante alto, ya que se amortizará en cientos de miles o 
+incluso millones de ventas de relojes.
+En el caso del reloj digital, vemos que el software, especialmente cuando está 
+cuidadosamente diseñado, permite una enorme flexibilidad en respuesta a un mercado 
+rápidamente cambiante y altamente competitivo.
+
+Un tipo de reloj mas actual es el reloj digital inteligente. Este reloj es totalmente
+diferente al anterior y puede costar mil veces más. 
+Los relojes inteligentes tienen usualmente un microprocesador de 32 bits (arquitectura ARM),
+mucha cantidad de RAM para estos dispositivos (por ej. 512MB) y varios
+GB de disco. Cuentan con conexion wireless y su software se comunica
+con un teléfono inteligente, del cual obtiene mensajes y avisos para comunicar
+al usuario a través de una pantalla LCD en el reloj.
+En este tipo de relojes el presupuesto de desarrollo es mucho mayor,
+porque ya la categoría del hardware a controlar y del software 
+a desarrollar es extremadamente compleja.
+
 1.3.2. Video Game Player
 
 When you pull the Sony PlayStation 2 out from your entertainment center, you are preparing to use an
@@ -687,6 +759,21 @@ For example, Atari and Nintendo have designed some of their systems this way.
 
 We can see from the case of the video game player that in high-volume products, a lot of development
 effort can be sunk into fine-tuning every aspect of a product.
+
+
+
+.3.2. Video Game Player
+
+Cuando saca la Sony PlayStation 2 de su centro de entretenimiento, se está preparando para usar un sistema integrado. En algunos casos, estas máquinas son más potentes que las computadoras personales de la misma generación. Sin embargo, los jugadores de videojuegos para el mercado doméstico son relativamente baratos en comparación con las computadoras personales. Son los requisitos competitivos de alta potencia de procesamiento y bajo costo de producción los que mantienen a los diseñadores de videojuegos despiertos por la noche.
+
+A las compañías que producen reproductores de videojuegos generalmente no les importa cuánto cuesta desarrollar el sistema siempre que los costos de producción del producto resultante sean bajos, generalmente alrededor de cien dólares. Incluso podrían alentar a sus ingenieros a diseñar procesadores personalizados a un costo de desarrollo de millones de dólares cada uno. Entonces, aunque puede haber un procesador de 64 bits dentro de su reproductor de videojuegos, probablemente no sea el mismo procesador que se encontraría en una computadora de uso general. Con toda probabilidad, el procesador está altamente especializado para las demandas de los videojuegos que está destinado a jugar.
+Debido a que el costo de producción es tan crucial en el mercado de videojuegos domésticos, los diseñadores también usan trucos para cambiar los costos. Por ejemplo, una táctica es mover la mayor cantidad de memoria y otros dispositivos electrónicos periféricos como sea posible fuera de la placa de circuito principal y en los cartuchos de juego. [] Esto ayuda a reducir el costo del jugador pero aumenta el precio de cada juego. Entonces, si bien el sistema podría tener un potente procesador de 64 bits, podría tener solo unos pocos megabytes de memoria en la placa de circuito principal. Esto es suficiente memoria para arrancar la máquina a un estado desde el cual puede acceder a memoria adicional en el cartucho del juego.
+
+Por ejemplo, Atari y Nintendo han diseñado algunos de sus sistemas de esta manera.
+
+Podemos ver, por el caso del reproductor de videojuegos, que en productos de gran volumen, se puede dedicar mucho esfuerzo de desarrollo a ajustar cada aspecto de un producto.
+
+
 
 1.3.3. Mars Rover
 
