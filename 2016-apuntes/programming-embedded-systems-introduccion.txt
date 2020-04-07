@@ -762,16 +762,41 @@ effort can be sunk into fine-tuning every aspect of a product.
 
 
 
-.3.2. Video Game Player
+Consola de Video Juegos
 
-Cuando saca la Sony PlayStation 2 de su centro de entretenimiento, se está preparando para usar un sistema integrado. En algunos casos, estas máquinas son más potentes que las computadoras personales de la misma generación. Sin embargo, los jugadores de videojuegos para el mercado doméstico son relativamente baratos en comparación con las computadoras personales. Son los requisitos competitivos de alta potencia de procesamiento y bajo costo de producción los que mantienen a los diseñadores de videojuegos despiertos por la noche.
+Cuando conectes tu Sony PlayStation 4 a tu smart TV te estás preparando para utilizar decenas de sistemas embebidos.
+Las consolas de video juegos pueden llegar a ser más potentes que las PC
+de su misma generación; aún si las consolas son relativamente mas baratas que las PC.
+Esto se debe a que existe un requisito competitivo de alto poder de cómputo
+a un costo bajo de producción. Tales requisitos obligan a los 
+diseñadores de las consolas de videojuegos a estar despiertos por las noches.
 
-A las compañías que producen reproductores de videojuegos generalmente no les importa cuánto cuesta desarrollar el sistema siempre que los costos de producción del producto resultante sean bajos, generalmente alrededor de cien dólares. Incluso podrían alentar a sus ingenieros a diseñar procesadores personalizados a un costo de desarrollo de millones de dólares cada uno. Entonces, aunque puede haber un procesador de 64 bits dentro de su reproductor de videojuegos, probablemente no sea el mismo procesador que se encontraría en una computadora de uso general. Con toda probabilidad, el procesador está altamente especializado para las demandas de los videojuegos que está destinado a jugar.
-Debido a que el costo de producción es tan crucial en el mercado de videojuegos domésticos, los diseñadores también usan trucos para cambiar los costos. Por ejemplo, una táctica es mover la mayor cantidad de memoria y otros dispositivos electrónicos periféricos como sea posible fuera de la placa de circuito principal y en los cartuchos de juego. [] Esto ayuda a reducir el costo del jugador pero aumenta el precio de cada juego. Entonces, si bien el sistema podría tener un potente procesador de 64 bits, podría tener solo unos pocos megabytes de memoria en la placa de circuito principal. Esto es suficiente memoria para arrancar la máquina a un estado desde el cual puede acceder a memoria adicional en el cartucho del juego.
+A las compañías que producen consolas de videojuegos generalmente no les importa 
+cuánto cuesta desarrollar el sistema, siempre que los costos de producción del 
+producto resultante sean bajos.
+Incluso podrían ofrecer la posibilidad, a sus ingenieros, de diseñar un procesador personalizado 
+a un costo de desarrollo de millones de dólares cada uno. 
+Entonces, aunque puede haber un procesador de 64 bits dentro de la consola 
+probablemente no sea el mismo procesador que se encontraría en una 
+computadora personal. Con toda probabilidad, el procesador está altamente especializado 
+para las demandas de los videojuegos que está destinado a ejecutar.
+
+Debido a que el costo de producción es tan crucial en el mercado de videojuegos 
+se deben tambien realizar ciertos tricks para modificar esos costos. Por ejemplo, los
+diseñadores han utilizado la táctica de mover la mayor cantidad de memoria 
+y otros dispositivos electrónicos fuera de la 
+placa de circuito impreso principal, y han colocado este hardware en los cartuchos de juego. [] 
+Esto ayuda a reducir el costo de la consola pero aumenta el precio de cada juego. 
+Entonces, si bien el sistema podría tener un procesador potente de 64 bits, 
+podría tener solo unos pocos megabytes de memoria en la placa de circuito principal. 
+Con esta poca memoria ya es suficiente para iniciar 
+la máquina a un estado desde el cual se puede acceder a la memoria adicional 
+contenida en el cartucho del juego.
 
 Por ejemplo, Atari y Nintendo han diseñado algunos de sus sistemas de esta manera.
 
-Podemos ver, por el caso del reproductor de videojuegos, que en productos de gran volumen, se puede dedicar mucho esfuerzo de desarrollo a ajustar cada aspecto de un producto.
+Podemos ver, en este ejemplo, que en productos de gran masividad se puede dedicar 
+mucho esfuerzo de desarrollo a ajustar cada aspecto del sistema.
 
 
 
@@ -801,6 +826,16 @@ landing craft had a 32-bit processor and 128 MB of RAM; the rover, on the other 
 processor and 512 KB of RAM. These choices reflect the different functional requirements of the two
 systems. Production cost probably wasn't much of an issue in either case; any investment would have
 been worth an improved likelihood of success.
+
+1.3.3. Mars Rover
+
+En 1976, dos naves espaciales no tripuladas llegaron al planeta Marte. Como parte de su misión, debían recolectar muestras de la superficie marciana, analizar la composición química de cada una y transmitir los resultados a los científicos en la Tierra. Esas misiones vikingas fueron increíbles. Rodeado de computadoras personales que deben reiniciarse ocasionalmente, podríamos encontrar notable que hace más de 30 años, un equipo de científicos e ingenieros construyó con éxito dos computadoras que sobrevivieron a un viaje de 34 millones de millas y funcionaron correctamente durante media década. Claramente, la confiabilidad era uno de los requisitos más importantes para estos sistemas.
+
+¿Qué pasa si un chip de memoria ha fallado? ¿O el software contenía errores que lo habían bloqueado? ¿O se había roto una conexión eléctrica durante el impacto? No hay forma de evitar que ocurran tales problemas, y en otras misiones espaciales, estos problemas han resultado ser ruinosos. Entonces, todos estos puntos potenciales de falla y muchos otros tuvieron que ser eliminados agregando circuitos redundantes o funcionalidades adicionales:
+un procesador adicional aquí, diagnósticos especiales de memoria allí, un temporizador de hardware para reiniciar el sistema si el software se atasca, y así sucesivamente.
+
+Más recientemente, la NASA lanzó la misión Pathfinder. Su objetivo principal era demostrar la viabilidad de llegar a Marte con un presupuesto. Por supuesto, dados los avances tecnológicos realizados desde mediados de los años 70, los diseñadores no tuvieron que renunciar demasiado para lograr esto. Es posible que hayan reducido un poco la cantidad de redundancia, pero aún así le dieron a Pathfinder más poder de procesamiento y memoria
+que vikingo El Mars Pathfinder era en realidad dos sistemas integrados: una nave de aterrizaje y un rover. La lancha de desembarco tenía un procesador de 32 bits y 128 MB de RAM; el rover, por otro lado, solo tenía un procesador de 8 bits y 512 KB de RAM. Estas elecciones reflejan los diferentes requisitos funcionales de los dos sistemas. El costo de producción probablemente no fue un gran problema en ninguno de los casos; cualquier inversión hubiera valido una mayor probabilidad de éxito.
 
 1.4. Life As an Embedded Software Developer
 
