@@ -1069,6 +1069,53 @@ Few popular high-level languages can compete with C in the production of compact
 almost all processors. And, of these, only C allows programmers to interact with the underlying
 hardware so easily.
 
+1.5. El lenguaje C: el denominador común
+
+Una de las pocas cosas regulares en la mayoría de los sistemas embebidos es el uso del 
+lenguaje de programación C.
+Más que ningún otro, C se ha convertido en el lenguaje de los programadores de estos sistemas. 
+Este no siempre ha sido el caso, y tal vez no seguirá siéndolo para siempre. 
+Sin embargo, en este momento, C es lo más parecido a un estándar en el mundo embebido (en el mundo hobbysta Arduino, sin embargo, el lenguaje utilizado en el ambiente de desarrollo Arduino es C++). Pero en todos los demas casos el denominador común es C. 
+Debido a que el éxito del desarrollo de software depende entre otras cosas de seleccionar 
+el lenguaje de programación mas indicado, es sorprendente observar que 
+un mismo lenguaje ha demostrado ser apropiado para procesadores de 8 y 64 bits; 
+en sistemas con muy poca memoria o ninguna (unos pocos bytes) a sistemas
+con GB de RAM; y para equipos de desarrollo compuestos por un sólo desarrollador 
+a equipos con una docena o más personas. 
+Sin embargo, esta es precisamente la gama de proyectos en los que C ha prosperado.
+
+El lenguaje de programación C tiene muchas ventajas. 
+Es reducido y bastante simple de aprender, los compiladores están disponibles 
+para casi todos los procesadores que se usan en la actualidad, y hay un 
+gran grupo de programadores de C con experiencia. 
+Además, C tiene la ventaja de la independencia del procesador, 
+que permite a los programadores concentrarse en algoritmos y aplicaciones 
+en lugar de en los detalles de una arquitectura en particular. 
+Sin embargo, muchas de estas ventajas también existen 
+en otros lenguajes de alto nivel. Entonces, ¿por qué C ha tenido 
+tanto éxito aquí y otros no?
+Quizás la mayor fortaleza de C, y lo que lo distingue de lenguajes 
+como Pascal y FORTRAN, es que es un lenguaje de alto nivel 
+muy "de bajo nivel". 
+C brinda a los programadores de sistemas embebidos un grado 
+extraordinario de control directo sobre el hardware, sin 
+reducir los beneficios de los lenguajes de alto nivel. 
+La naturaleza de "bajo nivel" de C fue una clara intención 
+de los creadores del lenguaje. De hecho, Brian W. Kernighan y Dennis M. 
+Ritchie incluyeron el siguiente comentario en las páginas 
+iniciales de su libro The C Programming Language (Prentice Hall):
+C es un lenguaje relativamente de "bajo nivel". Esta característica no es peyorativa; 
+simplemente significa que C trata con el mismo tipo de objetos 
+que la mayoría de las computadoras (caracteres, números y direcciones). 
+Estos pueden ser combinados y cambiados de sitio con los operadores
+aritméticos y lógicos implementados en máquinas reales.
+Pocos lenguajes populares de alto nivel pueden competir con C 
+en la producción de código compacto y eficiente para casi 
+todos los procesadores. Y, de estos, solo C permite a los 
+programadores interactuar con el hardware de bajo nivel tan fácilmente.
+
+
+
 1.5.1. Other Embedded Languages
 
 Of course, C is not the only language used by embedded programmers. At least four other languages—
@@ -1132,3 +1179,4 @@ no ha ganado mucho apoyo fuera de las industrias de defensa y aeroespaciales.
 E incluso ha estado perdiendo mercado allí mismo en los últimos años. 
 Esto es lamentable porque el lenguaje Ada tiene muchas características 
 que simplificarían el desarrollo de software embebido si se usa en lugar de C o C++.
+
