@@ -1037,6 +1037,25 @@ These are just a few qualities that separate embedded software developers from t
 will investigate these and other techniques that are specific to embedded software development as we
 continue.
 
+Herramientas de desarrollo
+
+Las herramientas que utilizará a lo largo de su carrera 
+como desarrollador embebido serán diferentes de una compañía a otra y, 
+a menudo, de un proyecto a otro. Esto significa que necesita
+aprender nuevas herramientas a medida que pasen los años.
+Por lo general, estas herramientas no son tan potentes 
+o fáciles de usar como las que se usan en el desarrollo de software para PC.
+
+Las herramientas de depuración que puede encontrar en distintos entornos
+pueden variar, desde un simple LED conectado a la placa hasta un emulador de 
+circuito completo (ICE). Esto requiere que, como desarrollador de firmware y responsable de depurar 
+su código, sea muy ingenioso y tenga un conjunto de técnicas a las que pueda recurrir
+cuando falte el entorno de depuración. 
+
+Estas son solo algunas cualidades que diferencian a los desarrolladores 
+de software embebido del resto.
+
+
 1.5. The C Language: The Lowest Common Denominator
 
 One of the few constants across most embedded systems is the use of the C programming language.
