@@ -703,7 +703,9 @@ que ya no vuelva a comprar un producto de esa marca.
 
 \subsubsection {Recursos mínimos}
 
-En la misma línea de crear un sistema más robusto, otro gran diferenciador entre el software embebido y otros tipos de software son los recursos limitados. 
+En la misma línea de crear un sistema más robusto, el desarrollador
+de software embebido se diferencia de otros tipos de desarrolladores
+por tener que trabajar con recursos limitados.
 Las reglas para desarrollar un firmware son diferentes de las reglas para 
 escribir software para una PC. Piense en la gestión de la memoria por ejemplo.
 Una aplicación para una PC moderna puede dar por sentado que tendrá acceso a recursos prácticamente ilimitados. Pero en un sistema embebido, se quedará sin memoria si no planifica con anticipación y diseña el software correctamente.
@@ -729,7 +731,17 @@ aunque no siempre será posible utilizar este método.
 
 \subsubsection {Software reutilizable}
 
-Como mencionamos anteriormente, la portabilidad del código o la reutilización del código —escribiendo software para que se pueda mover de la plataforma de hardware a la plataforma de hardware— es muy útil para ayudar a la transición a nuevos proyectos. Esto no siempre se puede hacer; Hemos visto cuán individual es cada sistema embebido. A lo largo de este libro, analizaremos métodos básicos para garantizar que su código incrustado se pueda mover más fácilmente de un proyecto a otro. Por lo tanto, si su próximo proyecto utiliza una pantalla LCD para la cual ha desarrollado previamente un controlador, puede colocar el código anterior y ahorrar un tiempo precioso en el cronograma.
+Como mencionamos anteriormente, la portabilidad del código o la 
+reutilización del código —desarrollar software para que se pueda compilar
+y ejecutar en otra plataforma y arquitectura de hardware— es muy 
+útil en la transición a nuevos proyectos. Esto no siempre se puede hacer.
+Hemos visto cuán individual es cada sistema embebido. 
+De todas maneras, muchos de los módulos de un software embebido
+puede diseñarse con interfaces que oculten los detalles del hardware
+subyacente. Si esto se logra, gran parte del código podría ser portable.
+Por ejemplo, si en su próximo proyecto se utiliza una pantalla LCD 
+para la cual se ha desarrollado previamente un controlador, 
+puede colocar el código anterior y ahorrar un tiempo importante en el cronograma.
 
 
 
@@ -740,13 +752,16 @@ como desarrollador embebido serán diferentes de una compañía a otra y,
 a menudo, de un proyecto a otro. Esto significa que necesita
 aprender nuevas herramientas a medida que pasen los años.
 Por lo general, estas herramientas no son tan potentes 
-o fáciles de usar como las que se usan en el desarrollo de software para PC.
+o fáciles de usar como las que se usan en los entornos
+de desarrollo para PC.
 
-Las herramientas de depuración que puede encontrar en distintos entornos
-pueden variar, desde un simple LED conectado a la placa hasta un emulador de 
-circuito completo (ICE). Esto requiere que, como desarrollador de firmware y responsable de depurar 
-su código, sea muy ingenioso y tenga un conjunto de técnicas a las que pueda recurrir
-cuando falte el entorno de depuración. 
+Las herramientas de depuración, por ejemplo, pueden variar de plataforma
+en plataforma. Tal vez en una tenga simplemente un LED conectado a la placa,
+y en otra puede que tenga algo mucho mas completo como un emulador de 
+circuito completo (ICE). Esto requiere que, como desarrollador de 
+firmware y responsable de depurar 
+su código, sea muy ingenioso y tenga un conjunto de técnicas a las que 
+pueda recurrir cuando falte el entorno de depuración. 
 
 Estas son solo algunas cualidades que diferencian a los desarrolladores 
 de software embebido del resto.
@@ -760,12 +775,13 @@ lenguaje de programación C.
 Más que ningún otro, C se ha convertido en el lenguaje de los programadores de estos sistemas. 
 Este no siempre ha sido el caso, y tal vez no seguirá siéndolo para siempre. 
 Sin embargo, en este momento, C es lo más parecido a un estándar en el mundo embebido (en el mundo hobbysta Arduino, sin embargo, el lenguaje utilizado en el ambiente de desarrollo Arduino es C++). Pero en todos los demás casos el denominador común es C. 
+
 Debido a que el éxito del desarrollo de software depende entre otras cosas de seleccionar 
 el lenguaje de programación mas indicado, es sorprendente observar que 
 un mismo lenguaje ha demostrado ser apropiado para procesadores de 8 y 64 bits; 
 en sistemas con muy poca memoria o ninguna (unos pocos bytes) a sistemas
-con GB de RAM; y para equipos de desarrollo compuestos por un sólo desarrollador 
-a equipos con una docena o más personas. 
+con GBs de RAM; y para equipos de desarrollo compuestos por un sólo desarrollador 
+a equipos con una docena de personas o más. 
 Sin embargo, esta es precisamente la gama de proyectos en los que C ha prosperado.
 
 El lenguaje de programación C tiene muchas ventajas. 
@@ -778,21 +794,24 @@ en lugar de en los detalles de una arquitectura en particular.
 Sin embargo, muchas de estas ventajas también existen 
 en otros lenguajes de alto nivel. Entonces, ¿por qué C ha tenido 
 tanto éxito aquí y otros no?
-Quizás la mayor fortaleza de C, y lo que lo distingue de lenguajes 
-como Pascal y FORTRAN, es que es un lenguaje de alto nivel 
+
+Quizás la mayor fortaleza de C, y lo que lo distingue de otros lenguajes 
+como Java, Pascal o FORTRAN, es que es un lenguaje de alto nivel 
 muy "de bajo nivel". 
 C brinda a los programadores de sistemas embebidos un grado 
 extraordinario de control directo sobre el hardware, sin 
 reducir los beneficios de los lenguajes de alto nivel. 
-La naturaleza de "bajo nivel" de C fue una clara intención 
+La naturaleza de \textit{bajo nivel} de C fue una clara intención 
 de los creadores del lenguaje. De hecho, Brian W. Kernighan y Dennis M. 
 Ritchie incluyeron el siguiente comentario en las páginas 
 iniciales de su libro The C Programming Language (Prentice Hall):
-C es un lenguaje relativamente de "bajo nivel". Esta característica no es peyorativa; 
+
+\textit{C es un lenguaje relativamente de "bajo nivel". Esta característica no es peyorativa; 
 simplemente significa que C trata con el mismo tipo de objetos 
 que la mayoría de las computadoras (caracteres, números y direcciones). 
 Estos pueden ser combinados y cambiados de sitio con los operadores
-aritméticos y lógicos implementados en máquinas reales.
+aritméticos y lógicos implementados en máquinas reales.}
+
 Pocos lenguajes populares de alto nivel pueden competir con C 
 en la producción de código compacto y eficiente para casi 
 todos los procesadores. Y, de estos, solo C permite a los 
@@ -813,8 +832,9 @@ Una desventaja es que el costo de desarrollo es muy elevado (el código fuente e
 difícil de leer y mantener), y el software no es portable. 
 Además, encontrar programadores que conozcan lenguaje ensamblador es bastante difícil hoy en día.
 El lenguaje ensamblador se utiliza principalmente como un complemento a los lenguajes de
-alto nivel. Se utiliza para escribir una porción del código de arranque de un sistema,
+alto nivel. Por ejemplo, para escribir una porción del código de arranque de un sistema,
 o en pequeños fragmentos de código que deben ser extremadamente eficientes o ultracompactos.
+
 Forth es eficiente pero es de un nivel extremadamente bajo e inusual; aprender a trabajar 
 con Forth lleva más tiempo que con C.
 
@@ -827,7 +847,7 @@ Por lo tanto, C ++ tiende a ser más popular entre los grandes equipos de
 desarrollo, donde los beneficios para los desarrolladores superan la posible
 pérdida de eficiencia que pudiera tener el programa final.
 
-Ada también es un lenguaje orientado a objetos, aunque sustancialmente diferente de C++. 
+Ada también es un lenguaje orientado a objetos, aunque sustancialmente diferente de C++.
 Ada fue diseñada originalmente por el Departamento de Defensa de los EE. UU. para 
 el desarrollo de software militar de misión crítica.  
 A pesar de ser dos veces aceptado como un estándar internacional (Ada83 y Ada95), 
@@ -862,9 +882,8 @@ Cuando un dato es leído, supongamos desde un conversor analógico a
 digital, el dato estará en una variable de 8 bits y físicamente
 en un registro de 8 bits del procesador.
 Si el programador realiza una operación de este estilo:
-total = valor\_entrada * 100 / 20;
-
-Para, tal vez, calcular el promedio, está inadvertidamente
+total = valor\_entrada * 100 / 20; para, tal vez, calcular 
+el promedio, está inadvertidamente
 realizando un cálculo que dará un error silencioso.
 Las variables total y valor\_entrada son seguramente de 8 bits,
 por lo que si el valor\_entrada fue 200, cuando la CPU 
@@ -892,22 +911,22 @@ ya sea que el contador i del bucle sea una cantidad de 8, 16, 32 o incluso 64 bi
 Mientras el entero sea lo suficientemente ancho como para contener el valor máximo 
 (N en el ejemplo), queremos que el procesador se use de la manera más eficiente. 
 Y eso es precisamente lo que los estándares ISO C y C++ le dicen al compilador: 
-"elija el tamaño de entero más eficiente". 
+\textit{elija el tamaño de entero más eficiente}. 
 Debido a que el tamaño de los enteros (int en C) son variables para diferentes procesadores, 
 y a la flexibilidad correspondiente de los estándares del lenguaje, 
 el código de ejemplo anterior puede dar como resultado un entero de 32 bits 
 con un compilador, pero un entero de 16 bits con otro. Incluso si el procesador destino es el mismo.
 Por lo tanto, en algunas situaciones de programación, la cantidad de bits con que 
 se representa un entero importa. 
-En la programación de sistemas embebidos, en particular, suele 
-utilizar muy a menudo una cantidad considerable de datos enteros 
+En la programación de sistemas embebidos, en particular, se suele 
+utilizar muy a menudo una cantidad considerable de variables enteras 
 de anchos fijos.
 
-En retrospectiva, hubiese sido bueno para el lenguaje si los autores del estándar C 
-hubieran definido algunos nombres estándar y hubieran hecho responsables a 
+En retrospectiva, hubiese sido bueno para el lenguaje si los autores del estándar de
+C hubieran definido algunos nombres estándar y hubieran hecho responsable a 
 los proveedores de compiladores de proporcionar la definición de tipo apropiada 
 para cada tipo de entero de tamaño fijo en un archivo de encabezado de biblioteca. 
-Alternativamente, el estándar C podría haber especificado que cada uno de los 
+Alternativamente, el estándar de C podría haber especificado que cada uno de los 
 tipos short, int y long tuvieran un ancho estándar en todas las plataformas; 
 pero eso podría haber tenido un impacto en el rendimiento, 
 particularmente en los procesadores de 8 bits, que obligarían a implementar 
@@ -917,7 +936,7 @@ Curiosamente, la actualización de 1999 del estándar C de la Organización
 Internacional de Normalización (ISO) (también conocido como C99) 
 hizo exactamente eso. El ISO finalmente ha puesto el peso de su 
 estándar detrás de un conjunto preferido de nombres para tipos de datos 
-enteros de tamaño fijo con y sin signo. Los nombres de tipo recién definidos son:
+enteros de tamaño fijo con y sin signo. Los nombres de tipo ahora son:
 
 \begin{small}
 \begin{verbatim}
@@ -933,7 +952,7 @@ enteros de tamaño fijo con y sin signo. Los nombres de tipo recién definidos s
 
 De acuerdo con el estándar actualizado, este conjunto requerido de 
 typedefs (junto con algunos otros) debe estar definido por los 
-proveedores del compilador e incluido en el nuevo archivo 
+proveedores de compiladores e incluido en el nuevo archivo 
 de encabezado stdint.h. Si ya está utilizando un compilador 
 compatible con C99, esta nueva función de lenguaje hace 
 que la declaración de una variable entera de ancho fijo o de un registro 
@@ -976,6 +995,7 @@ la misma rutina a lo largo de los años, cada uno dejando su propia marca.
 Los problemas estilísticos, como por ejemplo los nombres de las
 variables, o dónde debe residir una llave, pueden ser 
 muy personales para algunos desarrolladores.
+
 Hay una serie de estándares de programación decentes flotando en Internet. 
 Dos estándares muy utilizados y heredados por muchos proyectos son: 
 la guía de estilo de programación del proyecto del kernel Linux (http://www.kernel.org),
