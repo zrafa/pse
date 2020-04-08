@@ -1,0 +1,99 @@
+\section{Illustrating OSL commands and conventions}
+
+Below I illustrate the use of a number of commands defined in langsci-osl.tex (see the styles folder). In \sectref{s:tree} I add a simple tree.
+
+\subsection{Typesetting semantics}
+
+Semantic interpretation brackets:
+
+\ea \sib{dog}$^g=\textsc{dog}=\lambda x[\textsc{dog}(x)]$\label{ex:dog}
+\z
+
+\noindent Use noindent after example environments (but not after floats like tables or figures).
+
+And here's a macro for semantic type brackets: The expression \textit{dog} is of type $\stb{e,t}$. Don't forget to place the whole type formula into a math-environment. An example of a more complex type, such as the one of \textit{every}: $\stb{s,\stb{\stb{e,t},\stb{e,t}}}$. You can of course also use the type in a subscript: dog$_{\stb{e,t}}$
+
+We distinguish between metalinguistic constants that are translations of object language, which are typeset using smallcaps, see \REF{ex:dog}, and logical constants. See the contrast in \REF{ex:speaker}, where \textsc{speaker} (= serif) in \REF{ex:speaker-a} is the denotation of the word \textit{speaker}, and \cnst{speaker} (= sans-serif) in \REF{ex:speaker-b} is the function that maps the context $c$ to the speaker in that context.\footnote{Notice that both types of smallcaps are automatically turned into text-style, even if used in a math-environment. This enables you to use math throughout.}
+
+\ea\label{ex:speaker}
+\ea \sib{The speaker is drunk}$^{g,c}=\textsc{drunk}\big(\iota x\,\textsc{speaker}(x)\big)$\label{ex:speaker-a}
+\ex \sib{I am drunk}$^{g,c}=\textsc{drunk}\big(\cnst{speaker}(c)\big)$\label{ex:speaker-b}
+\z\z
+
+\noindent Notice that with more complex formulas, you can use bigger brackets indicating scope, cf. $($ vs. $\big($, as used in \REF{ex:speaker}. Also notice the use of backslash plus comma, which produces additional space in math-environment.
+
+\subsection{Typesetting non-glossed elements in examples}
+
+Try to keep examples simple. But if you need to pack more information into an example or include more alternatives, you can resort to various brackets or slashes. For that, you will find the minsp-command useful. It works as follows:
+
+\ea \gll Hans \minsp{\{} schläft / schlief / \minsp{*} schlafen\}.\\
+Hans {} sleeps {} slept {} {} sleep.\textsc{inf}\\
+\glt `Hans \{sleeps / slept\}.'
+\z
+
+\noindent If you use the command, glosses will be aligned with the corresponding object language elements correctly. Notice also that brackets etc. do not receive their own gloss. Simply use the placeholder \{\,\} in the code.
+
+The minsp-command is not needed for grammaticality judgments used for the whole sentence. For that, use the native langsci-gb4e method instead, as illustrated below:
+
+\ea[*]{\gll Das sein ungrammatisch.\\
+that be.\textsc{inf} ungrammatical\\
+\glt Intended: `This is ungrammatical.'}
+\z
+
+\noindent Also notice that translations should never be ungrammatical. If the original is ungrammatical, provide the intended interpretation in idiomatic English.
+
+\subsection{Citation commands and macros}
+
+You can make your life easier if you use the following citation commands and macros (see code):
+
+\begin{itemize}
+    \item \citealt{Bailyn2004}: no brackets
+    \item \citet{Bailyn2004}: year in brackets
+    \item \citep{Bailyn2004}: everything in brackets
+    \item \citepossalt{Bailyn2004}: possessive
+    \item \citeposst{Bailyn2004}: possessive with year in brackets
+\end{itemize}
+
+\subsection{A tree}\label{s:tree}
+
+Use the forest package for trees and place trees in a figure environment. \figref{fig:CP} shows a simple example.\footnote{See \citet{VandenWyngaerd2017} for a simple and useful quickstart guide for the forest package.}
+
+\begin{figure}[h]
+\centering
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [CP
+        [DP, name=what
+            [what, roof]
+        ]
+        [C$'$
+            [C
+                [are, name=are]
+            ]
+            [TP
+                [DP
+                    [you, roof]
+                ]
+                [T$'$, s sep=2.2cm
+                    [t\textsubscript{T}, name=trace-T]
+                    [VP
+                        [V
+                            [looking]
+                        ]
+                        [PP, s sep=2.2cm
+                            [P
+                                [at]
+                            ]
+                            [t\textsubscript{DP}, name=trace-DP]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    % \draw[->] (trace-DP) to[out=south west, in=south west, looseness=1.2] (what);
+    % \draw[->] (trace-T) to[out=south west, in=south west] (are);
+    \end{forest}
+    \caption{A normal CP}
+    \label{fig:CP}
+\end{figure}
