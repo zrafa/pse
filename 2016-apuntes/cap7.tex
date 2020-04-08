@@ -255,7 +255,7 @@ a continuación en la estructura de datos serial\_st. Cada registro es de
 struct serial_st
 {
     uint8_t data_es;	/* udr0 i/o data */
-    uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+    uint8_t baud_rate_h;    /* ubrr0h baud rate high */
     uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
     uint8_t _reserved;    /* espacio sin utilizar */
     uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
@@ -353,18 +353,18 @@ controlador utilizamos únicamente el modo asincrónico no SPI.
 Antes de diseñar y desarrollar un controlador de dispositivo 
 es importante entender el diagrama de bloques del hardware -el cual
 presenta cómo las señales van y vienen desde el periférico al exterior del mismo.
-Típicamente, esta tarea se logra  observando las porciones relevantes de los
-esquemáticos, y leyendo las hojas de datos de los diferentes integrados.
-Un diagrama de bloques para el puerto serial se muestra en la Figura \ref{fig:usart-block}.
-
 \begin{figure}
 \includegraphics[width=\linewidth]{usart-block.png}
 \caption{Diagrama de bloques del USART en el atmega328p.}
 \label{fig:usart-block}
 \end{figure}
 
+Típicamente, esta tarea se logra  observando las porciones relevantes de los
+esquemáticos, y leyendo las hojas de datos de los diferentes integrados.
+Un diagrama de bloques para el puerto serial se muestra en la Figura \ref{fig:usart-block}.
 
-\subsubsection{¿Qué integrados se necesitan programar para controlar el periférico?}
+
+\subsubsection*{¿Qué integrados se necesitan programar para controlar el periférico?}
 Para este ejemplo de controlador serial únicamente nos enfocamos
 en el USART. La información de los registros está localizada en la hoja
 de datos del microcontrolador atmega328p. Mientras se lee esta información
@@ -394,7 +394,7 @@ están mapeados a memoria. La estructura uart\_t se muestra a continuación :
 typedef struct 
 {
     uint8_t data_es;	/* udr0 i/o data */
-    uint6_t baud_rate_h;    /* ubrr0h baud rate high */
+    uint8_t baud_rate_h;    /* ubrr0h baud rate high */
     uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
     uint8_t _reserved;    /* espacio sin utilizar */
     uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
