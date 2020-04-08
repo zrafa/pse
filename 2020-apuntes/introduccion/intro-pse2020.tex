@@ -17,14 +17,14 @@ newtxmath
 \input{localpackages.tex}
 \input{localcommands.tex}
 
+
 \usepackage[spanish]{babel}
-%\usepackage[none]{hyphenat}
-%\sloppy
+\usepackage[bottom]{footmisc}
 
 % \IfFileExists{../localcommands.tex}{%hack to check whether this is being compiled as part of a collection or standalone
 %   \input{../localpackages}
 %   \input{../localcommands} 
-\togglepaper[0]
+%\togglepaper[1]
 % }{}
 
 \begin{document}
@@ -34,7 +34,7 @@ newtxmath
 \chapterfont{\Large\color{LightBlue}} 
 %\chapternumberfont{\large} 
 %\chaptertitlefont{\Large}
-\chapter{ Programación de Sistemas Embebidos 2020: Introducción}
+\chapter*{ Programación de Sistemas Embebidos 2020: Introducción}
 
 \begingroup
 \let\clearpage\relax
@@ -43,10 +43,10 @@ newtxmath
 \tableofcontents*
 \endgroup
 
-%\begin{otherlanguage}{spanish}
-% \foreignlanguage{spanish} {
 
-%\maketitle
+\footnote{\scriptsize\normalfont Esta es una obra derivada oficialmente autorizada por O'Reilly(*) para la materia "Programación de Sistemas Embebidos" de la Facultad de Informática, Universidad Nacional del Comahue. \\ Detalles de la autorización oficial y sus modificaciones al final del capítulo. \\ Libro original: Michael Barr. Programming Embedded Systems in C and C++. ISBN-13: 978-1565923546
+ISBN-10: 1565923545. O'Reilly }
+
 {\def\addcontentsline#1#2#3{}\maketitle}
 
 
@@ -60,14 +60,9 @@ There is no reason anyone would want a computer in their home.
 \end{minipage}
 
 
-%\begingroup
-%\let\clearpage\relax
-%\cleardoublepage
-%\hypersetup{linkcolor=blue}
-%\tableofcontents*
-%\endgroup
 
-\togglepaper[0]
+
+% \togglepaper[0]
 
 \section {¿Qué es un sistema embebido?}
 
