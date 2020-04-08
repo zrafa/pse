@@ -31,9 +31,14 @@ newtxmath
 
 \selectlanguage{spanish}
 
+\chapterfont{\Large\color{LightBlue}} 
+%\chapternumberfont{\large} 
+%\chaptertitlefont{\Large}
+\chapter{ Programación de Sistemas Embebidos 2020: Introducción}
+
 \begingroup
-%\let\clearpage\relax
-%\cleardoublepage
+\let\clearpage\relax
+\cleardoublepage
 \hypersetup{linkcolor=blue}
 \tableofcontents*
 \endgroup
@@ -160,7 +165,7 @@ la próxima generación de sistemas embebidos está vigente, y lo estará por mu
 
 
 
-\section {Sistemas de Tiempo Real} 
+\subsection {Sistemas de Tiempo Real} 
 
 
 
@@ -171,7 +176,12 @@ ciertos cálculos o decisiones de manera oportuna. Estos cálculos o actividades
 tienen plazos de finalización específicos.
 
 
-Figure 1-1. A range of example real-time systems
+\begin{figure}
+\includegraphics[scale=0.25]{images/real-time-system.jpg}
+\caption{Un rango de ejemplos de sistemas de tiempo real}
+\label{fig:sist-tiemp-real}
+\end{figure}
+
 
 Existen al menos en la literatura dos categorías de sistemas de tiempo real.
 La distinción crucial entre estos radica en lo que sucede si el sistema respondió o no antes
@@ -191,7 +201,7 @@ En el otro extremo se define la categoría de los sistemas de tiempo real blando
 En esta categoría, los tiempos límites de respuesta existen en la especificación, pero para
 ciertos eventos está permitido no cumplir el plazo de tiempo para una respuesta, y por lo tanto
 el sistema no falló si eso sucede.
-La Figura 1-1 muestra algunos ejemplos de sistemas de tiempo real duros y blandos.
+La Figura \ref{fig:sist-tiempo-real} muestra algunos ejemplos de sistemas de tiempo real duros y blandos.
 
 
 
@@ -228,7 +238,7 @@ cálculos de ingeniería y documentación descriptiva completa.
 
 
 
-\section {Características del Hardware Embebido}
+\section {Variaciones sobre el mismo Tema}
 
 
 
@@ -248,11 +258,8 @@ hacerse modificaciones en todas las capas del software.
 
 
 
-\section {Componentes del Sistema Comunes}
+\subsection {Componentes del Sistema Comunes}
 
-
-
-See Figure 1-2 for a general example of an embedded system.
 
 Por definición, todos los sistemas embebidos contienen un procesador y software, 
 pero ¿qué otras características tienen en común?. En realidad, para poder tener software, 
@@ -276,10 +283,24 @@ funciones de salida de un sistema embebido. Las entradas al sistema generalmente
 la forma de sensores y sondas, señales de comunicación o perillas, y botones de control. 
 Las salidas son típicamente pantallas, señales de comunicación o cambios en el mundo físico.
 
-Consulte la Figura 1-2 para ver un ejemplo general de un sistema integrado.
+En la Figura \ref{fig:hardware-basico} puede observarse el diagrama de bloques
+del hardware de la computaodra de un sistema embebido.
+Toda la columna de la derecha son periféricos internos al chip,
+y se utilizan para interconectar dispositivos externos. En nuestro ejemplo
+del microondas, el sensor de temperatura podría conectarse al ADC,
+los botones a puertos GPIO, la pantalla LCD al SPI y el 
+controlador de radiación externo al PWM.
+Todos los periféricos externos mencionados tendrán que tener
+esas interfaces de conexiones por hardware (una señal analógica,
+switches, LCD con interfaz SPI, controlador de radiación
+que admita una señal PWM de control).
 
 
-Figure 1-2. A generic embedded system
+\begin{figure}[h]
+\includegraphics[scale=0.25]{images/hardware-basico.png}
+\caption{Una computadora para sistemas embebidos: CPU, RAM y E/S}
+\label{fig:hardware-basico}
+\end{figure}
 
 
 
@@ -287,19 +308,19 @@ Figure 1-2. A generic embedded system
 Con la excepción de estas pocas características comunes, el resto del hardware en un sistema
 embebido es generalmente único y, por lo tanto, requiere un software único. 
 Esta variación es el resultado de muchos criterios de diseño competitivos de los fabricantes.
-El software para un sistema embebido genérico que se muestra en la Figura 1-2 
-varía según la funcionalidad necesaria. El hardware es el recuadro en blanco, 
-y el software es la pintura agregada para que la imagen cobre vida. 
-La Figura 1-3 proporciona un par de diagramas de alto nivel 
+La Figura \ref{fig:sistema-embebido-basico} proporciona un par de diagramas de alto nivel 
 posibles, que podrían implementarse en un sistema embebido genérico.
 
-Figure 1-3. (a) Basic embedded software diagram and (b) a more complex embedded software
-diagram
+
+\begin{figure}[h]
+\includegraphics[scale=0.3]{images/sistema-embebido-basico.png}
+\caption{(a) y (b) Diagramas de los componentes de dos sistemas embebidos}
+\label{fig:sistema-embebido-basico}
+\end{figure}
 
 
-
-Tanto el diagrama de software embebido básico en la Figura 1-3 (a) como el diagrama de software más complejo 
-en la Figura 1-3 (b) contienen bloques muy similares. El bloque de hardware es común en ambos diagramas.
+Tanto el diagrama de software embebido básico en la Figura \ref{fig:sistema-embebido-basico} (a) como el diagrama de software más complejo 
+en la Figura \ref{fig:sistema-embebido-basico} (b) contienen bloques muy similares. El bloque de hardware es común en ambos diagramas.
 Los controladores de dispositivo (drivers) son módulos de software que contienen la funcionalidad 
 para operar (controlar) los dispositivos de hardware (periféricos). Estos controladores
 eliminan la necesidad de que la aplicación sepa cómo controlar cada pieza de hardware, además permiten su reuso. 
@@ -335,7 +356,7 @@ que sea claro, limpio, fácil de leer y portátil.
 
 
 
-\section {Requerimientos que Afectan a las Decisiones de Diseño}
+\subsection {Requerimientos que Afectan a las Decisiones de Diseño}
 
 
 
@@ -350,8 +371,7 @@ de diseño son:
 
 
 
-\subsection {Poder de procesamiento (Rendimiento)}
-
+\subsubsection {Rendimiento del procesador}
 
 
 Es la carga de trabajo que puede computar el chip principal. 
@@ -379,7 +399,7 @@ Además ambos sistemas deben tener exactamente la misma instalación y
 configuración (los mismos paquetes en cada sistema).
 
 
-\subsection {Memoria}
+\subsubsection {Memoria}
 
 La cantidad de memoria (ROM y RAM) que se necesita para almacenar
 y ejecutar el software del sistema embebido. Aquí, el diseñador de 
@@ -403,7 +423,7 @@ con unos pocos bytes; sin embargo varios miles de bytes es un requisito de
 memoria mínimo más común, incluso en un procesador de 8 bits.
 
 
-\subsection {Cantidad de unidades}
+\subsubsection {Cantidad de unidades}
 
 Es la cantidad esperada de unidades a fabricar. 
 La inversión destinada al desarrollo y producción se verá afectada 
@@ -412,8 +432,7 @@ Por ejemplo, rara vez tiene sentido desarrollar componentes de
 hardware especializados para un sistema que tendrá un bajo volumen de producción.
 
 
-
-\subsection {El consumo de energía}
+\subsubsection {Consumo de energía}
 
 La cantidad de energía utilizada durante la operación. 
 Este requerimiento de diseño suele ser extremadamente importante, 
@@ -427,7 +446,7 @@ baterías serán más pequeñas, tendrá un peso final menor,
 será mas compacto, y el diseño mecánico será más sencillo.
 
 
-\subsection {El costo de desarrollo}
+\subsubsection {Costo de desarrollo}
 
 El costo del proceso de diseño del software y del hardware, conocido como nonrecurring engineering
 (NRE). Es una inversión de única vez, y generalmente fija. El presupuesto para
@@ -436,7 +455,7 @@ será muy grande, el NRE puede tener un presupuesto alto. En cambio, para una pr
 de bajo volumen puede haber un presupuesto acotado.
 
 
-\subsection {Tiempo de vida}
+\subsubsection {Tiempo de vida}
 
 El tiempo esperado de uso del producto. El tiempo de vida requerido o esperado
 afecta a todas las decisiones de diseño, desde la selección de los componentes
@@ -446,7 +465,7 @@ debe funcionar? Un mes? Un ańo? Una década?
 
 
 
-\subsection {Confiabilidad}
+\subsubsection {Confiabilidad}
 
 Este requerimiento indicará cuán confiable debe ser el producto final. 
 Si es un juguete para chicos es posible que no tenga que funcionar correctamente el 100 por 
@@ -457,7 +476,7 @@ que se necesite, y que lo haga como se requiere.
 Además de estos requisitos generales, cada sistema tiene requisitos funcionales 
 detallados específicos; que le dan al sistema embebido su identidad única (horno de microondas, marcapasos o consola de juegos).
 
-La Tabla 1-1 ilustra el rango de valores típicos para cada uno de los requisitos de diseño anteriores. 
+La Figura \ref{fig:tabla-rango} presenta una tabla con el rango de valores típicos para cada uno de los requisitos de diseño anteriores. 
 
 Las etiquetas "bajo", "medio" y "alto" tienen fines ilustrativos y no deben tomarse como límites estrictos. 
 Un producto real tiene una selección de cada fila. En algunos casos, dos o más de los criterios 
@@ -469,28 +488,15 @@ al reducir la complejidad del diseño de hardware y software.
 Por lo tanto, los valores en una columna en particular no necesariamente van juntos.
 
 
+\begin{figure}
+\includegraphics[scale=0.25]{images/requerimientos-comunes.jpg}
+\caption{Requerimientos comunes para diferentes sistemas embebidos}
+\label{fig:tabla-rango}
+\end{figure}
 
 
 
-Table 1-1. Common design requirements for embedded systems
-Criterion
-Low
-Medium
-High
-Processor 4- or 8-bit 16-bit 32- or 64-bit
-Memory < 64 KB 64 KB to 1 MB > 1 MB
-Development cost < $100,000 $100,000 to $1,000,000 > $1,000,000
-Production cost < $10 $10 to $1,000 > $1,000
-Number of units < 100 100 to 10,000 > 10,000
-Power consumption > 10 mW/MIPS 1 to 10 mW/MIPS < 1 mW/MIPS
-Lifetime Days, weeks, or months Years Decades
-
-Reliability May occasionally fail Must work reliably Must be fail-proof
-
-
-
-
-\section {Ejemplos de Sistemas Embebidos}
+\section {Tres Ejemplos de Sistemas Embebidos}
 
 En esta sección se presentan tres ejemplos de sistemas
 embebidos reales, los cuales tienen marcadas
@@ -624,7 +630,7 @@ ninguno de los casos.
 
 
 
-\section {La vida de un desarrollador de software embebido}
+\section {La vida como desarrollador de sistemas embebidos}
 
 Veamos ahora brevemente algunas de las cualidades del software embebido, 
 que diferencian a los desarrolladores embebidos de otros tipos de desarrolladores de software. 
@@ -642,7 +648,7 @@ genera una cadena en la pantalla, solo que sucede cuando se llama a una
 rutina particular con los parámetros adecuados.
 
 
-\subsection {Conocimiento del hardware}
+\subsubsection {Conocimiento del hardware}
 
 El desarrollador de software embebidos debe familiarizarse íntimamente con los 
 circuitos integrados, las placas de circuito impreso, los buses, y los dispositivos 
@@ -652,7 +658,7 @@ comenzar a hurgar en el circuito para descubrir qué está sucediendo.
 
 
 
-\subsection {Código eficiente}
+\subsubsection {Código eficiente}
 
 Los desarrolladores de software embebido deben tener en cuenta
 cada línea de código fuente, ya que los sistemas embebidos 
@@ -663,7 +669,7 @@ que deben poseer los desarrolladores de firmware.
 
 
 
-\subsection {Interfaces a los dispositivos}
+\subsubsection {Interfaces a los dispositivos}
 
 A bajo nivel el firmware es muy especializado, porque cada componente o circuito 
 tiene su propia actividad que realizar y, además, su propia forma de realizar esa actividad. 
@@ -681,12 +687,15 @@ Dos maneras distintas en hardware y software en dos sistemas distintos
 para una misma funcionalidad de entrada.
 
 
-\subsection {Código robusto}
+\subsubsection {Código robusto}
 
-En muchos casos se espera que el sistema embebido funcione durante años.
-Este no es un requisito típico para las aplicaciones desarrolladas para PC, Mac o el smartphone (aunque hay excepciones).
-Por lo tanto, si luego de un tiempo la única manera de finalizar la
-coción en su horno microondas es abriendo la puerta (porque el sistema de reloj ya no funciona
+Un sistema que puede manejar entradas que están fuera del rango
+específico de sus requerimientos, y continúe funcionando 
+sin problemas, es robuto.
+También, en muchos casos, se espera que el sistema embebido funcione durante años.
+Este no es un requisito típico para las aplicaciones desarrolladas para PC, Mac o el smartphone (aunque hay excepciones),
+pero es importante por el siguiente ejemplo: si luego de un tiempo la única manera de finalizar la
+coción en su horno microondas es abriendo la puerta (porque el sistema de reloj o stop automático ya no funciona,
 o lo que fuese la causa) entonces es muy probable
 que ya no vuelva a comprar un producto de esa marca.
 
@@ -694,7 +703,7 @@ que ya no vuelva a comprar un producto de esa marca.
 
 
 
-\subsection {Recursos mínimos}
+\subsubsection {Recursos mínimos}
 
 En la misma línea de crear un sistema más robusto, otro gran diferenciador entre el software incorporado y otros tipos de software son las limitaciones de recursos. Las reglas para escribir firmware son diferentes de las reglas para escribir software para una PC. Tome la asignación de memoria, por ejemplo. Una aplicación para una PC moderna puede dar por sentado que tendrá acceso a recursos prácticamente ilimitados. Pero en un sistema embebido, se quedará sin memoria si no planifica con anticipación y diseña el software correctamente.
 Un desarrollador de software integrado debe administrar de cerca los recursos, desde la memoria hasta la potencia de procesamiento, para que el sistema funcione según las especificaciones y no se produzcan fallas. Por ejemplo, el uso de funciones de asignación de memoria dinámica estándar puede causar fragmentación y, finalmente, el sistema puede dejar de funcionar. Esto requiere un reinicio ya que no tiene lugar para almacenar datos entrantes.
@@ -704,13 +713,13 @@ Muy a menudo, en el software integrado, un desarrollador asignará toda la memor
 
 
 
-\subsection {Software reutilizable}
+\subsubsection {Software reutilizable}
 
 Como mencionamos anteriormente, la portabilidad del código o la reutilización del código —escribiendo software para que se pueda mover de la plataforma de hardware a la plataforma de hardware— es muy útil para ayudar a la transición a nuevos proyectos. Esto no siempre se puede hacer; Hemos visto cuán individual es cada sistema embebido. A lo largo de este libro, analizaremos métodos básicos para garantizar que su código incrustado se pueda mover más fácilmente de un proyecto a otro. Por lo tanto, si su próximo proyecto utiliza una pantalla LCD para la cual ha desarrollado previamente un controlador, puede colocar el código anterior y ahorrar un tiempo precioso en el cronograma.
 
 
 
-\subsection {Herramientas de desarrollo}
+\subsubsection {Herramientas de desarrollo}
 
 Las herramientas que se utilizan a lo largo de una carrera 
 como desarrollador embebido serán diferentes de una compañía a otra y, 
@@ -853,8 +862,6 @@ cuál es su tamaño. En un procesador podría ser de 64 bits, mientras
 que en otro de 16.
 
 Aquí otro ejemplo :
-
-For example, when we write:
 
 \begin{small}
 \begin{verbatim}
@@ -1009,6 +1016,7 @@ difficult material in a very understandable way. It makes a great companion for 
 
 
 
+\pagebreak
 
 \section{Referencias}
 
@@ -1017,6 +1025,8 @@ ISBN-10: 1565923545. O'Reilly Media; 1 edition (February 9, 1999)
 
 
 \section*{Licencia y notas de la traducción}
+
+Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 2016-2020
 
 Este apunte es una traducción del libro de referencia, para
 ser utilizado como apunte en la materia de grado
@@ -1028,15 +1038,13 @@ al contenido para aclarar ciertos detalles o agregar secciones nuevas.
 modificado todos los archivos fuentes de código, ya que fueron
 portados a la plataforma Atmel AVR atmega328.
 
-Autores : \\
-Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 
 
-\fcolorbox{black}{LightBlue}{
+\fcolorbox{black}{cyan}{
 \parbox[t]{1.0\linewidth}{ \vspace*{0.4cm}
-Esta es una obra derivada del libro de referencia que ha obtenido permiso de O'Reilly para su publicación en en PEDCO.
+Esta es una obra derivada del libro de referencia que ha obtenido permiso de O'Reilly para su publicación en PEDCO.
 \vspace*{0.4cm} } }
 
-Permiso de publicación:
+\subsubsection{Permiso de publicación}
 
 \begin{small}
 \begin{verbatim}
