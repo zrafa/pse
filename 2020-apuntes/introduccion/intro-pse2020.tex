@@ -263,7 +263,8 @@ memoria temporal para las variables y el estado del programa en tiempo de ejecuc
 Por lo que casi todos los sistemas embebidos incluyen una memoria de solo lectura (ROM) 
 para almacenar el programa, y una memoria de acceso aleatorio (RAM), para la vida
 de las variables en tiempo de ejecución. Si solo se requiere una pequeña cantidad 
-de memoria entonces usualmente ambas memorias están contenidas dentro del mismo chip que el procesador.
+de memoria entonces usualmente ambas memorias están contenidas dentro del mismo chip junto al
+procesador.
 De lo contrario, uno o ambos tipos de memoria residen en chips de memoria externos.
 
 Todos los sistemas embebidos también presentan entradas y salidas. Por ejemplo, 
@@ -279,9 +280,11 @@ la forma de sensores y sondas, señales de comunicación o perillas, y botones d
 Las salidas son típicamente pantallas, señales de comunicación o cambios en el mundo físico.
 
 En la Figura \ref{fig:hardware-basico} puede observarse el diagrama de bloques
-del hardware de la computaodra de un sistema embebido.
-Toda la columna de la derecha son periféricos internos al chip,
-y se utilizan para interconectar dispositivos externos. En nuestro ejemplo
+del hardware de una computadora embebida típica.
+Toda la columna de la derecha son periféricos que generalmente,
+en muchas computadoras embebidas, se encuentran internos en el mismo chip
+junto al procesador. Estos periféricos internos se utilizan 
+para interconectar el sistema con otros dispositivos externos. En nuestro ejemplo
 del microondas, el sensor de temperatura podría conectarse al ADC,
 los botones a puertos GPIO, la pantalla LCD al SPI y el 
 controlador de radiación externo al PWM.
@@ -341,10 +344,10 @@ Las responsabilidades de la capa de software de aplicación son las mismas
 en los diagramas de software integrados básicos y complejos. 
 En un horno microondas, la aplicación procesa las diferentes entradas 
 y controla las salidas en función de lo que el usuario ordenó.
-Notará que el software en la Figura 1-3 está representado por bloques 
+Notará que el software en la Figura \ref{fig:sistema-embebido-basico} está representado por bloques 
 discretos apilados uno encima del otro con bordes fijos. Esto se hace deliberadamente, 
 para indicar que existe una separación clara de las diferentes capas funcionales 
-de software que conforman el software del sistema embebido completo. 
+de software que conforman el firmware completo. 
 Mantener estas capas de software en módulos diferentes con interfaces bien definidas para 
 que las capas vecinas pueden comunicarse, le ayudará a desarrollar software embebido 
 que sea claro, limpio, fácil de leer y portátil.
@@ -389,7 +392,8 @@ Linux en los sistemas a comparar, lo mas indicado es utilizar
 exactamente la misma versión de la distribución Linux en cada
 sistema (si son de diferentes arquitecturas la distribución Linux
 debe proveer los paqutes para las diferentes arquitecturas con la misma versión;
-si esto no es posible entonces no se debe utilizar esa distribución Linux).
+si esto no es posible entonces no se podrá realizar la comparación de rendimiento
+adecuadamente).
 Además ambos sistemas deben tener exactamente la misma instalación y 
 configuración (los mismos paquetes en cada sistema).
 
@@ -401,18 +405,16 @@ y ejecutar el software del sistema embebido. Aquí, el diseñador de
 hardware generalmente debe realizar los cálculos necesarios para
 estimar de la mejor manera posible por adelantado, y estar preparado para 
 aumentar o disminuir la cantidad real a medida que se desarrolla el software. 
-La cantidad de memoria requerida también puede afectar la selección del 
+La cantidad de memoria requerida también puede afectar a la selección del 
 procesador. En general, el ancho del camino de datos y de los buses de un procesador 
-establecen el límite superior de la cantidad de memoria a la que se puede 
+establecen el límite superior de memoria a la que se puede 
 acceder (por ejemplo, un registro de dirección de 16 bits puede abordar solo 
-64 KB (2 16) ubicaciones de memoria). [*]
+64 KB ($2^{\text{16}}$) ubicaciones de memoria). \footnote{Procesadores 
+con un ancho de bus estrecho generalmente presentan por hardware 
+indirecciones u otros trucos para acceder a 
+más memoria. Cuanto más estrecho sea el ancho del bus 
+más probable es que suceda lo anterior.}
 
-
-[*]
-Algunos procesadores deben implementar indirecciones u otros trucos
-para acceder a más memoria si el ancho del bus es muy estrecho.
-Cuanto más estrecho sea el ancho del bus más probable es que el procesador 
-emplee trucos como múltiples espacios de direcciones (o segmentos).
 Algunos sistemas embebidos pueden realizar su trabajo
 con unos pocos bytes; sin embargo varios miles de bytes es un requisito de
 memoria mínimo más común, incluso en un procesador de 8 bits.
@@ -456,24 +458,25 @@ El tiempo esperado de uso del producto. El tiempo de vida requerido o esperado
 afecta a todas las decisiones de diseño, desde la selección de los componentes
 de hardware a cuánto es posible invertir en el desarrollo del sistema y su 
 producción. La pregunta a responder es : Cuánto tiempo (en promedio) el sistema
-debe funcionar? Un mes? Un ańo? Una década?
+debe funcionar? ¿Un mes? ¿Un año? ¿Una década?.
 
 
 
 \subsubsection {Confiabilidad}
 
-Este requerimiento indicará cuán confiable debe ser el producto final. 
+Este requerimiento indica usualmente la calidad del producto final. 
 Si es un juguete para chicos es posible que no tenga que funcionar correctamente el 100 por 
 ciento del tiempo, pero tal vez debe ser seguro (partes pequeñas sueltas podrían ser ingeridas por 
 un niño menor a 3 años). En cambio, si se trata de un sistema antibloqueo 
 de frenos para un automóvil, es necesario que funcione todas las veces
 que se necesite, y que lo haga como se requiere.
+
 Además de estos requisitos generales, cada sistema tiene requisitos funcionales 
 detallados específicos; que le dan al sistema embebido su identidad única (horno de microondas, marcapasos o consola de juegos).
 
 La Figura \ref{fig:tabla-rango} presenta una tabla con el rango de valores típicos para cada uno de los requisitos de diseño anteriores. 
 
-Las etiquetas "bajo", "medio" y "alto" tienen fines ilustrativos y no deben tomarse como límites estrictos. 
+Las etiquetas bajo, medio y alto tienen fines ilustrativos y no deben tomarse como límites estrictos. 
 Un producto real tiene una selección de cada fila. En algunos casos, dos o más de los criterios 
 podrían estar vinculados. Por ejemplo, un aumento en la potencia de procesamiento 
 requerida podrían generar mayores costos de producción. 
@@ -568,15 +571,15 @@ Debido a que el costo de producción es tan crucial en el mercado de videojuegos
 se deben también realizar ciertos tricks para modificar esos costos. Por ejemplo, los
 diseñadores han utilizado la táctica de mover la mayor cantidad de memoria 
 y otros dispositivos electrónicos fuera de la 
-placa de circuito impreso principal, y han colocado este hardware en los cartuchos de juego. [] 
+placa de circuito impreso principal, y han colocado este hardware en los cartuchos de juego. \footnote{Por ejemplo, hace muchos años, Atari y Nintendo 
+han diseñado algunos de sus sistemas de esta manera.}
 Esto ayuda a reducir el costo de la consola pero aumenta el precio de cada juego. 
 Entonces, si bien el sistema podría tener un procesador potente de 64 bits, 
 podría tener solo unos pocos megabytes de memoria en la placa de circuito principal. 
-Con esta poca memoria ya es suficiente para iniciar 
+La memoria debe ser suficiente para iniciar 
 la máquina a un estado desde el cual se puede acceder a la memoria adicional 
-contenida en el cartucho del juego.
+contenida en el cartucho del juego. Ni mas memoria ni menos.
 
-Por ejemplo, Atari y Nintendo han diseñado algunos de sus sistemas de esta manera.
 
 Podemos ver, en este ejemplo, que en productos de gran masividad se puede dedicar 
 mucho esfuerzo de desarrollo a ajustar cada aspecto del sistema.
@@ -632,20 +635,20 @@ que diferencian a los desarrolladores embebidos de otros tipos de desarrolladore
 Un desarrollador de software embebido es aquél que se ensucia las manos acercándose al hardware.
 
 El desarrollo de software embebidos, en la mayoría de los casos, requiere una estrecha interacción 
-con el mundo físico: la plataforma de hardware. Decimos "en la mayoría de los casos" 
+con el mundo físico: la plataforma de hardware. Decimos \textit{en la mayoría de los casos}
 porque hay sistemas embebidos muy grandes que requieren que las personas trabajen 
-únicamente en el software de la capa de aplicación para el sistema. 
-Estos desarrolladores de aplicaciones generalmente no tienen ninguna 
-interacción con el hardware. Cuando se diseñan correctamente, los controladores 
-del dispositivo de hardware se abstraen del hardware real para que un 
-desarrollador que escribe el software a nivel de aplicación no sepa cómo se 
-genera una cadena en la pantalla, solo que sucede cuando se llama a una 
-rutina particular con los parámetros adecuados.
+únicamente en la capa de aplicación del sistema. 
+Estos desarrolladores generalmente no necesitan tener ninguna 
+interacción directa con el hardware. Cuando se diseñan correctamente, los controladores 
+de hardware (software drivers) se abstraen del hardware real de tal modo
+que un desarrollador que escribe el software a nivel de aplicación 
+no necesita conocer cómo es que aparece un texto en la pantalla, 
+sólo que sucede cuando se llama a una rutina particular con los parámetros adecuados.
 
 
 \subsubsection {Conocimiento del hardware}
 
-El desarrollador de software embebidos debe familiarizarse íntimamente con los 
+El desarrollador de software embebido debe familiarizarse íntimamente con los 
 circuitos integrados, las placas de circuito impreso, los buses, y los dispositivos 
 que se utilizan para transferir y testear el software embebido sólido (también denominado firmware). 
 No se debe sentir temor por los esquemáticos, o tomar una sonda del osciloscopio y 
@@ -657,7 +660,7 @@ comenzar a hurgar en el circuito para descubrir qué está sucediendo.
 
 Los desarrolladores de software embebido deben tener en cuenta
 cada línea de código fuente, ya que los sistemas embebidos 
-generalmente están diseñados con el procesador menos potente posible
+están diseñados, generalmente, con el procesador menos potente posible
 (pero que cumple con los requisitos de rendimiento del sistema). 
 La capacidad de escribir código eficiente es una gran cualidad
 que deben poseer los desarrolladores de firmware.
@@ -700,10 +703,26 @@ que ya no vuelva a comprar un producto de esa marca.
 
 \subsubsection {Recursos mínimos}
 
-En la misma línea de crear un sistema más robusto, otro gran diferenciador entre el software incorporado y otros tipos de software son las limitaciones de recursos. Las reglas para escribir firmware son diferentes de las reglas para escribir software para una PC. Tome la asignación de memoria, por ejemplo. Una aplicación para una PC moderna puede dar por sentado que tendrá acceso a recursos prácticamente ilimitados. Pero en un sistema embebido, se quedará sin memoria si no planifica con anticipación y diseña el software correctamente.
-Un desarrollador de software integrado debe administrar de cerca los recursos, desde la memoria hasta la potencia de procesamiento, para que el sistema funcione según las especificaciones y no se produzcan fallas. Por ejemplo, el uso de funciones de asignación de memoria dinámica estándar puede causar fragmentación y, finalmente, el sistema puede dejar de funcionar. Esto requiere un reinicio ya que no tiene lugar para almacenar datos entrantes.
+En la misma línea de crear un sistema más robusto, otro gran diferenciador entre el software embebido y otros tipos de software son los recursos limitados. 
+Las reglas para desarrollar un firmware son diferentes de las reglas para 
+escribir software para una PC. Piense en la gestión de la memoria por ejemplo.
+Una aplicación para una PC moderna puede dar por sentado que tendrá acceso a recursos prácticamente ilimitados. Pero en un sistema embebido, se quedará sin memoria si no planifica con anticipación y diseña el software correctamente.
+Un desarrollador de software embebido debe calcular cuidadosamente cuantos
+recursos consumirá el sistema cuando esté en ejecución, para todos sus estados
+(cuanta memoria y cuanto CPU).
+Por supuesto, también para que el sistema funcione según 
+las especificaciones y sin fallas. Por ejemplo, 
+si se utilizan las funciones de asignación de memoria dinámica 
+estándar puede que para algún caso particular de entradas
+y estado el sistema de memoria esté fragmentado, y deje de funcionar.
+Esto requiere un reinicio ya que no tiene lugar para almacenar datos entrantes.
 
-Muy a menudo, en el software integrado, un desarrollador asignará toda la memoria que necesita el sistema en el momento de la inicialización. Esto es más seguro que usar la asignación dinámica de memoria, aunque no siempre se puede hacer.
+Muy a menudo, se diseña el software de tal manera que al iniciarse
+su ejecución se asigna e inicialize toda la memoria que necesita la aplicación
+para su funcionamiento. Esta es una asignación estática (se define
+en tiempo de compilación).
+Esto es más seguro que usar asignación dinámica de memoria, 
+aunque no siempre será posible utilizar este método.
 
 
 
