@@ -295,7 +295,7 @@ que admita una señal PWM de control).
 
 
 \begin{figure}[h]
-\includegraphics[scale=0.25]{images/hardware-basico.png}
+\includegraphics[scale=0.25]{images/hardware-basico2.png}
 \caption{Una computadora para sistemas embebidos: CPU, RAM y E/S}
 \label{fig:hardware-basico}
 \end{figure}
@@ -1004,48 +1004,119 @@ y todas las recomendaciones del libro Estilos en la Programación, de Brian Kern
 
 
 
-\subsection {A Few Words About Hardware}
+\subsection {Una introducción básica acerca del hardware}
 
-It is the nature of programming that books about the subject must include examples. Typically, these
-examples are selected so that interested readers can easily experiment with them. That means readers
-must have access to the very same software development tools and hardware platforms used by the
-authors. Unfortunately, it does not make sense to run any of the example programs on the platforms
-available to most readers—PCs, Macs, and Unix workstations.
-Even selecting a standard embedded platform is difficult. As you have already learned, there is no such
-thing as a "typical" embedded system. Whatever hardware is selected, the majority of readers will not
-have access to it. But despite this rather significant problem, we do feel it is important to select a
-reference hardware platform for use in the examples. In so doing, we hope to make the examples
-consistent and, thus, the entire discussion more clear—whether you have the chosen hardware in front of
-you or not.
-In choosing an example platform, our first criterion was that the platform had to have a mix of
-peripherals to support numerous examples in the book. In addition, we sought a platform that would
-allow readers to carry on their study of embedded software development by expanding on our examples
-with more advanced projects. Another criterion was to find a development board that supported the
-GNU software development tools; with their open source licensing and coverage on a wide variety of
-embedded processors, the GNU development tools were an ideal choice.
-The chosen hardware consists of a 32-bit processor ( the XScale ARM), [ ] a hefty amount of memory
-(64 MB of RAM and 16 MB of ROM), and some common types of inputs, outputs, and peripheral
-components. The board we've chosen is called the VIPER-Lite and is manufactured and sold by Arcom.
-A picture of the Arcom VIPER-Lite development board (along with the add-on module and other
-supporting hardware) is shown in Figure 1-4. Additional information about the Arcom board and
-instructions for obtaining one can be found in Appendix A.
-[ ]
-The processor on the VIPER-Lite board is the PXA255 XScale processor, which is based on the
-ARM v.5TE architecture. The XScale processor was developed by an Intel Corporation embedded
-systems division that was sold to Marvell Technology Group in July 2006.
-Figure 1-4. The Arcom VIPER-Lite development boards
-Page 25Programming Embedded Systems Second Edition
-If you have access to the reference hardware, you will be able to work through the examples in the book
-as they are presented. Otherwise, you will need to port the example code to an embedded platform that
-you do have access to. Toward that end, we have made every effort to make the example programs as
-portable as possible. However, the reader should bear in mind that the hardware is different in each
-embedded system and that some of the examples might be meaningless on hardware different from the
-hardware we have chosen here. For example, it wouldn't make sense to port our flash memory driver to a
-board that had no flash memory devices.
-Although we will get into some basic details about hardware, the main focus of this book is embedded
-software. We recommend that you take a look at Designing Embedded Systems by John Catsoulis
-(O'Reilly). John has an extensive background on the subject and does a wonderful job presenting often
-difficult material in a very understandable way. It makes a great companion for this book.
+Para programar un sistema embebido necesita de al menos una computadora
+empotrada al sistema.
+Existen al menos dos clases de circuitos integrados que contienen
+procesadores utilizados en sistemas embebidos: los microprocesadores y los microcontroladores.
+
+\subsubsection{System-on-Chip}
+Los microprocesadores son los mas conocidos en el mundo PC, o en los smartphones.
+Usualmente son de 32 bits o 64 bits, y requieren de memoria RAM externa y del resto
+de los periféricos para componer una computadora completa.
+Actualmente los más utilizados son los circuitos integrados llamados
+Systems-on-Chip (SoC). Estos sistemas son computadoras completas en un 
+único circuito integrado. Generalmente integran al microprocesador
+y los periféricos. Algunos traen memoria RAM tambien on chip.
+Otros deben integrar la RAM externamente. Muchos traen radio
+wireless para comunicaciones wifi, y tambien GPUs.
+Los SoCs se utilizan en sistemas embebidos que requieran
+mucho procesamiento. Los smartphones, las computadoras de placa individual
+(SBC) como los Raspberry Pi, BeagleBoards, Routers hogareños, los smartTv,
+y muchos otros sistemas utilizan estas computadoras embebidas potentes 
+integradas en un SoC.
+Las arquitecturas de las CPU en estos dispositivos es generalmente
+alguna versión de ARM, y en pocos casos de MIPS.
+El sistema operativo mas utilizado en estos sistemas es Linux embebido.
+
+\subsubsection{Microcontroladores}
+En el otro extremo de las computadoras embebidas se encuentran los
+microcontroladores. Un microcontrolador (abreviado μC, UC o MCU) 
+es un circuito integrado programable, capaz de ejecutar un único programa
+grabado en su memoria. A este programa se lo denomina firmware.
+Un microcontrolador incluye en su interior las tres principales 
+unidades funcionales de una computadora: una CPU, 
+memoria y periféricos de entrada/salida.
+La diferencia principal con un SoC es que un microcontrolador usualmente
+consume 100 veces menor energía que un SoC, y puede costar 100 veces
+menos por unidad. Por lo que si el sistema embebido
+a desarrollar se puede controlar usando un microcontrolador 
+entonces la decisión es obvia. Obviamente la CPU en un microcontrolador
+es alrededor de 100 veces menos potente que la de un SoC.
+Un microcontrolador 
+requiere un mínimo de hardware extra para su funcionamiento, 
+mientras que los sistemas de placa individual con SoCs
+necesitan placas muy complejas y una gran cantidad de hardware extra.
+
+En la Figura \ref{fig:microvssoc} pueden observarse visualmente
+la gran diferencia entre una placa con un SoC y una placa
+con un microcontrolador. En la imagen a la izquierda el sistema
+embebido es un saturador de oxígeno en sangre, controlado
+por un microcontrolador AVR attiny y unos pocos componentes de hardware.
+En la imagen de la derecha vemos
+una placa de desarrollo Odroid, con un SoC con CPU de 64bits,
+puertos USB, ethernet, y gran cantidad de electrónica de soporte
+en la placa de circuito impreso.
+
+\begin{figure}
+\includegraphics[scale=0.25]{images/microvssoc.png}
+\caption{Dos sistemas embebidos. A la izquierda sencillo con MCU (microcontrolador). A la derecha otro mas complejo con un SoC (System-On-Chip)}
+\label{fig:microvssoc}
+\end{figure}
+
+
+
+Los microcontroladores suelen tener un software que fue 
+desarrollado con los drivers mínimos necesarios. Esto los hace
+muy eficiente al momento de controlar Entradas y Salidas
+en momentos exactos. 
+
+\subsubsection{Microcontrolador AVR de 8 bits}
+
+Las arquitecturas de CPU mas comunmente usadas en microcontroladores
+son PIC, AVR, 8051 y 68000; siendo las primeras 3 ampliamante usadas
+en toda clase de dispositivos.
+
+Para nuestros laboratorios utilizaremos microcontroladores AVR de 8 bits,
+por un buen número de razones. Una vez avanzados en la práctica
+estas razones serán obvias. Los AVR son una familia de microcontroladores de 8 bits, con arquitectura
+RISC, que fue diseñada desde un comienzo 
+para la ejecución eficiente de código C compilado\footnote{https://www.microchip.com/design-centers/8-bit/avr-mcus}. Debido a que
+la ejecución de las instrucciones más comunes se dan en un sólo
+ciclo de reloj, los microcontroladores AVR alcanzan un rendimiento
+de 1 MIPS por Mhz de reloj, permitiendo a los diseñadores de
+sistemas optimizar el consumo de energía versus la velocidad
+de procesamiento requerida.
+
+Como ejemplo describiremos el microcontrolador AVR atmega328, 
+el cual es muy utilizado en las placas
+Arduino. Este microcontrolador trae tres tipos de memoria on chip: 2KB de memoria \textbf{RAM},
+32KB de memoria \textbf{FLASH} y 1KB de memoria \textbf{EEPROM}.
+
+En cuantos a los periféricos de E/S se puede mencionar:
+varias líneas de E/S de propósito general (\textbf{GPIO}), un conversor
+analógico a digital (\textbf{ADC}), interfaces seriales para comunicación 
+\textbf{UART}, interfaces seriales \textbf{I2C} y \textbf{SPI} para conectar 
+dispositivos externos, interrupciones, \textbf{timers}, y 
+salidas \textbf{PWM} conectadas a estos relojes.
+
+Para su programación exiten diferentes compiladores de C
+y otros lengujaes. En particular el compilador de C
+del proyecto \textbf{GNU GCC} es el más ampliamante usado,
+y es el estándar en la industria. Está conformado
+por el compilador de C, la biblioteca de C estándar,
+un ensamblador, un vinculador, un debugger, y herramientas de 
+manejos de archivos binarios y de objetos (por ejemplo,
+un desemsamblador)\footnote{https://gcc.gnu.org/wiki/avr-gcc}\footnote{https://www.nongnu.org/avr-libc/}. Para transferir los programas al 
+chip se utiliza general la herramienta avrdude\footnote{https://www.nongnu.org/avrdude/}.
+Todo este software se encuentra disponible para los sistemas
+operativos Windows, Mac y Linux.
+
+Los microcontroladores AVR ya traen incorporado una interfaz
+de programación serial que requiere de un hardware mínimo
+de interconexión.
+
 
 
 
