@@ -367,7 +367,7 @@ de diseño son:
 
 
 
-\subsubsection {Rendimiento del procesador}
+\subsubsection *{Rendimiento del procesador}
 
 
 Es la carga de trabajo que puede computar el chip principal. 
@@ -396,7 +396,7 @@ Además ambos sistemas deben tener exactamente la misma instalación y
 configuración (los mismos paquetes en cada sistema).
 
 
-\subsubsection {Memoria}
+\subsubsection *{Memoria}
 
 La cantidad de memoria (ROM y RAM) que se necesita para almacenar
 y ejecutar el software del sistema embebido. Aquí, el diseñador de 
@@ -418,7 +418,7 @@ con unos pocos bytes; sin embargo varios miles de bytes es un requisito de
 memoria mínimo más común, incluso en un procesador de 8 bits.
 
 
-\subsubsection {Cantidad de unidades}
+\subsubsection *{Cantidad de unidades}
 
 Es la cantidad esperada de unidades a fabricar. 
 La inversión destinada al desarrollo y producción se verá afectada 
@@ -427,7 +427,7 @@ Por ejemplo, rara vez tiene sentido desarrollar componentes de
 hardware especializados para un sistema que tendrá un bajo volumen de producción.
 
 
-\subsubsection {Consumo de energía}
+\subsubsection *{Consumo de energía}
 
 La cantidad de energía utilizada durante la operación. 
 Este requerimiento de diseño suele ser extremadamente importante, 
@@ -441,7 +441,7 @@ baterías serán más pequeñas, tendrá un peso final menor,
 será mas compacto, y el diseño mecánico será más sencillo.
 
 
-\subsubsection {Costo de desarrollo}
+\subsubsection *{Costo de desarrollo}
 
 El costo del proceso de diseño del software y del hardware, conocido como nonrecurring engineering
 (NRE). Es una inversión de única vez, y generalmente fija. El presupuesto para
@@ -450,7 +450,7 @@ será muy grande, el NRE puede tener un presupuesto alto. En cambio, para una pr
 de bajo volumen puede haber un presupuesto acotado.
 
 
-\subsubsection {Tiempo de vida}
+\subsubsection *{Tiempo de vida}
 
 El tiempo esperado de uso del producto. El tiempo de vida requerido o esperado
 afecta a todas las decisiones de diseño, desde la selección de los componentes
@@ -460,7 +460,7 @@ debe funcionar? ¿Un mes? ¿Un año? ¿Una década?.
 
 
 
-\subsubsection {Confiabilidad}
+\subsubsection *{Confiabilidad}
 
 Este requerimiento indica usualmente la calidad del producto final. 
 Si es un juguete para chicos es posible que no tenga que funcionar correctamente el 100 por 
@@ -644,7 +644,7 @@ no necesita conocer cómo es que aparece un texto en la pantalla,
 sólo que sucede cuando se llama a una rutina particular con los parámetros adecuados.
 
 
-\subsubsection {Conocimiento del hardware}
+\subsubsection *{Conocimiento del hardware}
 
 El desarrollador de software embebido debe familiarizarse íntimamente con los 
 circuitos integrados, las placas de circuito impreso, los buses, y los dispositivos 
@@ -654,7 +654,7 @@ comenzar a hurgar en el circuito para descubrir qué está sucediendo.
 
 
 
-\subsubsection {Código eficiente}
+\subsubsection *{Código eficiente}
 
 Los desarrolladores de software embebido deben tener en cuenta
 cada línea de código fuente, ya que los sistemas embebidos 
@@ -665,7 +665,7 @@ que deben poseer los desarrolladores de firmware.
 
 
 
-\subsubsection {Interfaces a los dispositivos}
+\subsubsection *{Interfaces a los dispositivos}
 
 A bajo nivel el firmware es muy especializado, porque cada componente o circuito 
 tiene su propia actividad que realizar y, además, su propia forma de realizar esa actividad. 
@@ -683,7 +683,7 @@ Dos maneras distintas en hardware y software en dos sistemas distintos
 para una misma funcionalidad de entrada.
 
 
-\subsubsection {Código robusto}
+\subsubsection *{Código robusto}
 
 Un sistema que puede manejar entradas que están fuera del rango
 específico de sus requerimientos, y continúe funcionando 
@@ -699,7 +699,7 @@ que ya no vuelva a comprar un producto de esa marca.
 
 
 
-\subsubsection {Recursos mínimos}
+\subsubsection *{Recursos mínimos}
 
 En la misma línea de crear un sistema más robusto, el desarrollador
 de software embebido se diferencia de otros tipos de desarrolladores
@@ -727,7 +727,7 @@ aunque no siempre será posible utilizar este método.
 
 
 
-\subsubsection {Software reutilizable}
+\subsubsection *{Software reutilizable}
 
 Como mencionamos anteriormente, la portabilidad del código o la 
 reutilización del código —desarrollar software para que se pueda compilar
@@ -743,7 +743,7 @@ puede colocar el código anterior y ahorrar un tiempo importante en el cronogram
 
 
 
-\subsubsection {Herramientas de desarrollo}
+\subsubsection *{Herramientas de desarrollo}
 
 Las herramientas que se utilizan a lo largo de una carrera 
 como desarrollador embebido serán diferentes de una compañía a otra y, 
@@ -1002,14 +1002,14 @@ y todas las recomendaciones del libro Estilos en la Programación, de Brian Kern
 
 
 
-\subsection {Una introducción básica acerca del hardware}
+\section {Una introducción básica acerca del hardware}
 
 Para programar un sistema embebido necesita de al menos una computadora
 empotrada al sistema.
 Existen al menos dos clases de circuitos integrados que contienen
 procesadores utilizados en sistemas embebidos: los microprocesadores y los microcontroladores.
 
-\subsubsection{System-on-Chip}
+\subsubsection*{System-on-Chip}
 Los microprocesadores son los mas conocidos en el mundo PC, o en los smartphones.
 Usualmente son de 32 bits o 64 bits, y requieren de memoria RAM externa y del resto
 de los periféricos para componer una computadora completa.
@@ -1028,7 +1028,7 @@ Las arquitecturas de las CPU en estos dispositivos es generalmente
 alguna versión de ARM, y en pocos casos de MIPS.
 El sistema operativo mas utilizado en estos sistemas es Linux embebido.
 
-\subsubsection{Microcontroladores}
+\subsubsection*{Microcontroladores}
 En el otro extremo de las computadoras embebidas se encuentran los
 microcontroladores. Un microcontrolador (abreviado μC, UC o MCU) 
 es un circuito integrado programable, capaz de ejecutar un único programa
@@ -1070,11 +1070,12 @@ desarrollado con los drivers mínimos necesarios. Esto los hace
 muy eficiente al momento de controlar Entradas y Salidas
 en momentos exactos. 
 
-\subsubsection{Microcontrolador AVR de 8 bits}
+\subsubsection*{Microcontrolador AVR de 8 bits}
 
-Las arquitecturas de CPU mas comunmente usadas en microcontroladores
-son PIC, AVR, 8051 y 68000; siendo las primeras 3 ampliamante usadas
-en toda clase de dispositivos.
+Las arquitecturas de CPU de 8 bits mas comunmente usadas en microcontroladores
+son PIC, AVR, 8051 y 6800; siendo las primeras 3 ampliamante usadas
+en toda clase de dispositivos. Tambien existen con CPU de
+arquitecturas de 32 bits: ARM y MIPS (ambos de tipo RISC).
 
 Para nuestros laboratorios utilizaremos microcontroladores AVR de 8 bits,
 por un buen número de razones. Una vez avanzados en la práctica
@@ -1087,10 +1088,32 @@ de 1 MIPS por Mhz de reloj, permitiendo a los diseñadores de
 sistemas optimizar el consumo de energía versus la velocidad
 de procesamiento requerida.
 
-Como ejemplo describiremos el microcontrolador AVR atmega328, 
-el cual es muy utilizado en las placas
-Arduino. Este microcontrolador trae tres tipos de memoria on chip: 2KB de memoria \textbf{RAM},
-32KB de memoria \textbf{FLASH} y 1KB de memoria \textbf{EEPROM}.
+Existen una variedad impresionante de microcontroladores AVR,
+pero sus diferencias radican principalmente en las características extras, 
+ya que todos contienen la misma CPU. Todos los miembros de esta 
+familia se agrupan en tres 
+categorías: \textbf{tiny (tinyAVR), mega (megaAVR) y xmega}. 
+Los tinyAVR son dispositivos que usualmente tienen
+una reducida cantidad de pines y por lo tanto tambien menor
+cantidad de periféricos internos, comparados con los megaAVR.
+La CPU y la organización de memoria es igual en la familia
+completa por lo que migrar de un dispositivo a otro es muy sencillo.
+En la Figura \ref{fig:boardsavr} se pueden observar 3 placas con 
+microcontroladores AVR de 8 bits de distintas clases.
+
+\begin{figure}
+\includegraphics[scale=0.3]{images/boardsavr.png}
+\caption{Chips AVR: tinyAVR (izq. abajo), megaAVR (centro abajo), y xmega (der. arriba)}
+\label{fig:boardsavr}
+\end{figure}
+
+\subsubsection*{Microcontrolador AVR atmega328}
+Como ejemplo introducimos el microcontrolador AVR atmega328, 
+el cual es el utilizado en las placas Arduino original
+y varias variaciones. 
+
+El microcontrolador AVR atmega328 contiene tres tipos de memoria on chip: 
+2KB de memoria \textbf{RAM}, 32KB de memoria \textbf{FLASH} y 1KB de memoria \textbf{EEPROM}.
 
 En cuantos a los periféricos de E/S se puede mencionar:
 varias líneas de E/S de propósito general (\textbf{GPIO}), un conversor
@@ -1147,7 +1170,7 @@ portados a la plataforma Atmel AVR atmega328.
 Esta es una obra derivada del libro de referencia que ha obtenido permiso de O'Reilly para su publicación en PEDCO.
 \vspace*{0.4cm} } }
 
-\subsubsection{Permiso de publicación}
+\subsubsection*{Permiso de publicación}
 
 \begin{small}
 \begin{verbatim}
