@@ -1,4 +1,12 @@
 
+Muy buen codigo:
+https://github.com/scttnlsn/avr-twi/blob/master/twi.c
+
+Acá le anda en raspberry pero no en avr. Igualmente parece genial
+como hello world:
+https://electronics.stackexchange.com/questions/273634/atmega328-i2c-twi-and-oled-display/337912
+
+
 Excelente: http://maxembedded.com/2014/02/inter-integrated-circuits-i2c-basics/
 
 bit banging i2c
