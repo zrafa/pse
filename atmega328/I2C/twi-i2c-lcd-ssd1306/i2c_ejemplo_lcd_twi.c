@@ -1,9 +1,26 @@
 
-// Originalmente del ejemplo para Pi : gcc ssd1306.c -lwiringPi -o ssd1306
+/* Ejemplo de controlador LCD ssd1306 usando i2c
+ * El driver i2c está en : twi.c y twi.h (tiene interrupciones)
+ *
+ * Pensado para usar en la materia Programacion de Sistemas Embebidos
+ * Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
+ */
 
-/* Se pueden acelerar las escrituras de los comandos y los datos si 
-   se envía unicamente una sola vez el start / stop o el byte que
-   indica el comando o dato */
+/* Sacamos la idea y los comandos al LCD d un ejemplo original para 
+ * Pi : gcc ssd1306.c -lwiringPi -o ssd1306 
+ */
+
+
+/* POR HACER:
+ *
+ * - Se pueden acelerar las escrituras de los los datos si 
+ * se envía unicamente una sola vez el byte de comando
+ * y luego el resto de los bytes (en vez de un byte comando por cada
+ * byte de datos)
+ *
+ * - Se debe reescribir el driver i2c para usar solo baremetal
+ * sin las macros de avr-libc.
+ */
 
 #include <avr/io.h>
 #include <string.h>
@@ -26,8 +43,6 @@ unsigned char addr;
 
 void ssd1306_command(unsigned char c)
 {
-    // RAFA unsigned unsigned char control = 0x00;
-    // RAFA wiringPiI2CWriteReg8( i2cd, control, c );
 	buf[0] = 0x80;
 	buf[1] = c;
 	twi_write(addr, &buf[0], 2, NULL);
@@ -35,8 +50,6 @@ void ssd1306_command(unsigned char c)
 
 void ssd1306_byte(unsigned char c)
 {
-    // RAFA unsigned unsigned char control = 0x40;
-    // RAFA wiringPiI2CWriteReg8( i2cd, control, c );
 	buf[0] = 0x40;
 	buf[1] = c;
 	twi_write(addr, &buf[0], 2, NULL);
@@ -61,9 +74,6 @@ void ssd1306_render_buffer(void)
 
 void ssd1306_draw_pixel( unsigned char x, unsigned char y, unsigned char color )
 {
-	unsigned char r;  /* resto */
-	unsigned char d;  /* dato */
-	unsigned char t;
 
 /* Las siguientes son posibles rotaciones de las columnas del display */
 /*
@@ -94,8 +104,6 @@ void ssd1306_draw_char(unsigned char x, unsigned char y, unsigned char c,
                             unsigned char color) {
 
     for (unsigned char i = 0; i < 5; i++) { // Char bitmap = 5 columns
-            // ssd1306_draw_pixel(40 , y + i, 1);
-            // ssd1306_draw_pixel(100 , 5 + i, 1);
       unsigned char line = pgm_read_byte(&font[c * 5 + i]);
       for (unsigned char j = 0; j < 8; j++) {
 		if (line & 1)
@@ -105,13 +113,11 @@ void ssd1306_draw_char(unsigned char x, unsigned char y, unsigned char c,
 		line = line >> 1;
         }
       }
-
 }
 
 void ssd1306_init()
 {
-    // RAFA i2cd = wiringPiI2CSetup( 0x3C ); // address
-    addr = 0x3C;
+    addr = 0x3C;	/* La direccion i2c del controlador del LCD */
 
     ssd1306_command(0xAE);          // 0xAE // display off
     ssd1306_command(0xD5);          // 0xD5 // set display clock division
@@ -146,6 +152,9 @@ void ssd1306_clear_buffer(void)
     memset( buffer, 0, ( 128 * 64 / 8 ) * sizeof( unsigned char ) );
 }
 
+/* Muestra un texto en pantalla. X e Y son coordenadas a resolución de pixel
+ * El texto usa por cada caracter 6 columnas y 7 filas
+ */
 ssd1306_print_text(unsigned char x, unsigned char y, const char *text) {
 	int i;
 	char *c = text;
@@ -159,40 +168,44 @@ ssd1306_print_text(unsigned char x, unsigned char y, const char *text) {
 
 void main() 
 {
-	twi_init();  // Initalize the TWI.
-	sei();       // Enable interrupts.
+	twi_init();  /* Inicializa el driver i2c / TWI. */
+	sei();       /* Enable interrupts. */
 
-    ssd1306_init();
-    ssd1306_clear_buffer();
-    ssd1306_draw_pixel( 1, 2, 1 );
-    ssd1306_render_buffer();
+	ssd1306_init();
 
-	while (1) {
-    ssd1306_clear_buffer();
-    ssd1306_draw_pixel( 1, 2, 1 );
+	ssd1306_clear_buffer();
+	ssd1306_draw_pixel( 1, 2, 1 );
+	ssd1306_print_text(5,40, "Esperamos 2 seg.");
+	ssd1306_render_buffer();
+	_delay_ms(2000);
+
+	ssd1306_clear_buffer();
+	ssd1306_draw_pixel( 1, 2, 1 );
 
 	ssd1306_print_text(30,40, "Hola que tal bien");
 
-    ssd1306_draw_char(10, 3, 'A', 1);
-    ssd1306_draw_char(16, 3, 'M', 1);
-    ssd1306_draw_char(22, 3, 'I', 1);
-    ssd1306_draw_char(28, 3, ' ', 1);
-    ssd1306_draw_char(34, 3, 'C', 1);
-    ssd1306_draw_char(40, 3, 'O', 1);
-    ssd1306_draw_char(46, 3, 'R', 1);
-    ssd1306_draw_char(52, 3, 'A', 1);
-    ssd1306_draw_char(58, 3, 'Z', 1);
-    ssd1306_draw_char(64, 3, 'O', 1);
-    ssd1306_draw_char(70, 3, 'N', 1);
+	ssd1306_draw_char(10, 3, 'A', 1);
+	ssd1306_draw_char(16, 3, 'M', 1);
+	ssd1306_draw_char(22, 3, 'I', 1);
+	ssd1306_draw_char(28, 3, ' ', 1);
+	ssd1306_draw_char(34, 3, 'C', 1);
+	ssd1306_draw_char(40, 3, 'O', 1);
+	ssd1306_draw_char(46, 3, 'R', 1);
+	ssd1306_draw_char(52, 3, 'A', 1);
+	ssd1306_draw_char(58, 3, 'Z', 1);
+	ssd1306_draw_char(64, 3, 'O', 1);
+	ssd1306_draw_char(70, 3, 'N', 1);
 
-     ssd1306_draw_pixel( 100, 30, 1 );
-     ssd1306_draw_pixel( 60, 60, 1 );
-     ssd1306_draw_pixel( 61, 60, 1 );
-     ssd1306_draw_pixel( 61, 56, 1 );
+	ssd1306_draw_pixel( 100, 30, 1 );
+	ssd1306_draw_pixel( 60, 60, 1 );
+	ssd1306_draw_pixel( 61, 60, 1 );
+	ssd1306_draw_pixel( 61, 56, 1 );
 	for (unsigned char i = 0; i < 25; i++) 
      		ssd1306_draw_pixel( 6+i, 15+i, 1 );
 
 	ssd1306_render_buffer();
+
+	while (1) {
 	_delay_us(100);
 	}
 }

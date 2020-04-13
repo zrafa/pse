@@ -1,6 +1,6 @@
 CC=avr-gcc
-OBJETOS=ejemplo_lcd_twi.o twi.o
-APP=led-twi
+OBJETOS=i2c_ejemplo_lcd_twi.o twi.o
+APP=lcd-i2c
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p 
 LDFLAGS=-mmcu=atmega328p
 FIRMWARE=imagen.hex
