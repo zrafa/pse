@@ -146,6 +146,17 @@ void ssd1306_clear_buffer(void)
     memset( buffer, 0, ( 128 * 64 / 8 ) * sizeof( unsigned char ) );
 }
 
+ssd1306_print_text(unsigned char x, unsigned char y, const char *text) {
+	int i;
+	char *c = text;
+
+	while (*c) {
+    		ssd1306_draw_char(x + (6 * i), y, (*c), 1);
+		i++;
+		c++;
+	}
+}
+
 void main() 
 {
 	twi_init();  // Initalize the TWI.
@@ -160,16 +171,19 @@ void main()
     ssd1306_clear_buffer();
     ssd1306_draw_pixel( 1, 2, 1 );
 
-    ssd1306_draw_char(10, 3, 'H', 1);
-    ssd1306_draw_char(15, 3, 'o', 1);
-    ssd1306_draw_char(20, 3, 'l', 1);
-    ssd1306_draw_char(25, 3, 'a', 1);
-    ssd1306_draw_char(30, 3, ' ', 1);
-    ssd1306_draw_char(35, 3, 'M', 1);
-    ssd1306_draw_char(40, 3, 'u', 1);
-    ssd1306_draw_char(45, 3, 'n', 1);
-    ssd1306_draw_char(50, 3, 'd', 1);
-    ssd1306_draw_char(55, 3, 'o', 1);
+	ssd1306_print_text(30,40, "Hola que tal bien");
+
+    ssd1306_draw_char(10, 3, 'A', 1);
+    ssd1306_draw_char(16, 3, 'M', 1);
+    ssd1306_draw_char(22, 3, 'I', 1);
+    ssd1306_draw_char(28, 3, ' ', 1);
+    ssd1306_draw_char(34, 3, 'C', 1);
+    ssd1306_draw_char(40, 3, 'O', 1);
+    ssd1306_draw_char(46, 3, 'R', 1);
+    ssd1306_draw_char(52, 3, 'A', 1);
+    ssd1306_draw_char(58, 3, 'Z', 1);
+    ssd1306_draw_char(64, 3, 'O', 1);
+    ssd1306_draw_char(70, 3, 'N', 1);
 
      ssd1306_draw_pixel( 100, 30, 1 );
      ssd1306_draw_pixel( 60, 60, 1 );
