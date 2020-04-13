@@ -1,9 +1,12 @@
 
 // Originalmente del ejemplo para Pi : gcc ssd1306.c -lwiringPi -o ssd1306
 
+/* Se pueden acelerar las escrituras de los comandos y los datos si 
+   se envía unicamente una sola vez el start / stop o el byte que
+   indica el comando o dato */
+
 #include <avr/io.h>
 #include <string.h>
-// #include <string.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
@@ -15,10 +18,7 @@
 #define WIDTH 128
 #define HEIGHT 64
 
-// unsigned char buffer[ WIDTH * HEIGHT / 8 ];
 unsigned char buffer[ WIDTH * HEIGHT / 8 ];
-// unsigned char i2cd;
-
 
 unsigned char buf[2];
 unsigned char addr;
@@ -61,32 +61,47 @@ void ssd1306_render_buffer(void)
 
 void ssd1306_draw_pixel( unsigned char x, unsigned char y, unsigned char color )
 {
-    switch (color) 
-    {
-        case 1: // white
-            //buffer[x + ( y / 8 ) * WIDTH ] = 1;
-            buffer[x + ( y / 8 ) * WIDTH ] = 0xff;
+	unsigned char r;  /* resto */
+	unsigned char d;  /* dato */
+	unsigned char t;
 
-            break;
-        case 0: // black
-            buffer[x + ( y / 8 ) * WIDTH ] = 0;
-            break;
+/* Las siguientes son posibles rotaciones de las columnas del display */
+/*
+    switch(getRotation()) {
+     case 1:
+      ssd1306_swap(x, y);
+      x = WIDTH - x - 1;
+      break;
+     case 2:
+      x = WIDTH  - x - 1;
+      y = HEIGHT - y - 1;
+      break;
+     case 3:
+      ssd1306_swap(x, y);
+      y = HEIGHT - y - 1;
+      break;
+    }
+*/
+
+    switch(color) {
+     case 1:   buffer[x + (y/8)*WIDTH] |=  (1 << (y&7)); break;
+     case 0:   buffer[x + (y/8)*WIDTH] &= ~(1 << (y&7)); break;
     }
 
 }
-
-// extern font[];
 
 void ssd1306_draw_char(unsigned char x, unsigned char y, unsigned char c,
                             unsigned char color) {
 
     for (unsigned char i = 0; i < 5; i++) { // Char bitmap = 5 columns
-            ssd1306_draw_pixel(40 , y + i, 1);
-            ssd1306_draw_pixel(100 , 5 + i, 1);
+            // ssd1306_draw_pixel(40 , y + i, 1);
+            // ssd1306_draw_pixel(100 , 5 + i, 1);
       unsigned char line = pgm_read_byte(&font[c * 5 + i]);
       for (unsigned char j = 0; j < 8; j++) {
-	//	if (line & 1)
-            ssd1306_draw_pixel(x + i, y + j, color);
+		if (line & 1)
+            		ssd1306_draw_pixel(x + i, y + j, 1);
+		else
+            		ssd1306_draw_pixel(x + i, y + j, 0);
 		line = line >> 1;
         }
       }
@@ -138,31 +153,32 @@ void main()
 
     ssd1306_init();
     ssd1306_clear_buffer();
-//     ssd1306_draw_pixel( 10, 10, 1 );
-    int i;
-	for (i=0; i<100; i++) {
-     		ssd1306_draw_pixel( i, 2, 1 );
-     		ssd1306_draw_pixel( i, 3, 1 );
-     		ssd1306_draw_pixel( i, 4, 1 );
-     		ssd1306_draw_pixel( i, 5, 1 );
-     		ssd1306_draw_pixel( i, 6, 1 );
-     		ssd1306_draw_pixel( i, 7, 1 );
-	}
-    ssd1306_draw_char(10, 3, 'W', 1);
+    ssd1306_draw_pixel( 1, 2, 1 );
     ssd1306_render_buffer();
+
 	while (1) {
     ssd1306_clear_buffer();
-	for (i=0; i<100; i++) {
-     		ssd1306_draw_pixel( i, 2, 1 );
-     		ssd1306_draw_pixel( i, 3, 1 );
-     		ssd1306_draw_pixel( i, 4, 1 );
-     		ssd1306_draw_pixel( i, 5, 1 );
-     		ssd1306_draw_pixel( i, 6, 1 );
-     		ssd1306_draw_pixel( i, 7, 1 );
-	}
-    ssd1306_draw_char(10, 3, 'W', 1);
-    ssd1306_render_buffer();
-    // 	ssd1306_draw_pixel( 20, 20, 1 );
+    ssd1306_draw_pixel( 1, 2, 1 );
+
+    ssd1306_draw_char(10, 3, 'H', 1);
+    ssd1306_draw_char(15, 3, 'o', 1);
+    ssd1306_draw_char(20, 3, 'l', 1);
+    ssd1306_draw_char(25, 3, 'a', 1);
+    ssd1306_draw_char(30, 3, ' ', 1);
+    ssd1306_draw_char(35, 3, 'M', 1);
+    ssd1306_draw_char(40, 3, 'u', 1);
+    ssd1306_draw_char(45, 3, 'n', 1);
+    ssd1306_draw_char(50, 3, 'd', 1);
+    ssd1306_draw_char(55, 3, 'o', 1);
+
+     ssd1306_draw_pixel( 100, 30, 1 );
+     ssd1306_draw_pixel( 60, 60, 1 );
+     ssd1306_draw_pixel( 61, 60, 1 );
+     ssd1306_draw_pixel( 61, 56, 1 );
+	for (unsigned char i = 0; i < 25; i++) 
+     		ssd1306_draw_pixel( 6+i, 15+i, 1 );
+
+	ssd1306_render_buffer();
 	_delay_us(100);
 	}
 }
