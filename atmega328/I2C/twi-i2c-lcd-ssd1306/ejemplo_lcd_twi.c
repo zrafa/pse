@@ -7,11 +7,15 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include <avr/pgmspace.h>
+
 #include "twi.h"
+#include "font.h"
 
 #define WIDTH 128
 #define HEIGHT 64
 
+// unsigned char buffer[ WIDTH * HEIGHT / 8 ];
 unsigned char buffer[ WIDTH * HEIGHT / 8 ];
 // unsigned char i2cd;
 
@@ -47,7 +51,7 @@ void ssd1306_render_buffer(void)
     ssd1306_command(0x00);          // Page start address (0 = reset)
     ssd1306_command(7);             // Page end address
 
-    int i;
+    unsigned int i;
 
     for (i = 0; i < ( 128 * 64 / 8 ); i++) 
     {
@@ -60,13 +64,32 @@ void ssd1306_draw_pixel( unsigned char x, unsigned char y, unsigned char color )
     switch (color) 
     {
         case 1: // white
-            buffer[x + ( y / 8 ) * WIDTH ] = 1;
+            //buffer[x + ( y / 8 ) * WIDTH ] = 1;
+            buffer[x + ( y / 8 ) * WIDTH ] = 0xff;
 
             break;
         case 0: // black
             buffer[x + ( y / 8 ) * WIDTH ] = 0;
             break;
     }
+
+}
+
+// extern font[];
+
+void ssd1306_draw_char(unsigned char x, unsigned char y, unsigned char c,
+                            unsigned char color) {
+
+    for (unsigned char i = 0; i < 5; i++) { // Char bitmap = 5 columns
+            ssd1306_draw_pixel(40 , y + i, 1);
+            ssd1306_draw_pixel(100 , 5 + i, 1);
+      unsigned char line = pgm_read_byte(&font[c * 5 + i]);
+      for (unsigned char j = 0; j < 8; j++) {
+	//	if (line & 1)
+            ssd1306_draw_pixel(x + i, y + j, color);
+		line = line >> 1;
+        }
+      }
 
 }
 
@@ -116,12 +139,28 @@ void main()
     ssd1306_init();
     ssd1306_clear_buffer();
 //     ssd1306_draw_pixel( 10, 10, 1 );
-     ssd1306_draw_pixel( 20, 20, 1 );
+    int i;
+	for (i=0; i<100; i++) {
+     		ssd1306_draw_pixel( i, 2, 1 );
+     		ssd1306_draw_pixel( i, 3, 1 );
+     		ssd1306_draw_pixel( i, 4, 1 );
+     		ssd1306_draw_pixel( i, 5, 1 );
+     		ssd1306_draw_pixel( i, 6, 1 );
+     		ssd1306_draw_pixel( i, 7, 1 );
+	}
+    ssd1306_draw_char(10, 3, 'W', 1);
     ssd1306_render_buffer();
 	while (1) {
     ssd1306_clear_buffer();
-    ssd1306_draw_pixel( 10, 10, 1 );
-    ssd1306_draw_pixel( 20, 20, 1 );
+	for (i=0; i<100; i++) {
+     		ssd1306_draw_pixel( i, 2, 1 );
+     		ssd1306_draw_pixel( i, 3, 1 );
+     		ssd1306_draw_pixel( i, 4, 1 );
+     		ssd1306_draw_pixel( i, 5, 1 );
+     		ssd1306_draw_pixel( i, 6, 1 );
+     		ssd1306_draw_pixel( i, 7, 1 );
+	}
+    ssd1306_draw_char(10, 3, 'W', 1);
     ssd1306_render_buffer();
     // 	ssd1306_draw_pixel( 20, 20, 1 );
 	_delay_us(100);
