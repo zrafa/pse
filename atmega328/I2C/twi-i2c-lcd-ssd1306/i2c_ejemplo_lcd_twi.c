@@ -1,13 +1,14 @@
 
 /* Ejemplo de controlador LCD ssd1306 usando i2c
+ * Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
+ *
  * El driver i2c está en : twi.c y twi.h (tiene interrupciones)
  *
  * Pensado para usar en la materia Programacion de Sistemas Embebidos
- * Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
  */
 
-/* Sacamos la idea y los comandos al LCD d un ejemplo original para 
- * Pi : gcc ssd1306.c -lwiringPi -o ssd1306 
+/* Sacamos la idea y los comandos al LCD de un ejemplo original para 
+ * RaspberryPi : gcc ssd1306.c -lwiringPi -o ssd1306 
  */
 
 
@@ -57,6 +58,8 @@ void ssd1306_byte(unsigned char c)
 
 void ssd1306_render_buffer(void)
 {
+    unsigned int i;
+
     ssd1306_command(0x21);          // column address
     ssd1306_command(0);             // Column start address (0 = reset)
     ssd1306_command(127);           // Column end address (127 
@@ -64,11 +67,8 @@ void ssd1306_render_buffer(void)
     ssd1306_command(0x00);          // Page start address (0 = reset)
     ssd1306_command(7);             // Page end address
 
-    unsigned int i;
-
-    for (i = 0; i < ( 128 * 64 / 8 ); i++) 
-    {
-        ssd1306_byte( buffer[i] ); 
+    for (i = 0; i < ( 128 * 64 / 8 ); i++) {
+	ssd1306_byte( buffer[i] ); 
     }
 }
 
@@ -94,8 +94,8 @@ void ssd1306_draw_pixel( unsigned char x, unsigned char y, unsigned char color )
 */
 
     switch(color) {
-     case 1:   buffer[x + (y/8)*WIDTH] |=  (1 << (y&7)); break;
-     case 0:   buffer[x + (y/8)*WIDTH] &= ~(1 << (y&7)); break;
+    case 1:   buffer[x + (y/8)*WIDTH] |=  (1 << (y&7)); break;
+    case 0:   buffer[x + (y/8)*WIDTH] &= ~(1 << (y&7)); break;
     }
 
 }
@@ -103,15 +103,21 @@ void ssd1306_draw_pixel( unsigned char x, unsigned char y, unsigned char color )
 void ssd1306_draw_char(unsigned char x, unsigned char y, unsigned char c,
                             unsigned char color) {
 
-    for (unsigned char i = 0; i < 5; i++) { // Char bitmap = 5 columns
-      unsigned char line = pgm_read_byte(&font[c * 5 + i]);
-      for (unsigned char j = 0; j < 8; j++) {
-		if (line & 1)
-            		ssd1306_draw_pixel(x + i, y + j, 1);
-		else
-            		ssd1306_draw_pixel(x + i, y + j, 0);
-		line = line >> 1;
-        }
+	unsigned char i;
+	unsigned char line;
+	unsigned char j;
+
+	/* El font de este codigo tiene letras de 5x8 bits */
+	for (i = 0; i < 5; i++) { 	/* Letra en bitmap = 5 columnas */
+		line = pgm_read_byte(&font[c * 5 + i]);
+
+		for (j = 0; j < 8; j++) {  /* 8 hileras en cada columa */
+			if (line & 1)
+				ssd1306_draw_pixel(x + i, y + j, 1);
+			else
+				ssd1306_draw_pixel(x + i, y + j, 0);
+			line = line >> 1;
+		}
       }
 }
 
@@ -149,11 +155,11 @@ void ssd1306_init()
 
 void ssd1306_clear_buffer(void)
 {
-    memset( buffer, 0, ( 128 * 64 / 8 ) * sizeof( unsigned char ) );
+	memset( buffer, 0, ( WIDTH * HEIGHT / 8 ) * sizeof( unsigned char ) );
 }
 
 /* Muestra un texto en pantalla. X e Y son coordenadas a resolución de pixel
- * El texto usa por cada caracter 6 columnas y 7 filas
+ * El texto usa por cada caracter 6 columnas y 8 filas
  */
 ssd1306_print_text(unsigned char x, unsigned char y, const char *text) {
 	int i;
@@ -200,12 +206,13 @@ void main()
 	ssd1306_draw_pixel( 60, 60, 1 );
 	ssd1306_draw_pixel( 61, 60, 1 );
 	ssd1306_draw_pixel( 61, 56, 1 );
+
 	for (unsigned char i = 0; i < 25; i++) 
      		ssd1306_draw_pixel( 6+i, 15+i, 1 );
 
 	ssd1306_render_buffer();
 
 	while (1) {
-	_delay_us(100);
+		_delay_us(100);
 	}
 }
