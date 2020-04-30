@@ -1,5 +1,5 @@
 CC=avr-gcc
-OBJETOS=i2c_ejemplo_lcd_twi.o twi.o
+OBJETOS=i2c_ejemplo_lcd_twi.o twi.o lcd_ssd1306.o
 APP=lcd-i2c
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p 
 LDFLAGS=-mmcu=atmega328p

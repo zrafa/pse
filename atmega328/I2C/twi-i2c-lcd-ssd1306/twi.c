@@ -6,6 +6,7 @@
 #include "twi.h"
 
 static volatile uint8_t busy;
+
 static struct {
   uint8_t buffer[TWI_BUFFER_LENGTH];
   uint8_t length;

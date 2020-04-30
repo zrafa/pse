@@ -1,0 +1,19 @@
+
+Ejemplo de i2c funcionando. 
+
+Driver i2c: twi.c twi.h
+(tiene interrupciones).
+
+Driver LCD ssd1306: i2c_ejemplo_lcd_twi.c
+
+Hoja de datos del controlador del LCD:
+https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+
+
+Pinout
+
+avr sda       lcd sda
+avr scl       lcd scl
+avr 5v        lcd vcc
+avr gnd       lcd gnd
+
