@@ -1,10 +1,11 @@
 
-Ejemplo de i2c funcionando. 
+Driver LCD ssd1306: i2c_ejemplo_lcd_twi.c
+Ejemplo de i2c funcionando, utilizado para controlar un LCD ssd1306. 
 
 Driver i2c: twi.c twi.h
 (tiene interrupciones).
+Driver i2c para avr autor: https://github.com/scttnlsn/avr-twi
 
-Driver LCD ssd1306: i2c_ejemplo_lcd_twi.c
 
 Hoja de datos del controlador del LCD:
 https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf

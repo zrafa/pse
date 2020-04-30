@@ -1,3 +1,8 @@
+/*
+ * Driver i2c para avr
+ * Autor: https://github.com/scttnlsn/avr-twi
+ */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/twi.h>

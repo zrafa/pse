@@ -1,3 +1,8 @@
+/*
+ * Driver i2c para avr
+ * Autor: https://github.com/scttnlsn/avr-twi
+ */
+
 #ifndef TWI_H
 #define TWI_H
 

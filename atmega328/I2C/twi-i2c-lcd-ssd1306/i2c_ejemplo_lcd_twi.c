@@ -3,6 +3,7 @@
  * Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
  *
  * El driver i2c está en : twi.c y twi.h (tiene interrupciones)
+ * Driver i2c autor: https://github.com/scttnlsn/avr-twi
  *
  * Pensado para usar en la materia Programacion de Sistemas Embebidos
  * Sacamos la idea y los comandos al LCD de un ejemplo original para 
