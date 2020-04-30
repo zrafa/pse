@@ -18,3 +18,5 @@ lcd 2x16 caracteres, gpio con placa i2c
 
 
 
+Lectures : 
+http://web.engr.oregonstate.edu/~traylor/ece473/lectures/
