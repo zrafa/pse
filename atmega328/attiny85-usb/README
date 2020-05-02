@@ -1,0 +1,6 @@
+
+El led está en P0, que es PB0
+
+Para flashear un .hex
+
+sudo ./micronucleus --run name_of_the_file.hex
