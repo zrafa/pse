@@ -1,0 +1,9 @@
+
+Este comando zonso nos puede mostrar el ascii de la seccion data por ejemplo.
+Ademas del .map o dissasembly, viendo el ASCII de los .data podemos encontrar
+cuales son las cadenas de texto en memoria que no son parte de variables sino
+constantes. En xinu por ejemplo, utiliza muchisima data en forma de const
+char * que no es parte de variables o nombres de variables.
+
+avr-objdump -s xinu.elf  | less
+
