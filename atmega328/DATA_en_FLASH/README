@@ -1,0 +1,104 @@
+Si queremos poner datos read-only en flash sencillos es facil:
+
+#include <avr/pgmspace.h>
+
+cons char arreglo[] PROGMEM = { 2, 3, 4, 6, 6};
+
+
+luego
+pgm_read_word(&arreglo[0]);
+
+
+Pero, a veces queremos poner estructuras y elementos tipo char* 
+en las estructuras. O harder: queremos elementos que sean
+punteros a funciones, y utilizarlos.
+
+Aquí va un ejemplo dado en un foro completo muy bueno.
+
+El post al foro : https://www.avrfreaks.net/forum/progmem-using-structs-and-arrays
+
+La respuesta:
+
+typedef struct menu_entry 
+{ 
+   void (*select)(void);  // routine to call when selected 
+   char* name;      // name to display for this entry 
+   struct menu *next_menu; 
+} Menu_entry; 
+
+typedef struct menu 
+{ 
+   unsigned int num_entries;      //  total # of entries in menu 
+   unsigned int menu_level; 
+   const struct menu *previous; 
+   menu_entry_t entry[4]; 
+   char* header;                   //  top displayed entry 
+   char* footer; 
+} Menu; 
+
+Menu Settings_Menu PROGMEM = {
+//...
+//...
+//...
+};
+
+char Text1[] PROGMEM = "Open File";
+char Text2[] PROGMEM = "Main Menu";
+char Text3[] PROGMEM = "This is a footer";
+char Text4[] PROGMEM = "Settings";
+
+Menu MainMenu PROGMEM = {
+   num_entries = 2, 
+   menu_level = 0, 
+   previous = NULL, 
+   entry = {
+      {
+         select = OpenFile, 
+         name = (char*)Text1, 
+         next_menu = NULL
+      },
+      {
+         select = Settings,
+         name = (char*)Text4,
+         next_menu = (Menu*)Settings_Menu
+      }
+   }
+   header = (char*)Text2,
+   footer = (char*)Text3
+};
+
+
+That will place the entire Main Menu and Settings Menu in PROGMEM.
+Now, you'll have to use pgm_read_XX to read the various members of the menu.
+
+void DrawMenu(Menu* menu)
+{
+   // Draw the header
+   lcd_place_string_P((char*)pgm_read_word(menu->header));
+   // Draw the menu options
+   for(int x = 0; x < pgm_read_word(menu->num_entries); x++)
+      lcd_place_string_P((char*)pgm_read_word(menu->entry[x]));
+   // Draw the footer
+   lcd_place_string_P((char*)pgm_read_word(menu->footer));
+}
+
+
+
+
+
+One last question, how does one now read a function pointer out of PROGMEM.
+
+
+
+Try something like
+
+typedef void (*fn_ptr) (void);
+<...>
+(fn_ptr)pgm_read_word(current_menu->entry[0].select) ();
+
+
+
+
+Something like this would work when a variable index is used:
+
+    ((fn_ptr)pgm_read_word(¤t_menu->entry[i].select))();
