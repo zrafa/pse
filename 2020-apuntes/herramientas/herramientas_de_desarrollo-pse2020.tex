@@ -6,30 +6,18 @@ newtxmath
 \bibliography{localbibliography}
 
 \author{Rafael Ignacio Zurita\affiliation{Universidad Nacional del Comahue}}
-\title{Introducción a PSE2020}  
-\abstract{La programación de sistemas embebidos, en una visión conceptual de alto nivel, 
-no es muy diferente de la programación realizada en PC o computadoras
-de propósito general. Lo único que realmente cambia en el proceso es 
-que se necesita entender la plataforma de hardware destino. 
-Desafortunadamente, cada plataforma de hardware es única. Aún cuando
-todas las plataformas de hardware embebido contienen los mismos periféricos
-básicos más una CPU y memorias, cada ínfimo detalle de bajo nivel de estos 
-son diferentes. Por ejemplo, el método de comunicación
-de una interfaz serial puede variar de procesador a procesador 
-y de plataforma a plataforma.
-Estas diferencias entre las plataformas de hardware
-agrega una gran cantidad de complejidad adicional, y es también la razón
-por la cual se necesita trabajar más que antes en el proceso 
-de construcción del software.
-
+\title{Herramientas de desarrollo}  
+\abstract{
 En este capítulo se examinan los pasos involucrados en la preparación
-del software para la ejecución en un sistema embebido, y de las
+del software para un sistema embebido, y de las
 las herramientas de desarrollo asociadas al proceso.
 Se proporciona, como ejemplo, la
-construcción del programa Blinking LED estudiado en el Capítulo anterior.
+construcción del programa \textit{LED blink} que es analizado en detalle
+en el siguiente capítulo.
 
-Nos enfocaremos en el uso de herramientas open source provistas por 
-GCC (GNU Compiler Collection), las son parte del proyecto GNU.
+Nos enfocaremos unicamente en el uso de las herramientas open source 
+provistas por GCC (the GNU Compiler Collection), las cuales son 
+parte del proyecto GNU.
 
 
 \keywords{sistema embebido, ciclo de compilación, GNU GCC, compiladores cruzados (cross-compilers), cadena de desarrollo (toolchains)}
@@ -60,7 +48,11 @@ GCC (GNU Compiler Collection), las son parte del proyecto GNU.
 \chapterfont{\Large\color{LightBlue}} 
 %\chapternumberfont{\large} 
 %\chaptertitlefont{\Large}
-\chapter*{ Programación de Sistemas Embebidos 2020: Introducción}
+\chapter*{1 Programación de Sistemas Embebidos 2020\\ Herramientas de desarrollo}
+esta es una prueba
+{\def\addcontentsline#1#2#3{}\maketitle}
+
+\chapter*{Programación de Sistemas Embebidos 2020\\ Herramientas de desarrollo}
 
 \begingroup
 \let\clearpage\relax
@@ -88,23 +80,40 @@ nondisclosure agreement or a software license agreement.
 So that I can continue to use computers
 without dishonor, I have decided to put together a sufficient body of free software so that I will be able
 to get along without any software that is not free.\\
-—Richard Stallman, Founder of the GNU Project. The GNU Manifesto
+—Richard Stallman 27-sep-1983, Founder of the GNU Project. The GNU Manifesto
 \end{minipage}
 
 % \togglepaper[0]
 
 \section {El ciclo de compilación de software}
 
+La programación de sistemas embebidos, en una visión conceptual de alto nivel, 
+no es muy diferente a la programación realizada para un programa de PC. Lo único que 
+realmente cambia en el proceso es 
+que se necesita entender la plataforma de hardware destino. 
+Desafortunadamente, cada plataforma de hardware es única, aún cuando
+todas las plataformas de hardware embebido contienen los mismos periféricos
+básicos más una CPU y memorias. Cada ínfimo detalle de bajo nivel de estos 
+componentes son diferentes. Por ejemplo, el método de comunicación
+de una interfaz serial puede variar de procesador a procesador 
+y de plataforma a plataforma.
+Estas diferencias entre las plataformas de hardware
+agrega una complejidad adicional, y es también la razón
+por la cual se necesita trabajar más que antes en el proceso 
+de construcción del software embebido.
 
-Cuando las herramientas de compilación se ejecutan en el mismo sistema (host)
-que el programa generado (target) las herramientas pueden realizar
-varias suposiciones sobre el sistema.
+\subsection {Cadena de herramientas (toolchains)}
+
+Cuando las herramientas de desarrollo se utilizan en el mismo sistema 
+donde se ejecutará el programa, el compilador y programas asociados
+pueden realizar varias suposiciones sobre el sistema automáticamente.
 No es el caso en el desarrollo de sistemas embebidos, donde las herramientas
 de desarrollo se ejecutan en una máquina (host) diferente a la plataforma
-de hardware destino (target).
-Cuando la plataforma destino es la misma que la de desarrollo (host), y está
-bien definida, las herramientas de
-desarrollo de software pueden realizar varias cosas automáticamente.
+de hardware destino (target). En este último caso, el usuario debe proveer 
+conocimiento del sistema a las herramientas, a través 
+de una mayor cantidad de instrucciones explícitas que lo que haría
+si tanto el target como el host fueran la misma plataforma.
+
  
 \begin{center}
 \begin{tabularx}{0.95\textwidth}{|X|}
@@ -121,18 +130,48 @@ es simplemente el procesador en el cual se ejecuta el  programa.\\
 \end{tabularx}
 \end{center}
 
+\subsubsection{Definiciones}
 
-En cambio, las herramientas de desarrollo para software embebido 
-raramente pueden realizar suposiciones sobre la plataforma destino.
-En vez de eso, el usuario debe proveer 
-conocimiento del sistema a las herramientas, a través 
-de mayor cantidad de instrucciones explícitas que lo que haría
-si tanto el target como el host fueran la misma plataforma.
+Al conjunto de programas que se utilizan para convertir un
+archivo de código fuente a un programa ejecutable se lo denomina
+\textit{\textbf{toolchain (cadena de herramientas)}}. Algunas veces
+se lo denomina de manera resumida \textit{compilador}, pero recordemos
+que el compilador unicamente \textit{traduce} el código fuente 
+a un código en lenguaje ensamblador (luego se necesita un ensamblador
+y otras herramientas como se detalla en las siguientes secciones).
+
+Si el desarrollo del sistema se realizan en la misma máquina
+donde se ejecutará el programa el compilador es un compilador nativo 
+(\textit{\textbf{native compiler}}),
+al igual que el resto de las herramientas 
+(\textit{\textbf{native toolchain}}).
+
+En cambio, si el desarrollo del sistema embebido se realiza en una PC
+(u otra computadora diferente al hardware destino) el compilador
+es un \textit{\textbf{compilador cruzado (cross-compiler)}}, y el resto
+de los programas de desarrollo conforman las \textit{\textbf{herramientas
+de desarrollo cruzadas (cross-toolchain)}}.
+
+Por lo tanto, si usted compila un programa en lenguaje C y lo ejecuta
+en su PC, tanto el compilador como el programa ejecutable son nativos.
+Pero, si se desarrolla un programa en C para que se ejecute
+en una arquitectura diferente, su PC, o computadora de desarrollo,
+contendrá un segundo compilador, el cual será un compilador cruzado.
+En el caso de usar compiladores del proyecto GCC, usualmente 
+se tiene un compilador de C llamado gcc (compilador nativo para ejecutar
+en PC y generar programas ejecutables para PC), y un segundo compilador
+gcc llamado de una manera diferente (por ejemplo, mips-gcc, el cual
+se utilza en PC para generar un programa ejecutable para una computadora
+de arquitectura MIPS).
+
+\subsection{Ciclo de compilación}
 
 El proceso de convertir el código fuente del software embebido
 en una imagen binaria ejecutable involucra tres pasos bien distinguidos:
 
 \begin{enumerate}
+\item Escribir un programa en un lenguaje de programación. Si el proyecto
+es algo complejo tal vez se escriban varios archivos fuentes.
 \item Cada archivo fuente debe ser compilado o ensamblado en un archivo objeto.
 \item Todos los archivos objetos del primer paso deben ser vinculados (linked)
 juntos para generar un archivo objeto individual, llamado el programa reubicable.
@@ -140,8 +179,6 @@ juntos para generar un archivo objeto individual, llamado el programa reubicable
 dentro del programa reubicable en un proceso llamado reubicación (relocation).
 \end{enumerate}
 
-El resultado del paso final es un archivo que contiene una imagen binaria
-que está lista para ser ejecutada en el sistema embebido.
 
 El proceso recién descripto está representado en la Figura \ref{fig:compilacion}.
 Allí se se observan los tres pasos comenzado desde arriba hacia abajo,
@@ -149,6 +186,8 @@ en conjunto con las herramientas utilizadas (que aparecen
 en los recuadros con esquinas redondeadas).
 Estas herramientas de desarrollo toman uno o más archivos como entrada
 y producen un archivo individual como salida. 
+El resultado del paso final es un archivo que contiene una imagen binaria
+que está lista para ser ejecutada en el sistema embebido destino.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{images/ciclo_de_compilacion.png}
@@ -161,20 +200,21 @@ y producen un archivo individual como salida.
 Cada paso del proceso de compilación de software embebido
 es una transformación realizada por software ejecutado en una computadora
 de propósito general. Para distinguir esta computadora de desarrollo (usualmente una 
-PC o estación de trabajo UNIX) del sistema embebido destino se utiliza el término host computer.
-En esta computadora es donde se ejecuta el compilador, ensamblador, vinculador y se realiza la localización (locator).
+PC o estación de trabajo UNIX) del sistema embebido destino se utiliza el término \textit{\textbf{host computer}}.
+En esta computadora es donde se ejecuta el compilador, ensamblador, vinculador y se realiza la reubicación (location).
 Aunque, como ya mencionado, estas herramientas trabajan en conjunto
 para producir una imagen binaria que puede ser ejecutada
-únicamente en el sistema embebido destino. Esta división de responsabilidades
+únicamente en el sistema embebido destino (\textit{\textbf{target
+computer}}). Esta división de responsabilidades
 se representan en la Figura \ref{fig:compilacion2}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{images/host_target.png}
+\begin{figure}[H]
+\includegraphics[width=10cm]{images/host_target.png}
 \caption{Computadora de desarrollo (host) y computador destino (target).}
 \label{fig:compilacion2}
 \end{figure}
 
-En este libro se utilizan las herramientas de desarrollo del proyecto GNU
+En este texto se utilizan las herramientas de desarrollo del proyecto GNU
 (compilador, ensamblador, vinculador y debugger) las cuales son software libre
 y tienen extensa documentación en libros, y páginas de manual online en sistemas
 Linux y UNIX. Una vez comprendido
@@ -212,10 +252,10 @@ es extenso, e incluye AVR, Intel x86, MIPS, PowerPC, ARM y SPARC. Información
 adicional puede ser encontrada online en \texttt{http://gcc.gnu.org}.
 
 Cualquiera sea el lenguaje de entrada (C, C++, ensamblador o cualquier otro), la salida
-de un compilador cruzado será un archivo objeto. Este es un archivo binario con
+de un compilador cruzado será un \textit{\textbf{archivo objeto}}. Este es un archivo binario con
 formato especial que contiene el conjunto de instrucciones y datos
 resultado del proceso de traducción del lenguaje. Aunque partes de este archivo
-contiene código ejecutable el archivo objeto no puede ser ejecutado directamente.
+contiene código ejecutable \textit{el archivo objeto no puede ser ejecutado directamente}.
 
 
 El contenido de un archivo objeto puede ser imaginado como una estructura de datos
@@ -228,9 +268,9 @@ los dos formatos recién mencionados. Aunque muchos compiladores (y en particula
 los que son para ambientes UNIX) soportan formatos de archivo objeto como
 COFF y ELF, algunos producen archivos objetos en formatos propietarios.
 Si se utilizan compiladores de este último grupo se necesita obtener todas
-las restantes herramientas de desarrollo desde el mismo proveedor.
+las herramientas de desarrollo restantes desde el mismo proveedor.
 
-
+\subsubsection*{Estructura de un archivo objeto}
 La mayoría de los archivos objetos comienzan con un encabezado que describe las secciones
 que siguen. Cada una de esas secciones contienen uno o mas bloques de código o datos que 
 provienen de los archivos fuentes. De cualquier manera, el compilador tiene reagrupado
@@ -239,7 +279,7 @@ código en una sección llamada text, todas las variables globales inicializadas
 valores iniciales) en una sección llamada data, y todas las variables globales sin 
 inicializar en una sección llamada bss.
 
-Hay también, usualmente, una tabla de símbolos en el archivo objeto, que contiene
+Usualmente, existe también una tabla de símbolos en el archivo objeto, que contiene
 los nombres y las ubicaciones de todas las variables y funciones referenciadas dentro
 del archivo fuente. Partes de esta tabla podría estar incompleta, debido a que
 no todas las variables y funciones son siempre definidas en el mismo archivo fuente. 
