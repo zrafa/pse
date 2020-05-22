@@ -68,6 +68,7 @@ ISBN-10: 1565923545. O'Reilly }
 {\def\addcontentsline#1#2#3{}\maketitle}
 
 
+\setcounter{page}{1}
 
 
 \hfill\begin{minipage}{0.8\linewidth} \footnotesize
@@ -89,12 +90,13 @@ to get along without any software that is not free.\\
 
 La programación de sistemas embebidos, en una visión conceptual de alto nivel, 
 no es muy diferente a la programación realizada para un programa de PC. Lo único que 
-realmente cambia en el proceso es 
-que se necesita entender la plataforma de hardware destino. 
+cambia en el proceso es 
+que se necesita entender la plataforma de hardware destino para poder compilarlo. 
 Desafortunadamente, cada plataforma de hardware es única, aún cuando
 todas las plataformas de hardware embebido contienen los mismos periféricos
 básicos más una CPU y memorias. Cada ínfimo detalle de bajo nivel de estos 
-componentes son diferentes. Por ejemplo, el método de comunicación
+componentes son diferentes. Por ejemplo, el método de configuración
+de los registros de control
 de una interfaz serial puede variar de procesador a procesador 
 y de plataforma a plataforma.
 Estas diferencias entre las plataformas de hardware
@@ -118,9 +120,8 @@ si tanto el target como el host fueran la misma plataforma.
 \begin{center}
 \begin{tabularx}{0.95\textwidth}{|X|}
 \hline
-\rowcolor{lightgray}
-\textbf{Target platform}\\
 \rowcolor{aliceblue}
+\textbf{Target platform}\\ \\
 La plataforma destino (target) incluye tanto el hardware como así
 también el sistema operativo, que conforman el ambiente de ejecución
 básico para la aplicación. Si no existe sistema operativo, como es
@@ -140,16 +141,16 @@ que el compilador unicamente \textit{traduce} el código fuente
 a un código en lenguaje ensamblador (luego se necesita un ensamblador
 y otras herramientas como se detalla en las siguientes secciones).
 
-Si el desarrollo del sistema se realizan en la misma máquina
-donde se ejecutará el programa el compilador es un compilador nativo 
-(\textit{\textbf{native compiler}}),
+Si el desarrollo del sistema se realiza en la misma máquina
+donde se ejecutará el programa final, entonces el compilador es un compilador 
+nativo (\textit{\textbf{native compiler}}),
 al igual que el resto de las herramientas 
 (\textit{\textbf{native toolchain}}).
 
 En cambio, si el desarrollo del sistema embebido se realiza en una PC
 (u otra computadora diferente al hardware destino) el compilador
 es un \textit{\textbf{compilador cruzado (cross-compiler)}}, y el resto
-de los programas de desarrollo conforman las \textit{\textbf{herramientas
+de los programas para desarrollo conforman las \textit{\textbf{herramientas
 de desarrollo cruzadas (cross-toolchain)}}.
 
 Por lo tanto, si usted compila un programa en lenguaje C y lo ejecuta
@@ -164,24 +165,55 @@ gcc llamado de una manera diferente (por ejemplo, mips-gcc, el cual
 se utilza en PC para generar un programa ejecutable para una computadora
 de arquitectura MIPS).
 
+\subsubsection*{Componentes de un toolchain}
+
+Los herramientas para desarrollo de software en C (toolchain) en realidad
+son pocas. Para programar en lenguaje C utilizando GCC necesita :
+
+\begin{verbatim}
+
+- un editor de texto sencillo
+- el compilador de C (gcc)
+- las herramientas binutils (ensamblador as, linker ld, etc).
+- la biblioteca de c (libc)
+
+\end{verbatim}
+
+En sistemas Linux todas estas herramientas ya vienen enpaquetadas,
+y para arquitecturas diferentes. Por ejemplo, si usted quisiera programar
+en C para arquitectura MIPS y AVR tendrá que instalar en un sistema Linux
+típico los siguientes paquetes: 
+
+\begin{verbatim}
+Para arquitectura MIPS:
+- gcc-mips: el compilador de C cruzado para mips
+- binutuils-mips: las harramientas binutils para mips
+- libc-mips: biblioteca estándar de C para mips
+
+Para arquitectura AVR:
+- gcc-avr: el compilador de C cruzado para avr
+- binutuils-avr: las harramientas binutils para avr
+- avr-libc: biblioteca estándar de C para avr
+\end{verbatim}
+
 \subsection{Ciclo de compilación}
 
 El proceso de convertir el código fuente del software embebido
-en una imagen binaria ejecutable involucra tres pasos bien distinguidos:
+en una imagen binaria ejecutable involucra cuatro pasos bien distinguidos:
 
 \begin{enumerate}
 \item Escribir un programa en un lenguaje de programación. Si el proyecto
-es de mediana complejidad entonces se escriben varios archivos fuentes.
+es de mediana complejidad entonces se escriben varios archivos fuente.
 \item Cada archivo fuente debe ser compilado en un archivo objeto.
-\item Todos los archivos objetos del primer paso deben ser vinculados (linked)
-juntos para generar un archivo objeto individual, llamado el programa reubicable.
+\item Todos los archivos objetos del paso dos deben ser vinculados en conjunto
+(linked) para generar un archivo objeto individual, llamado el programa reubicable.
 \item Direcciones físicas de la memoria deben ser asignadas a los desplazamientos (offsets)
 dentro del programa reubicable en un proceso llamado reubicación (relocation).
 \end{enumerate}
 
 
 El proceso recién descripto está representado en la Figura \ref{fig:compilacion}.
-Allí se se observan los tres pasos comenzado desde arriba hacia abajo,
+Allí se se observan los cuatro pasos comenzado desde arriba hacia abajo,
 en conjunto con las herramientas utilizadas (que aparecen
 en los recuadros con esquinas redondeadas).
 Estas herramientas de desarrollo toman uno o más archivos como entrada
@@ -230,9 +262,9 @@ el ensamblador es también un compilador (generalmente se lo llama
 compilador de lenguaje ensamblador), pero su tarea es mas sencilla, ya que
 realiza una traducción de uno a uno, de nemotécnicos leíble por personas
 en sus equivalentes códigos de operación de la CPU. El resto de lo explicado en esta sección
-aplica a compiladores y ensambladores. En conjunto, estas herramientas
-realizan el primer paso del proceso de construcción de software embebido
-ya mencionado.
+aplica tanto a compiladores como a los ensambladores. En conjunto, 
+estas herramientas realizan el primer paso del proceso de construcción 
+de software de un sistema embebido.
 
 Por supuesto, cada procesador tiene su propio lenguaje máquina, por lo que
 necesita seleccionar un compilador que produzca programas para el procesador
@@ -244,13 +276,13 @@ código para otra- es llamado un compilador cruzado (cross-compiler). El uso de
 un compilador cruzado es una de las características de desarrollo de software
 embebido.
 
-El \textit{\textbf{compilador C de GNU (gcc) y el ensamblador (as)}} pueden ser configurados y compilados
+El \textit{\textbf{compilador GNU de lenguaje C (gcc) y el ensamblador (as)}} pueden ser configurados y compilados
 para que trabajen como compiladores nativos o compiladores cruzados. 
 Estas herramientas soportan
 un impresionante conjunto de combinaciones host-target. El compilador gcc ha sido
 portado a todos los sistemas operativos Mac y PC. También, el soporte de procesadores destino
 es extenso, e incluye AVR, Intel x86, MIPS, PowerPC, ARM y SPARC. Información
-adicional puede ser encontrada online en \texttt{http://gcc.gnu.org}.
+adicional puede ser encontrada online\footnote{\texttt{http://gcc.gnu.org}}.
 
 Cualquiera sea el lenguaje de entrada (C, C++, ensamblador o cualquier otro), la salida
 de un compilador cruzado será un \textit{\textbf{archivo objeto}}. Este es un archivo binario con
@@ -286,11 +318,17 @@ del archivo fuente. Partes de esta tabla podría estar incompleta, debido a que
 no todas las variables y funciones son siempre definidas en el mismo archivo fuente. 
 Esos son los símbolos que hacen referencia a variables y funciones definidas en 
 otro archivo fuente distinto. Es trabajo del vinculador resolver todas esas referencias
-no resueltas.
+no resueltas. Si se necesita revisar la tabla de símbolos de un archivo objeto
+o ejecutable puede utilizar la herramienta \textit{\textbf{objdump}} del paquete binutils.
+Por ejemplo, con el argumento -t :
+
+\begin{verbatim}
+# objdump -t  main.o
+\end{verbatim}
 
 \subsection {Vinculando}
 
-Todos los archivos objetos que fueron el resultado del paso uno del proceso deben
+Todos los archivos objetos que fueron el resultado del paso dos del proceso deben
 ser vinculados. Los archivos objetos individualmente están incompletos, por lo que
 alguna de las referencias a variables y funciones internas aún no han sido resueltas.
 La tarea del vinculador (linker) es combinar esos archivos objetos, y en el proceso,
@@ -325,7 +363,7 @@ que el vinculador GNU tiene un lenguaje de scripting que puede ser utilizado
 para controlar cómo debe ser el archivo objeto de salida si se requiere.
 
 Si el mismo símbolo es declarado en más de un archivo objeto de los que 
-procesa ld entonces el proceso finaliza inmediatamente, y ld mostrará
+procesa el vinculador ld, entonces el proceso finaliza inmediatamente, y ld mostrará
 un mensaje de error explicando la situación (error de programación).
 
 \begin{center}
@@ -359,39 +397,46 @@ los programas en ejecución que las utilicen.\\
 \rowcolor{lightgray}
 \textbf{Vinculación selectiva}\\
 Si el vinculador GNU ld encuentra funciones sin referenciar en el código
-(si que se utilicen), entonces ld descarta ese código y lo deja
+(es decir, son funciones que no se utilizan), entonces ld descarta ese código y lo deja
 afuera de la imagen de salida resultante.\\
 \hline
 \end{tabularx}
 \end{center}
 
-Las rutinas de la biblioteca estándar algunas veces requieren 
+\subsubsection*{Biblioteca estándar de C para embebidos}
+
+Las rutinas de la biblioteca estándar de C algunas veces requieren 
 algunos o varios cambios antes que puedan ser utilizada en un sistema 
 embebido nuevo.
+
 Un problema es que las bibliotecas estándar provistas comercialmente
 con la mayoría de las 
 suites de herramientas de desarrollo de software propietarias
 vienen únicamente en forma de archivo objeto.
-Raramente vez se tiene acceso al código fuente de la biblioteca para hacer los 
+Rara vez se tiene acceso al código fuente de la biblioteca para hacer los 
 cambios necesarios. Por suerte, si ese es su caso, existen algunas 
-alternativas. Una de ellas es
-la provista por la compañía Cygnus (la cual es ahora parte de Red Hat),
+alternativas. 
+
+Una de ellas es
+la provista por la compañía Cygnus (ahora parte de Red Hat),
 la cual creó una versión libre de la biblioteca estándar de C para utilizar 
 en sistemas embebidos.
-Este paquete es llamado newlib. Simplemente se necesita descargar el código fuente
-para esta biblioteca desde la web (actualmente ubicada en 
-\texttt{http://sourceware.org/newlib}),
+Este paquete es llamado \textit{\textbf{newlib}}. Simplemente se necesita descargar el código fuente
+para esta biblioteca desde la web\footnote{\texttt{http://sourceware.org/newlib}},
 implementar unas pocas funciones especificas para el hardware destino y compilar.
 La biblioteca puede luego ser vinculada con nuestras aplicaciones embebidas
 para resolver cualquier llamada a la biblioteca estándar sin 
-resolver previamente. Afortunadamente para la arquitectura AVR, existe 
-una versión open source de la biblioteca estándar de C, llamada avr-libc
-(\texttt{http://sourceware.org/newlib}). El inicio de su sitio web
-con extensa documenatción puede verse en la Figura \ref{fig:avr_libc}.
+resolver previamente. 
+
+Afortunadamente, para la arquitectura de microcontroladores AVR en particular, 
+existe una versión open source de la biblioteca estándar de C, llamada 
+\textit{\textbf{avr-libc}}\footnote{\texttt{https://www.nongnu.org/avr-libc/}}. 
+El inicio de su sitio web,
+(el cual provee la biblioteca y su documentación) puede verse en la Figura \ref{fig:avr_libc}.
 
 
 \begin{figure}[H]
-\includegraphics[width=12cm]{images/avr-libc.png}
+\includegraphics[width=12cm]{images/avr-libc2.png}
 \caption{AVR-Libc Home Page}
 \label{fig:avr_libc}
 \end{figure}
@@ -425,7 +470,7 @@ es agregar automáticamente el código de inicialización: un pequeño bloque
 de código en lenguaje ensamblador que prepara el ambiente para la ejecución
 del software escrito en un lenguaje de alto nivel. Cada lenguaje de alto
 nivel tiene un conocimiento propio acerca del ambiente de ejecución.
-Por ejemplo, programas escritos en C utilizan una pila (stack). El espacio
+Por ejemplo, los programas escritos en C utilizan una pila (stack). El espacio
 para la pila tiene que ser reservado y ubicado antes de que el software escrito
 en C pueda ser ejecutado apropiadamente. Esa es una de las responsabilidades
 asignadas al código de inicialización para programas en C.
@@ -477,8 +522,8 @@ el microcontrolador es complemante virgen se puede instalar un
 bootloader en caso de ser necesario).
 Los bootloaders para AVR pueden ser utilizados
 para descargar el firmware a través de una conexión serial, y escribir
-el mismo en la memoria FLASH del microcontroladors, en la dirección 0x00.
-Si el bootloader no recibe ordenes desde el puerto serial simplemente 
+el mismo en la memoria FLASH del microcontrolador, en la dirección 0x00.
+Si el bootloader no recibe órdenes desde el puerto serial simplemente 
 ejecuta la aplicación actual en FLASH.\\
 \hline
 \end{tabularx}
@@ -512,7 +557,7 @@ con el vinculador GNU ld, se agrega el código de inicialización y se
 resuelven las direcciones reales de acuerdo al microcontrolador destino.
 
 En cambio, si se debe suministrar manualmente la información de la memoria 
-de la plataforma destino al vinculador GNU ls, entonces se debe escribir 
+de la plataforma destino al vinculador GNU ld, entonces se debe escribir 
 un \textit{\textbf{script del vinculador (linker script)}}.
 Estos scripts son utilizados algunas veces para controlar el orden exacto de
 las secciones de código y datos dentro del programa reubicable, y establecer
@@ -576,7 +621,7 @@ puede ser leída desde \texttt{http://www.gnu.org}.
 
 La salida de este paso final del proceso de compilación es una imagen binaria
 conteniendo direcciones físicas para el sistema embebido destino específico.
-Esta imagen binaria ejecutable puede ser descargada a la memoria del sistema embebido.
+Esta imagen binaria ejecutable puede ser descargada a la memoria del sistema embebido y ejecutada.
 
 Afortunadamente, como se mencionó anteriormente, las herramientas de desarrollo
 GNU para microcontroladores AVR pueden realizar este ultimo paso automáticamente
@@ -593,18 +638,18 @@ utilizando las herramientas y convenciones que acompañan al hardware.
 
 El ejemplo LED blink consiste de dos archivos fuentes : led.c y blink.c.
 El primer paso en el proceso es compilar estos dos archivos.
-La estructura básica para el compilador gcc es :
+La estructura básica para ejecutar el compilador gcc es :
 
 \begin{verbatim}
-avr-gcc [opciones] archivo
+# avr-gcc [opciones] archivo
 \end{verbatim}
 
 Compilamos y vinculamos nuestro programa con :
 
 \begin{verbatim}
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o led.o led.c
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o blink.o blink.c
-avr-gcc -mmcu=atmega328p led.o blink.o -o led.elf
+# avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o led.o led.c
+# avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o blink.o blink.c
+# avr-gcc -mmcu=atmega328p led.o blink.o -o led.elf
 \end{verbatim}
 
 Las opciones utilizadas son :
@@ -700,7 +745,7 @@ ningún byte para las secciones data y bss. La columna dec muestra el tamaño
 total de la imagen, en decimal, y la columna hex en hexadecimal.
 
 
-\section {Compilando LED blink para una plataforma MIPS}
+\section {Compilando el programa LED blink para una plataforma MIPS}
 
 En esta sección se muestra un ejemplo del procedimiento de compilación 
 para el procesador MIPS 24K contenido en el sistema on-chip AR9331 de atheros
@@ -715,17 +760,17 @@ La estructura básica para el compilador gcc utilizando el toolchain openwrt
 de Linaro es :
 
 \begin{verbatim}
-mips-openwrt-linux-uclibc-gcc [opciones] archivo
+# mips-openwrt-linux-uclibc-gcc [opciones] archivo
 \end{verbatim}
 
 Compilamos los archivos fuentes con :
 
 \begin{verbatim}
 
-mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
+# mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
     -Wall -DRAMSIZE=0x00100000          -mips32 -c start.S -o start.o
 
-mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
+# mips-openwrt-linux-uclibc-gcc -O -G 0 -mno-abicalls -fno-pic \
     -Wall -DRAMSIZE=0x00100000          -mips32 -c main.c -o main.o
 
 \end{verbatim}
@@ -750,17 +795,17 @@ permitirá establecer la ubicación de cada sección en la memoria del tplink
 mr3020.  La estructura básica de este archivo, como visto antes, es :
 
 \begin{verbatim}
-mips-openwrt-linux-uclibc-ld [opciones] archivo ...
+# mips-openwrt-linux-uclibc-ld [opciones] archivo ...
 
 El comando utilizado en este caso es :
 
-mips-openwrt-linux-uclibc-ld -o barebone.elf -Tbarebone.lds \
+# mips-openwrt-linux-uclibc-ld -o barebone.elf -Tbarebone.lds \
                 -Ttext 0x80060000 start.o main.o
 
-mips-openwrt-linux-uclibc-objcopy -S -O srec --remove-section=.reginfo \
+# mips-openwrt-linux-uclibc-objcopy -S -O srec --remove-section=.reginfo \
                 --remove-section=.mdebug barebone.elf barebone.srec
 
-mips-openwrt-linux-uclibc-objcopy -S -O binary --remove-section=.reginfo \
+# mips-openwrt-linux-uclibc-objcopy -S -O binary --remove-section=.reginfo \
                 --remove-section=.mdebug barebone.elf barebone.bin
 \end{verbatim}
 
@@ -772,14 +817,14 @@ la cual es 0x80060000. Los siguientes comandos (objcopy) realizan la
 conversión de la imagen binaria ejecutable
 en un formato adecuado para ser descargado en la memoria flash del tplink.
 Su funcionamiento es el mismo que el explicado anteriormente 
-para el microcontrolador atmge328p, pero en este caso el formato
+para el microcontrolador atmega328p, pero en este caso el formato
 es acorde a este hardware destino (tplink mr3020).
 
 
 \subsubsection {Código de inicialización (startup)}
 
 Se muestra a continuación el código de inicialización contenido en el archivo
-fuente start.S
+fuente en lenguaje ensamblador MIPS start.S
 
 \begin{verbatim}
 
