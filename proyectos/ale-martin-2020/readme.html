@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Alcoholimetro</title>
+</head>
+
+<body>
+    <h1>Alcoholimetro implementado con FreeRTOS</h1>
+
+    <h2>Arquitectura de Hardware: </h2>
+    <p>El Hardware del prototipo construido tiene 3 componentes principales:
+    </p>
+    <ul>
+        <li>Arduino Pro Mini ATMega328</li>
+        <li>Display LCD Nokia 1100</li>
+        <li>Sensor de alcohol MQ-3 <a href="https://www.sparkfun.com/datasheets/Sensors/MQ-3.pdf">(Datasheet MQ-3)</a>
+        </li>
+    </ul>
+    <p>El pin analógico del sensor MQ-3 se conecta a una entrada analógica del avr (A0), la alimentación del sensor es
+        de 5V.
+        Los pines de datos del display LCD se conectan a puertos de salida (GPIO) del avr mediante resistencias de 10K,
+        la
+        alimentación del display es de 3.3V. Ademas se conecta un interruptor al pin (1) del display para controlar la
+        iluminación del mismo. A continuación se presenta el diagrama esquematico de conexión.
+    </p>
+
+    <div>
+        <a href="https://ibb.co/dcCj63q"><img src="https://i.ibb.co/vByVmrG/esquematico.png" alt="esquematico"
+                 border="0"></a>
+    </div>
+
+    <h2>Arquitectura de Software: </h2>
+    <p>El hardware del prototipo es controlado por FreeRTOS, que se ejecuta en el microcontrolador AVR
+        y maneja 2 tareas.
+        Una tarea controla la lectura analogica del sensor MQ-3, utilizando el driver ADC. Esta lectura se corresponde
+        con la concentración de alcohol presente en el ambiente, para reducir la oscilación de los datos de entrada
+        se realizan 30 lecturas y se calcula un promedio de las mismas.
+        La tarea restante controla la información que se muestra por pantalla, utilizando el driver Display LCD. Esta
+        tarea toma
+        el valor promedio generado por la tarea anterior y lo transforma en miligramos por litro de aire (mg/L), que es
+        el
+        valor que finalmente se muestra por pantalla.
+
+    </p>
+    <br>
+    <a href="https://imgbb.com/"><img src="https://i.ibb.co/mXYTwv3/diagrama-software.png" alt="diagrama-software"
+             border="0"></a>
+
+    <h3>Codigo fuente: </h3>
+    <a
+       href="https://github.com/zrafa/pse/tree/master/proyectos/ale-martin-2020">https://github.com/zrafa/pse/tree/master/proyectos/ale-martin-2020</a>
+
+
+    <h2>Pasos para compilar y flashear: </h2>
+    <ol>
+        <li>Clonar el repositorio y compilar:</li>
+        $ git clone https://github.com/zrafa/pse.git<br>
+        $ cd proyectos/ale-martin-2020/alcoholimetro_freertos<br>
+        $ make<br>
+        <li>Conectar el avr al puerto USB de la PC y flashear:</li>
+        $ sudo make flash<br>
+    </ol>
+
+    <h2>Prototipo construido</h2>
+    <p>A continuación se muestra una foto y video donde se describen las distintas partes del prototipo, y una breve
+        demostración del funcionamiento del mismo</p>
+
+    <div>
+        <a href="https://imgbb.com/"><img src="https://i.ibb.co/Mncc24Y/prototipo-alcoholimetro.png"
+                 alt="prototipo-alcoholimetro" border="0"></a>
+    </div>
+
+
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/eLc-GqMCyqg" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <h2>Observaciones: </h2>
+    <p>El Sensor MQ-3 posee un calentador interno que proporciona las condiciones necesarias de trabajo para su correcto
+        funcionamiento. Para lograr estabilizar el sensor se deberá esperar aproximadamente 15 minutos. Una vez pasado
+        el tiempo,
+        el display debería mostrar el valor "mg/L: 0.00", en este momento se podrá utilizar el alcoholímetro y su
+        funcionamiento será el esperado.
+    </p>
+</body>
+
+</html>
