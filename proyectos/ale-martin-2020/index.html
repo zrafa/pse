@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Alcoholimetro</title>
+</head>
+
+<body>
+    <h1>Alcoholimetro implementado con FreeRTOS</h1>
+
+    <p>Proyecto correspondiente al trabajo requerido para el final de la Materia "Programación de Sistemas Embebidos".
+        Facultad de Informática - Universidad Nacional del Comahue.
+    </p>
+    <h3>Integrantes: </h3>
+    <ul>
+        <li>Mora Alejandro Leg: 108479</li>
+        <li>Bucarey Martin Leg: 114413</li>
+    </ul>
+
+    <h2>Introduccion: </h2>
+    <p>Durante el cursado de la materia, fuimos buscando diferentes ideas en base a los componentes que teniamos para el
+        trabajo final. En una de esas busquedas dimos con un sensor de alcohol y en ese momento surgió la idea
+        de construir nuestro propio medidor de alcoholemia casero. Para esta idea,
+        aparte del sensor necesitabamos algo donde mostrar los resultados de forma precisa, ahí fue donde resurgieron
+        celulares viejos en desuso, mas precisamente la pantalla LCD de un celular Nokia 1100. A esto se le sumo el
+        microcontrolador
+        Arduino Pro Mini. Teniendo el hardware necesario para el proyecto, se comenzó con las investigaciones y pruebas
+        de los
+        componentes por separado. Finalmente se integró todo con el objetivo de construir un prototipo funcional.<br>
+
+        La alcoholemia es la cantidad de alcohol que está presente en la sangre después de haber ingerido
+        bebidas alcohólicas. Se mide directamente en la sangre en gramos de alcohol por litro de sangre (g/l), o
+        indirectamente a través del aire espirado en miligramos de alcohol por litro de aire. La relacion es la
+        siguiente: <br>
+        <br>
+        0,25 mg/l de aire espirado = 0,5 g/l en sangre.
+
+
+
+    </p>
+
+    <h2>Arquitectura de Hardware: </h2>
+    <p>El Hardware del prototipo construido tiene 3 componentes principales:
+    </p>
+    <ul>
+        <li>Arduino Pro Mini ATMega328</li>
+        <li>Display LCD Nokia 1100</li>
+        <li>Sensor de alcohol MQ-3 <a href="https://www.sparkfun.com/datasheets/Sensors/MQ-3.pdf">(Datasheet MQ-3)</a>
+        </li>
+    </ul>
+    <p>El pin analógico del sensor MQ-3 se conecta a una entrada analógica del avr (A0), la alimentación del sensor es
+        de 5V.
+        Los pines de datos del display LCD se conectan a puertos de salida (GPIO) del avr mediante resistencias de 10K,
+        la
+        alimentación del display es de 3.3V. Ademas se conecta un interruptor al pin (1) del display para controlar la
+        iluminación del mismo. A continuación se presenta el diagrama esquematico de conexión.
+    </p>
+
+    <div>
+        <a href="https://ibb.co/dcCj63q"><img src="https://i.ibb.co/vByVmrG/esquematico.png" alt="esquematico"
+                 border="0"></a>
+    </div>
+
+    <h2>Arquitectura de Software: </h2>
+    <p>El hardware del prototipo es controlado por FreeRTOS, que se ejecuta en el microcontrolador AVR
+        y maneja 2 tareas.
+        Una tarea controla la lectura analogica del sensor MQ-3, utilizando el driver ADC. Esta lectura se corresponde
+        con la concentración de alcohol presente en el ambiente, para reducir la oscilación de los datos de entrada
+        se realizan 30 lecturas y se calcula un promedio de las mismas. El Driver ADC es capaz de realizar 5000 lecturas
+        del sensor por segundo aproximadamente.
+        La tarea restante controla la información que se muestra por pantalla, utilizando el driver Display LCD. Esta
+        tarea toma el valor promedio generado por la tarea anterior y lo transforma en miligramos por litro de aire
+        (mg/L), que es
+        el valor que finalmente se muestra por pantalla. El driver Display LCD implementa el Driver SPI por software
+        (haciendo
+        uso de puertos GPIO), ya que la pantalla LCD del Nokia 1100 utiliza este protocolo de comunicación.
+        <br>
+        Los drivers mencionados fueron diseñados con funciones indispensables para que el hardware
+        correspiondiente funcione de forma correcta, y ademas para que estos drivers puedan ser reutilizados en otros
+        proyectos.
+        Toda funcionalidad extra, como el calculo promedio ADC y la conversion de ese valor a mg/L se hicieron en el
+        main en sus
+        respectivas tareas.
+    </p>
+    <br>
+    <a href="https://imgbb.com/"><img src="https://i.ibb.co/8MJmPW3/diagrama-software.png" alt="diagrama-software"
+             border="0"></a>
+
+    <h3>Codigo fuente: </h3>
+    <a
+       href="https://github.com/zrafa/pse/tree/master/proyectos/ale-martin-2020">https://github.com/zrafa/pse/tree/master/proyectos/ale-martin-2020</a>
+
+
+    <h2>Pasos para compilar y flashear: </h2>
+    <ol>
+        <li>Clonar el repositorio y compilar:</li>
+        $ git clone https://github.com/zrafa/pse.git<br>
+        $ cd proyectos/ale-martin-2020/alcoholimetro_freertos<br>
+        $ make<br>
+        <li>Conectar el avr al puerto USB de la PC y flashear:</li>
+        $ sudo make flash<br>
+    </ol>
+    <h2>Como utilizar el Hardware: </h2>
+    <p>Una vez cargado el programa en el microcontrolador de debe esperar hasta que las lecturas se estabilicen.
+        El Sensor MQ-3 posee un calentador interno que proporciona las condiciones necesarias de trabajo para su
+        correcto
+        funcionamiento. Cuando la pantalla muestra el resultado 0.0 mg/L (en un ambiente libre de alcohol)
+        se puede utlizar el dispositivo. Para una mejor visualizacion se cuenta con un interruptor que
+        ilumina la pantalla LCD.</p>
+
+
+    <h2>Prototipo construido</h2>
+    <p>A continuación se muestra una foto y video donde se describen las distintas partes del prototipo, y una breve
+        demostración del funcionamiento del mismo</p>
+
+    <div>
+        <a href="https://imgbb.com/"><img src="https://i.ibb.co/Mncc24Y/prototipo-alcoholimetro.png"
+                 alt="prototipo-alcoholimetro" border="0"></a>
+    </div>
+
+
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/eLc-GqMCyqg" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <h2>Conculsiones: </h2>
+    <p>
+        El prototipo fue testeado con elemenos tales como o algodón o telas impregnadas con alcohol etílico
+        y el resultado fué el esperado. Como se puede apreciar en el video, cuando acercamos una muestra
+        al sensor, aumentamos la concentracion de alcohol en el ambiente cercano a este, y esto se ve reflejado
+        en los valores que se muestran por pantalla. Cuando alejamos la muestra del sensor, los valores disminuyen
+        lentamente
+        hasta llegar a 0.
+
+        Al momento de realizar testeos con personas que hayan ingerido alcohol, el resultado no fue tan preciso.
+        Solo se detectaba una mínima cantidad de alcohol (casi nula). Se llegó a la conclusion de que esto ocurre
+        porque no se cuenta con una estructura capaz de contener durante unos segundos el alcohol que se emana al
+        momento de espirar aire en las cercanias del sensor, y asi lograr tener un funcionamiento similar a los
+        alcoholimetros
+        utilizado en los controles policiales. <br>
+
+        Nuestro trabajo se podría mejorar si se contara con dicha estructura, ya que se podría agregar un pulsador
+        para iniciar el test, el cual suspendería la tarea ADC durante 10 segundos, tiempo necesario para que se
+        concentre el aire que espira el usuario en el dispositivo. Pasado este tiempo, se realizaría la lectura del
+        sensor y se mostraría
+        el resultado por pantalla. Debería contar tambien otro pulsador para resetear la pantalla.
+        Ademas se debería hacer una correcta calibración utilizando un alcoholimetro certificado.
+
+        Nuestro trabajo también se podría reutilizar facilmente en otros proyectos
+        donde se involucre la lectura de un sensor analógico y se deban mostrar resultados por pantalla.
+        Por ejemplo, un sensor de dioxido de carbono, de temperatura, de luz, etc.
+        Solo se necesita reemplazar el sensor y realizar los nuevos calculos para transformar el valor de ADC leido a la
+        unidad
+        y valor deseado antes de ser presentados por pantalla.
+
+    </p>
+</body>
+
+</html>
