@@ -1,0 +1,21 @@
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author 
+\makeatother
+
+\newcommand{\togglepaper}[1][0]{ 
+%   \bibliography{../localbibliography}
+  \papernote{\scriptsize\normalfont
+Esta es una obra derivada oficialmente autorizada por O'Reilly(*) para la materia "Programación de Sistemas Embebidos" de la Facultad de Informática, Universidad Nacional del Comahue. \\ Detalles de la autorización oficial y sus modificaciones al final del capítulo. \\ Libro original: Programming Embedded Systems with C and GNU Development Tools,
+Second Edition, by Michael Barr and Anthony Massa. Copyright 2007 O'Reilly Media, Inc., 978-0-596-00983-0
+%    \theauthor.
+%    \thetitle. 
+%    To appear in: 
+%    Change Volume Editor \& in localcommands.tex 
+%    Change volume title in localcommands.tex
+ %   Berlin: Language Science Press. [preliminary page numbering]
+  }
+ % \pagenumbering{roman}
+  \setcounter{chapter}{#1}
+  \addtocounter{chapter}{-1}
+}
