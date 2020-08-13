@@ -355,13 +355,13 @@ a continuación en la estructura de datos serial\_st. Cada registro es de
 \begin{verbatim}
 struct serial_st
 {
-    uint8_t data_es;		/* udr0 i/o data */
-    uint8_t baud_rate_h;    	/* ubrr0h baud rate high */
-    uint8_t baud_rate_l;    	/* ubrr0l baud rate low */;
-    uint8_t _reserved;    	/* espacio sin utilizar */
-    uint8_t status_control_c;   /* ucsr0c USART Control and Status C */
-    uint8_t status_control_b;   /* ucsr0b USART Control and Status B */
     uint8_t status_control_a;   /* ucsr0a USART Control and Status A */
+    uint8_t status_control_b;   /* ucsr0b USART Control and Status B */
+    uint8_t status_control_c;   /* ucsr0c USART Control and Status C */
+    uint8_t _reserved;    	/* espacio sin utilizar */
+    uint8_t baud_rate_l;    	/* ubrr0l baud rate low */;
+    uint8_t baud_rate_h;    	/* ubrr0h baud rate high */
+    uint8_t data_es;		/* udr0 i/o data */
 }
 \end{verbatim}
 \end{small}
@@ -512,23 +512,23 @@ están mapeados a memoria. La estructura uart\_t se muestra a continuación :
 \begin{verbatim}
 typedef struct 
 {
-    uint8_t data_es;	/* udr0 i/o data */
-    uint8_t baud_rate_h;    /* ubrr0h baud rate high */
-    uint8_t baud_rate_l;    /* ubrr0l baud rate low */;
-    uint8_t _reserved;    /* espacio sin utilizar */
-    uint8_t status_control_c;    /* ucsr0c USART Control and Status C */
-    uint8_t status_control_b;    /* ucsr0b USART Control and Status B */
-    uint8_t status_control_a;    /* ucsr0a USART Control and Status A */
+    uint8_t status_control_a;   /* ucsr0a USART Control and Status A */
+    uint8_t status_control_b;   /* ucsr0b USART Control and Status B */
+    uint8_t status_control_c;   /* ucsr0c USART Control and Status C */
+    uint8_t _reserved;    	/* espacio sin utilizar */
+    uint8_t baud_rate_l;    	/* ubrr0l baud rate low */;
+    uint8_t baud_rate_h;    	/* ubrr0h baud rate high */
+    uint8_t data_es;		/* udr0 i/o data */
 } volatile uart_t
 \end{verbatim}
 \end{small}
 
 La variable puerto\_serial se utiliza para acceder a los registros
-en la dirección 0xc6 (que es la dirección mas baja del registro data\_es),
+en la dirección 0xc0 (que es la dirección mas baja del registro data\_es),
 y es definida así :
 
 \begin{verbatim}
-uart_t *puerto_serial = (uart_t *) (0xc6);
+uart_t *puerto_serial = (uart_t *) (0xc0);
 \end{verbatim}
 
 
