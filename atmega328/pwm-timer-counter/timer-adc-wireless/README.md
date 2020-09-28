@@ -8,20 +8,25 @@ El código en el raíz es la aplicación emebebida para el AVR.
 
 Compilar con :
 
+```
 make clean
 make 
-make flas  # transfiere el firmware al AVR
+make flash  # transfiere el firmware al AVR
+```
 
 
 El programa de envío en PC:
 
+```
 cd PC/
 make send
-
+```
 
 Uso:
 
+```
 ./send "frase a transmitir"
+```
 
 
 NOTAS: hay que calibrar el LED ON/OFF para la aplicación embebida
