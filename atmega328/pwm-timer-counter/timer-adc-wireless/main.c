@@ -18,9 +18,7 @@ void esperar(unsigned long msec)
 int main(void)
 {
 	int i;
-        char ascii_value;
-        int read_adc;
-        int scale;
+        int adc_val;
 
 	cli();
 
@@ -31,23 +29,23 @@ int main(void)
 
         serial_put_str("Start");
 
-	read_adc = adc_get(0);
+	adc_val = adc_get(0);
 
 	char buf[5];
 
 /*
 	for (;;) {
-		read_adc = adc_get(0);
-		sprintf(buf, "%d", read_adc);
+		adc_val = adc_get(0);
+		sprintf(buf, "%d", adc_val);
 		serial_put_str(buf);
 	}
 */
 
         while (1) {
-		read_adc = 100;
-		while (read_adc < 890) {
+		adc_val = 100;
+		while (adc_val < 890) {
 			esperar(10);
-			read_adc = adc_get(0);
+			adc_val = adc_get(0);
 		}
 
 		no_leer = 1;
@@ -61,8 +59,8 @@ int main(void)
 			no_leer = 1;
 
 			letra = (letra << 1);
-			read_adc = adc_get(0);
-			if (read_adc < 890)
+			adc_val = adc_get(0);
+			if (adc_val < 890)
 				letra |= 1;
 			
 		}

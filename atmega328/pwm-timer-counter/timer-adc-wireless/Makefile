@@ -1,5 +1,5 @@
 CC=avr-gcc
-OBJETOS=main.o serial.o utils.o adc.o clock.o
+OBJETOS=main.o serial.o adc.o clock.o
 APP=uart
 CFLAGS=-O0 -DF_CPU=16000000UL -mmcu=atmega328p 
 LDFLAGS=-mmcu=atmega328p
