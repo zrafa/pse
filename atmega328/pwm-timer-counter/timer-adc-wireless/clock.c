@@ -44,16 +44,11 @@ volatile unsigned char *timer0_timsk0 = (unsigned char *)(0x6E);
 
 void timer0_init( void )
 {
-//    TCCR0B |= (1<<CS01) | (1<<CS00);   //clock select is divided by 64.
- //   TCCR0A |= (1<<WGM01);              //sets mode to CTC
-  //  OCR0A = 0xF9;                      // Este valor tiene que ser 250 sets TOP to 124 so the timer will overflow every 1 ms.    
-   // TIMSK0 |= (1<<OCIE0A);              //Output Compare Match A Interrupt Enable
-
 	timer0->tccr0a |= TIMER0_CTC;
 	timer0->tccr0b |= TIMER0_CS;
 	timer0->ocr0a = TIMER0_OCR0A; /* valor contra el cual comparar */
-	(*timer0_timsk0) |= 0x02;  /* 0x02: compara contra registro OCR0A y genera
-				   interrupcion si hay un match */
+	(*timer0_timsk0) |= 0x02;  /* 0x02: compara contra registro OCR0A 
+				      y genera interrupcion si hay un match */
 }
 
 extern char letra;
@@ -62,25 +57,10 @@ extern volatile int no_leer;
 ISR(TIMER0_COMPA_vect)
 {
     ticks ++;
-    if (ticks > 100) {
-    	PORTB ^= ( 1 << PORTB5 );   
+    if (ticks >= 100) {
 	ticks=0;
 	no_leer = 0;
    }
 }
 
 
-/*
-main()
-{
-	cli();
-    	DDRB |= ( 1 << PORTB5 );   
-
-
-	timer0_init();
-        sei();                             //enable global interrupts
-
-	for (;;);
-
-}
-*/

@@ -29,9 +29,17 @@ int main(void)
 
 	char buf[5];
 
+/*
+	for (;;) {
+		read_adc = adc_get(0);
+		sprintf(buf, "%d", read_adc);
+		serial_put_str(buf);
+	}
+*/
+
         while (1) {
 		read_adc = 100;
-		while (read_adc < 800) {
+		while (read_adc < 890) {
 			esperar(10);
 			read_adc = adc_get(0);
 		}
@@ -48,7 +56,7 @@ int main(void)
 
 			letra = (letra << 1);
 			read_adc = adc_get(0);
-			if (read_adc < 800)
+			if (read_adc < 890)
 				letra |= 1;
 			
 		}
@@ -56,10 +64,6 @@ int main(void)
 		cli();
 		ticks=0;
 		
-		//serial_put_char('\n');
-		//serial_put_char('\r');
-
-		//for(;;);
         }
 
         return 0;
