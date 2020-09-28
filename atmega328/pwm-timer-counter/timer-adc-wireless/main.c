@@ -42,6 +42,8 @@ int main(void)
 */
 
         while (1) {
+
+		/* esperamos el bit de start */
 		adc_val = 100;
 		while (adc_val < 890) {
 			esperar(10);
@@ -50,8 +52,10 @@ int main(void)
 
 		no_leer = 1;
 		letra = 0;
+		/* habilitamos las interrupciones (timer/clock) */
 		sei();
 
+		/* leemos 8 bits desde el led */
 		for (i=0; i<8; i++) {
 
 			while (no_leer);
@@ -65,6 +69,7 @@ int main(void)
 			
 		}
 		serial_put_char(letra);
+		/* deshabilitamos interrupciones */
 		cli();
 		ticks=0;
 		
