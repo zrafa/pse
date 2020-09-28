@@ -19,7 +19,9 @@ int main(void)
 {
 	int i;
         int adc_val;
+	char buf[5];
 
+	/* deshabilitamos interrupciones */
 	cli();
 
 	letra = 0;
@@ -30,8 +32,6 @@ int main(void)
         serial_put_str("Start");
 
 	adc_val = adc_get(0);
-
-	char buf[5];
 
 /*
 	for (;;) {
