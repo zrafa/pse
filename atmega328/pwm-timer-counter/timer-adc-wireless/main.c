@@ -55,7 +55,7 @@ int main(void)
 		/* habilitamos las interrupciones (timer/clock) */
 		sei();
 
-		/* leemos 8 bits desde el led */
+		/* leemos 8 bits desde el ADC (fotoresistencia) */
 		for (i=0; i<8; i++) {
 
 			while (no_leer);
