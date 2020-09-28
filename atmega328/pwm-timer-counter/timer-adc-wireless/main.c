@@ -1,13 +1,19 @@
 #include <avr/interrupt.h>
 
 #include "serial.h"
-#include "utils.h"
 #include "adc.h"
 #include "clock.h"
 
 char letra;
 volatile int no_leer;
 extern volatile int ticks;
+
+void esperar(unsigned long msec)
+{
+        unsigned long i;
+        for (i = 0; i < 450 * msec; i++);
+}
+
 
 int main(void)
 {
