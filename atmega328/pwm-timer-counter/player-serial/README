@@ -14,6 +14,7 @@ EL conector de audio headset jack que utilizaremos tiene un esquemático
 para conectarlo al avr. Se utiliza una resistencia y capacitor según
 el archivo: doc/esquematico-player-serial.jpg
 
+El PIN en arduino pro mini es el 9 (D9)
 
 Teoría y software
 -----------------
@@ -70,6 +71,15 @@ stty -F /dev/ttyACM0 speed 115200  # configuramos el driver serial del Linux a 1
 stty -F /dev/ttyACM0   # revisamos la nueva configuracion
 
 cat archivo_output.wav > /dev/ttyACM0      # enviamos el archivo wav al avr
+
+
+Para escuchar el sonido de la PC
+--------------------------------
+ ffmpeg  -f pulse -i default  -ar 11000 -acodec pcm_u8 -ac 1 -f wav pipe:1 | cat > /dev/ttyUSB0
+
+Ir a pavucontrol -> Recording -> seleccionar monitor built-in or monitor 
+of internal
+
 
 
 Fuente original
