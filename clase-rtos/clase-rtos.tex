@@ -653,6 +653,10 @@ Como el tamaño del código fuente es pequeño \\ \textcolor{blue}{Xinu es adecu
     \end{columns}
 \end{frame}
 
+
+
+
+
 \begin{frame}{Xinu}
 
     \begin{columns}[onlytextwidth,T]
@@ -860,9 +864,247 @@ printf(args);
 
 
 \subsection{Xinu en ejemplos: Tareas}
+
 \subsubsection{Tareas concurrentes}
 \subsubsection{Reuso de código}
 \subsubsection{Diseño de tiempo real: prioridades fijas}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: crear y ejecutar 3 procesos concurrentes}{Programación concurrente}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+	\begin{itemize}
+\bigskip
+  \item[Secuencia]
+\begin{enumerate}
+\item Al iniciar Xinu existen 2 procesos en ejecución: main() y null().
+\bigskip
+\item Cada proceso tiene su propia pila y contexto.
+\bigskip
+\item main() entonces crea 3 nuevos procesos y finaliza.
+\bigskip
+\item send\_a(), led() y led\_placa() son procesos \\ con loop infinitos.
+\bigskip
+\item Los 4 procesos se ejecutan indefinidamente \\ de manera concurrente.
+\bigskip
+\item \textcolor{blue}{\href{https://youtu.be/Xg1l9pvxluE/}{Video demostrativo}}
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{60mm}
+     \includegraphics[width=58mm]{images/3tasks.png}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 0}{Crear y ejecutar una tarea}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+	\begin{itemize}
+\bigskip
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{create()} crea el proceso \textit{ex\_0}
+\begin{itemize}
+\item El código fuente de este proceso esta implementado en \textbf{example0()}.
+\item Recibe 3 argumentos: nargs (la cantidad de argumentos), y 2 argumentos en args.
+\end{itemize}
+
+\bigskip
+\item Para compilar esta aplicación junto con Xinu: 
+
+\begin{lstlisting}[language=c,basicstyle=\footnotesize]
+cd xinu-avr/
+cd compile/
+make clean
+make
+make flash
+\end{lstlisting}
+\bigskip
+\item Los printf están configurados para utilizar el dispositivo CONSOLE en Xinu. 
+
+\bigskip
+\item En xinu-avr, el dispositivo CONSOLE es el USART.
+
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{60mm}
+     \includegraphics[width=62mm]{images/ejemplo0.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 1}{Utilizar putc con el dispositivo CONSOLE}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+	\begin{itemize}
+\bigskip
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{main()} hace uso de la función de biblioteca \textbf{putc()}
+
+\bigskip
+\item Para compilar esta aplicación junto con Xinu: 
+
+\begin{lstlisting}[language=c,basicstyle=\footnotesize]
+cd xinu-avr/
+cd compile/
+make clean
+make
+make flash
+\end{lstlisting}
+\bigskip
+\item Las funciones vistas hasta el momento:
+
+\begin{lstlisting}[language=c,basicstyle=\footnotesize]
+create() : system call para crear un proceso y dejarlo en estado SUSPENDIDO
+resume(): función de Xinu para colocar el proceso en estado de LISTO
+nargs y args[]: argumentos de entrada de un proceso
+putc(): función de biblioteca para enviar un char a un dispositivo
+printf(): función de biblioteca para enviar un output a CONSOLE
+\end{lstlisting}
+
+\bigskip
+\item En xinu-avr, el dispositivo CONSOLE es el USART.
+
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{60mm}
+     \includegraphics[width=62mm]{images/ejemplo1.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 2}{Tareas concurrentes}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+	\begin{itemize}
+\bigskip
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{main()} crea dos procesos: sndA y sndB.
+	\begin{itemize}
+\item Cada proceso tiene un bucle infinito.
+\item Cada proceso envía de manera independiente una letra indefinidamente.
+	\end{itemize}
+
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\bigskip
+\item Observación: el codigo fuente de un proceso es de tipo void o process.
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{70mm}
+     \includegraphics[width=70mm]{images/ejemplo2.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 3}{Reuso de código}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+	\begin{itemize}
+\bigskip
+\item[]Reuso de código
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{main()} crea y ejecuta dos procesos independientes que utilizan el mismo código (pero con diferentes argumentos).
+	\begin{itemize}
+\item Cada proceso recibe un argumento (letra A o B).
+\item Cada proceso envía de manera independiente su letra indefinidamente.
+	\end{itemize}
+
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\bigskip
+\item Observación: el codigo fuente de un proceso es de tipo void o process.
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{70mm}
+     \includegraphics[width=70mm]{images/ejemplo3.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
 \subsection{Xinu en ejemplos: Sincronización de Tareas en Xinu}
 \subsubsection{Región crítica: solución con mutex}
 \subsubsection{Sincronización: semáforos (ej. productor/consumidor)}
@@ -877,6 +1119,49 @@ printf(args);
 
 
 
+
+
+
+
+
+
+\subsection{Recursos}
+
+
+
+
+\begin{frame}{Recursos}
+
+\begin{itemize}
+
+\item [WEB]
+\begin{enumerate}
+\item \textcolor{blue}{\footnotesize \url{https://xinu.cs.purdue.edu/}}
+\item \textcolor{blue}{\footnotesize \url{http://se.fi.uncoma.edu.ar/xinu-avr/}}
+\end{enumerate}
+
+\item [LIBRO]
+
+\begin{enumerate}
+\item \textit{Douglas Comer, Operating System Design - The Xinu Approach, Second Edition CRC Press, 2015. ISBN 9781498712439}
+\end{enumerate}
+
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-engine: xetex
+%%% End:
 
 
 
