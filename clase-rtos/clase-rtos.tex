@@ -86,17 +86,18 @@
 
 
 
-\begin{frame}{Sistema de Tiempo Real}
+\begin{frame}{Sistema de Tiempo Real (RTS)}
 
    \begin{columns}[onlytextwidth,T]
      \column{\dimexpr\linewidth-70mm-5mm}
 
 	\begin{itemize}
 \bigskip
-  \item[REAL-TIME-SYSTEM] cuando la correctitud del sistema depende:
+  \item[RTS] cuando la correctitud del sistema depende:
 
 \bigskip
 (1) del resultado lógico de la computación, y
+
 \bigskip
 (2) del tiempo que toma producir el resultado.
 
@@ -127,16 +128,17 @@
 
 
 
-\begin{frame}{Sistema de Tiempo Real}
+\begin{frame}{Sistema de Tiempo Real (RTS)}
 
    \begin{columns}[onlytextwidth,T]
      \column{\dimexpr\linewidth-70mm-5mm}
 
 \begin{itemize}
-  \item[REAL-TIME-SYSTEM] cuando la correctitud del sistema depende:
+  \item[RTS] cuando la correctitud del sistema depende:
 
 \bigskip
 (1) del resultado lógico de la computación, y
+
 \bigskip
 (2) del tiempo que toma producir el resultado.
 
@@ -157,16 +159,17 @@
 
 
 
-\begin{frame}{Sistema de Tiempo Real}
+\begin{frame}{Sistema de Tiempo Real (RTS)}
 
    \begin{columns}[onlytextwidth,T]
      \column{\dimexpr\linewidth-70mm-5mm}
 
 \begin{itemize}
-  \item[REAL-TIME-SYSTEM] cuando la correctitud del sistema depende:
+  \item[RTS] cuando la correctitud del sistema depende:
 
 \bigskip
 (1) del resultado lógico de la computación, y
+
 \bigskip
 (2) del tiempo que toma producir el resultado.
 
@@ -186,16 +189,17 @@
 
 
 
-\begin{frame}{Sistema de Tiempo Real}
+\begin{frame}{Sistema de Tiempo Real (RTS)}
 
    \begin{columns}[onlytextwidth,T]
      \column{\dimexpr\linewidth-70mm-5mm}
 
 \begin{itemize}
-  \item[REAL-TIME-SYSTEM] cuando la correctitud del sistema depende:
+  \item[RTS] cuando la correctitud del sistema depende:
 
 \bigskip
 (1) del resultado lógico de la computación, y
+
 \bigskip
 (2) del tiempo que toma producir el resultado.
 
@@ -312,7 +316,7 @@ El siguiente ejemplo: \textbf{¿Es un sistema de tiempo real?}
 (5) Compartir dispositivos entre tareas.
 
 \bigskip
-(6) Comunicación entre procesos y datos compartidos.
+(6) Sincronización y Comunicación entre procesos.
 
 \bigskip
 \bigskip
@@ -499,7 +503,7 @@ Tambien una interfaz web para verificar el estado de la planta remotamente.
 
 
 \begin{itemize}
-\item [Loop+Soft Timers]
+\item [Loop+Timers]
 
 \begin{enumerate}
 \item Las tareas de interfaz fisica se realizan en un bucle infinito en main.
@@ -919,9 +923,7 @@ printf(args);
 
 
 
-
-
-\begin{frame}[fragile]{Xinu: ejemplo 0}{Crear y ejecutar una tarea}
+\begin{frame}[fragile]{Xinu: ejemplo 0 \\ Crear y ejecutar una tarea}
 
     \begin{columns}[onlytextwidth,T]
       \column{\dimexpr\linewidth-70mm-5mm}
@@ -971,7 +973,7 @@ make flash
 
 
 
-\begin{frame}[fragile]{Xinu: ejemplo 1}{Utilizar putc con el dispositivo CONSOLE}
+\begin{frame}[fragile]{Xinu: ejemplo 1 \\ Utilizar putc con el dispositivo CONSOLE}
 
     \begin{columns}[onlytextwidth,T]
       \column{\dimexpr\linewidth-70mm-5mm}
@@ -1015,7 +1017,7 @@ printf(): función de biblioteca para enviar un output a CONSOLE
 \end{small}
 
       \column{60mm}
-     \includegraphics[width=62mm]{images/ejemplo1.jpg}
+     \includegraphics[width=62mm]{images/xinu-ejemplo1.jpg}
 
     \end{columns}
 \end{frame}
@@ -1028,7 +1030,7 @@ printf(): función de biblioteca para enviar un output a CONSOLE
 
 
 
-\begin{frame}[fragile]{Xinu: ejemplo 2}{Tareas concurrentes}
+\begin{frame}[fragile]{Xinu: ejemplo 2 \\ Tareas concurrentes}
 
     \begin{columns}[onlytextwidth,T]
       \column{\dimexpr\linewidth-70mm-5mm}
@@ -1069,15 +1071,14 @@ printf(): función de biblioteca para enviar un output a CONSOLE
 
 
 
-\begin{frame}[fragile]{Xinu: ejemplo 3}{Reuso de código}
+\begin{frame}[fragile]{Xinu: ejemplo 3 \\ Reuso de código}
 
     \begin{columns}[onlytextwidth,T]
       \column{\dimexpr\linewidth-70mm-5mm}
 
 \begin{small}
-	\begin{itemize}
+\begin{itemize}
 \bigskip
-\item[]Reuso de código
   \item[Descripción]
 \begin{enumerate}
 \item \textbf{main()} crea y ejecuta dos procesos independientes que utilizan el mismo código (pero con diferentes argumentos).
@@ -1105,13 +1106,123 @@ printf(): función de biblioteca para enviar un output a CONSOLE
 
 
 
-\subsection{Xinu en ejemplos: Sincronización de Tareas en Xinu}
-\subsubsection{Región crítica: solución con mutex}
+\subsection{Xinu en ejemplos: Sincronización y Comunicación de Tareas en Xinu}
 \subsubsection{Sincronización: semáforos (ej. productor/consumidor)}
-\subsubsection{Pasaje de mensajes: mailbox}
+\subsubsection{Región crítica: solución con mutex}
+\subsubsection{Comunicación: pasaje de mensajes con mailbox}
 \subsubsection{Buffers y colas: ports}
 
 
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 4 \\ Productor/Consumidor NO SINCRONIZADOS!}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+\begin{itemize}
+\bigskip
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{main()} crea dos tareas, un productor y un consumidor.
+	\begin{itemize}
+\item La tarea productora genera 2000 valores de n.
+\item La tarea consumidora muestra por CONSOLA el valor de n producido.
+	\end{itemize}
+
+\bigskip
+\item El sistema falla en su objetivo.\\ La E/S es miles de veces mas lenta que la CPU.
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\bigskip
+\item Observación: el codigo fuente de un proceso es de tipo void o process.
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{70mm}
+     \includegraphics[width=66mm]{images/xinu-ejemplo4.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: ejemplo 4 \\ Sincronización entre tareas (Productor/Consumidor)}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{small}
+\begin{itemize}
+\bigskip
+  \item[Descripción]
+\begin{enumerate}
+\item \textbf{main()} crea dos tareas, un productor y un consumidor.
+	\begin{itemize}
+\item La tarea productora genera 2000 valores de n.
+\item La tarea consumidora muestra por CONSOLA el valor de n producido.
+	\end{itemize}
+
+\bigskip
+\item Solución clásica al problema productor/consumidor, utilizando dos semáforos. \\ Las tareas están ahora sincronizadas.
+
+\bigskip
+\item \textbf{\textit{\textcolor{blue}{Xinu provee semáforos para sincronización}}}
+\bigskip
+\item Para observar el output: \textit{cutecom}
+\end{enumerate}
+	\end{itemize}
+
+\end{small}
+
+      \column{70mm}
+     \includegraphics[width=60mm]{images/xinu-ejemplo5.jpg}
+
+    \end{columns}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Xinu: Semáforos y mutex. Región crítica. Ejemplo de uso.}
+
+    \begin{columns}[onlytextwidth,T]
+      \column{\dimexpr\linewidth-70mm-5mm}
+
+\begin{itemize}
+  \item[Descripción]
+\begin{enumerate}
+\begin{footnotesize}
+\item Un buffer circular es una excelente herramienta de comunicación entre dos procesos.
+\item Una tarea produce elementos.
+\item Una tarea remueve elementos y los procesa. Si no hay elementos en el buffer la tarea consumidora bloquea.
+\item Los semáforos se utilizan para controlar los límites del buffer.
+\item El mutex se utiliza para proteger la región crítica.
+\item \textbf{\textit{\textcolor{blue}{En Xinu, un mutex puede ser implementado utilizando un semáforo binario correctamente utilizado. \\ Se debe prestar especial atención a esta implementación.}}}
+\end{footnotesize}
+\end{enumerate}
+\end{itemize}
+
+     \includegraphics[width=70mm]{images/mutex-sem1.png}
+
+      \column{70mm}
+     \includegraphics[width=70mm]{images/mutex-sem2.jpg}
+
+    \end{columns}
+\end{frame}
 
 
 
