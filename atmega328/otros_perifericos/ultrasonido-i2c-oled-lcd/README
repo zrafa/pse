@@ -1,0 +1,21 @@
+
+ultrasonido-i2c-oled-lcd: ejemplo que captura datos del ultrasonido y lo
+			  muestra en una pantalla oled.
+Driver LCD ssd1306
+Driver i2c: twi.c twi.h
+(tiene interrupciones).
+Driver i2c para avr autor: https://github.com/scttnlsn/avr-twi
+Driver (lib) de ultrasonido: https://github.com/taraskornuta/HC-SR04-lib
+
+Hoja de datos del controlador del LCD:
+https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+
+Pinout
+
+avr sda       lcd sda
+avr scl       lcd scl
+avr 5v        lcd vcc
+avr gnd       lcd gnd
+
+avr d2	      ultrasonido trigger
+avr d4	      ultrasonido echo
