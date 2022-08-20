@@ -13,8 +13,10 @@
 
 
 /* AM2321 ADDRESS 0x5C */
-#define SLAVE 0x5c
+#define SLAVE 0xB8
+//#define SLAVE 0x5C
 
+uint8_t stop = 1;
 
 static uint16_t 
 _calc_crc16(const uint8_t *buf, size_t len) {
@@ -54,7 +56,6 @@ void leer_medicion(uint8_t address, uint8_t *d)
 int 
 am2320_read(float *out_temperature, float *out_humidity) 
 {
-  int fd;
 
  // fd = open(I2C_DEVICE, O_RDWR);
  // if (fd < 0)
@@ -68,9 +69,19 @@ am2320_read(float *out_temperature, float *out_humidity)
    */
   //write(fd, NULL, 0);
   uint8_t c = 0;
-//  twi_write(SLAVE, &c, 0, NULL); 
- // _delay_ms(1);
-  //usleep(1000); /* at least 0.8ms, at most 3ms */
+  stop = 0;
+while(1) {
+  twi_write(SLAVE, &c, 0, NULL); 
+  _delay_ms(100);
+}
+  serial_put_str("hola3\n");
+  twi_write(SLAVE, &c, 0, NULL); 
+  _delay_ms(10);
+  serial_put_str("hola3\n");
+  twi_write(SLAVE, &c, 0, NULL); 
+  twi_write(SLAVE, &c, 0, NULL); 
+  _delay_ms(10);
+  serial_put_str("hola3\n");
   
   /* write at addr 0x03, start reg = 0x00, num regs = 0x04 */
   data[0] = 0x03; 
@@ -78,11 +89,15 @@ am2320_read(float *out_temperature, float *out_humidity)
   data[2] = 0x04;
   //if (write(fd, data, 3) < 0)
    // return 3;
+  stop = 1;
   twi_write(SLAVE, &data[0], 3, NULL); 
   
   /* wait for AM2320 */
   //usleep(1600); /* Wait atleast 1.5ms */
-  _delay_ms(1.6);
+  _delay_ms(1000);
+  _delay_ms(1000);
+  serial_put_str("hola3\n");
+  stop = 1;
   
   /*
    * Read out 8 bytes of data
@@ -104,6 +119,7 @@ am2320_read(float *out_temperature, float *out_humidity)
   _delay_ms(1.6);
   //printf("[0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x]\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] );
 
+  serial_put_str("hola3\n");
   /* Check data[0] and data[1] */
   if (data[0] != 0x03 || data[1] != 0x04)
     return 9;

@@ -1,13 +1,20 @@
+/*
+ * Driver i2c para avr
+ * Autor: https://github.com/scttnlsn/avr-twi
+ */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/twi.h>
-#include <util/delay.h>
 #include <string.h>
 
 #include "twi.h"
 #include "serial.h"
 
+extern uint8_t stop;
+
 static volatile uint8_t busy;
+
 static struct {
   uint8_t buffer[TWI_BUFFER_LENGTH];
   uint8_t length;
@@ -15,14 +22,12 @@ static struct {
   void (*callback)(uint8_t, uint8_t *);
 } transmission;
 
-int pri = 1;
 void twi_init() {
   TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
   TWSR = 0; // prescaler = 1
 
   busy = 0;
 
-  pri = 1;
   sei();
 
   TWCR = _BV(TWEN);
@@ -77,21 +82,16 @@ void twi_done() {
 }
 
 void twi_write(uint8_t address, uint8_t* data, uint8_t length, void (*callback)(uint8_t, uint8_t *)) {
-  if (pri) {
-	_delay_ms(1);
-//	twi_stop();
-	twi_done();
-	}
+  twi_wait();
 
-twi_wait();
-
+  serial_put_str("a punto\n");
   busy = 1;
 
   transmission.buffer[0] = (address << 1) | TW_WRITE;
   transmission.length = length + 1;
   transmission.index = 0;
   transmission.callback = callback;
-  memcpy(&transmission.buffer[1], data, length);
+  if (length) memcpy(&transmission.buffer[1], data, length);
 
   twi_start();
 }
@@ -110,11 +110,7 @@ void twi_read(uint8_t address, uint8_t length, void (*callback)(uint8_t, uint8_t
 }
 
 ISR(TWI_vect) {
-serial_put_char('a');
-if (pri) {
-   pri = 0;
-//   twi_done();
-} else
+	serial_put_str("e\n");
   switch (TW_STATUS) {
   case TW_START:
   case TW_REP_START:
@@ -130,15 +126,18 @@ if (pri) {
     break;
 
   case TW_MR_DATA_ACK:
+	serial_put_str("a\n");
     twi_recv();
     twi_reply();
     break;
 
   case TW_MR_SLA_ACK:
+	serial_put_str("b\n");
     twi_reply();
     break;
 
   case TW_MR_DATA_NACK:
+	serial_put_str("c\n");
     twi_recv();
     twi_stop();
     twi_done();
@@ -148,6 +147,7 @@ if (pri) {
   case TW_MR_SLA_NACK:
   case TW_MT_DATA_NACK:
   default:
+	serial_put_str("d\n");
     twi_stop();
     twi_done();
     break;
