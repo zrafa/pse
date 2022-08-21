@@ -13,10 +13,9 @@
 
 
 /* AM2321 ADDRESS 0x5C */
-#define SLAVE 0xB8
-//#define SLAVE 0x5C
+//#define SLAVE 0xB8
+#define SLAVE 0x5C
 
-uint8_t stop = 1;
 
 static uint16_t 
 _calc_crc16(const uint8_t *buf, size_t len) {
@@ -69,18 +68,8 @@ am2320_read(float *out_temperature, float *out_humidity)
    */
   //write(fd, NULL, 0);
   uint8_t c = 0;
-  stop = 0;
-while(1) {
   twi_write(SLAVE, &c, 0, NULL); 
   _delay_ms(100);
-}
-  serial_put_str("hola3\n");
-  twi_write(SLAVE, &c, 0, NULL); 
-  _delay_ms(10);
-  serial_put_str("hola3\n");
-  twi_write(SLAVE, &c, 0, NULL); 
-  twi_write(SLAVE, &c, 0, NULL); 
-  _delay_ms(10);
   serial_put_str("hola3\n");
   
   /* write at addr 0x03, start reg = 0x00, num regs = 0x04 */
@@ -89,7 +78,6 @@ while(1) {
   data[2] = 0x04;
   //if (write(fd, data, 3) < 0)
    // return 3;
-  stop = 1;
   twi_write(SLAVE, &data[0], 3, NULL); 
   
   /* wait for AM2320 */
@@ -97,7 +85,6 @@ while(1) {
   _delay_ms(1000);
   _delay_ms(1000);
   serial_put_str("hola3\n");
-  stop = 1;
   
   /*
    * Read out 8 bytes of data
@@ -116,7 +103,7 @@ while(1) {
   
   //close(fd);
 
-  _delay_ms(1.6);
+  _delay_ms(4);
   //printf("[0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x]\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] );
 
   serial_put_str("hola3\n");
@@ -130,8 +117,8 @@ while(1) {
   if (crcdata != crcread) 
     return 10;
 
-  uint16_t temp16 = _combine_bytes(data[4], data[5]); 
-  uint16_t humi16 = _combine_bytes(data[2], data[3]);   
+//  uint16_t temp16 = _combine_bytes(data[4], data[5]); 
+//  uint16_t humi16 = _combine_bytes(data[2], data[3]);   
   //printf("temp=%u 0x%04x  hum=%u 0x%04x\n", temp16, temp16, humi16, humi16);
   
   /* Temperature resolution is 16Bit, 
@@ -143,11 +130,22 @@ while(1) {
    * Temperature sensor value is a string of 10 times the
    * actual temperature value.
    */
-  if (temp16 & 0x8000)
-    temp16 = -(temp16 & 0x7FFF);
+ // if (temp16 & 0x8000)
+  //  temp16 = -(temp16 & 0x7FFF);
 
-  *out_temperature = (float)temp16 / 10.0;
-  *out_humidity = (float)humi16 / 10.0;
+//  *out_temperature = (float)temp16 / 10.0;
+ // *out_humidity = (float)humi16 / 10.0;
+
+
+  uint16_t t = (((uint16_t) data[4] & 0x7F) << 8) | data[5];
+  *out_temperature = t / 10.0;
+  *out_temperature = ((data[4] & 0x80) >> 7) == 1 ? *out_temperature * (-1) : *out_temperature;
+
+  uint16_t h = ((uint16_t) data[2] << 8) | data[3];
+  *out_humidity = h / 10.0;
+
+
+
 
   return 0;
 }

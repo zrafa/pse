@@ -2,7 +2,7 @@ CC=avr-gcc
 OBJETOS=am2320.o twi.o serial.o main.o
 APP=am2320
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p 
-LDFLAGS=-mmcu=atmega328p
+LDFLAGS=-mmcu=atmega328p -Wl,-u,vfprintf -lprintf_flt -lm
 FIRMWARE=imagen.hex
 
 # $@:Se sustituye por el nombre del objetivo de la presente regla.

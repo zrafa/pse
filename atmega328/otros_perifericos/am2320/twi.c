@@ -15,14 +15,12 @@ static struct {
   void (*callback)(uint8_t, uint8_t *);
 } transmission;
 
-int pri = 1;
 void twi_init() {
   TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
   TWSR = 0; // prescaler = 1
 
   busy = 0;
 
-  pri = 1;
   sei();
 
   TWCR = _BV(TWEN);
@@ -77,13 +75,8 @@ void twi_done() {
 }
 
 void twi_write(uint8_t address, uint8_t* data, uint8_t length, void (*callback)(uint8_t, uint8_t *)) {
-  if (pri) {
-	_delay_ms(1);
-//	twi_stop();
-	twi_done();
-	}
 
-twi_wait();
+  twi_wait();
 
   busy = 1;
 
@@ -110,11 +103,6 @@ void twi_read(uint8_t address, uint8_t length, void (*callback)(uint8_t, uint8_t
 }
 
 ISR(TWI_vect) {
-serial_put_char('a');
-if (pri) {
-   pri = 0;
-//   twi_done();
-} else
   switch (TW_STATUS) {
   case TW_START:
   case TW_REP_START:
