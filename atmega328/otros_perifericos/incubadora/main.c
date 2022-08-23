@@ -38,11 +38,34 @@ void init_wifi() {
 	_delay_ms(400);
 
 	while(1) {
+
+
+	//serial_put_str("AT+CIPSEND=0,65");
+	serial_put_str("AT+CIPSEND=0,25");
+	_delay_ms(200);
+
+	//serial_put_str("<html><head><meta http-equiv=\"refresh\" content=\"10\"></head><body>");
+	serial_put_str("<html><head></head><body>");
+	_delay_ms(200);
+
+			      
 	serial_put_str("AT+CIPSEND=0,26");
-	_delay_ms(400);
+	_delay_ms(200);
 
 	serial_put_str("<h1>ESP8266 Webserver</h1>");
-	_delay_ms(400);
+	_delay_ms(200);
+
+
+	serial_put_str("AT+CIPSEND=0,14");
+	_delay_ms(200);
+
+	serial_put_str("</body></html>");
+	_delay_ms(200);
+
+	serial_put_str("AT+CIPCLOSE=0");
+	_delay_ms(200);
+
+	_delay_ms(8000);
 	}
 
 }
