@@ -16,6 +16,10 @@
 #include "am2320.h"
 
 void init_wifi() {
+
+	char msg[80];
+	float temp, humi;
+
 	serial_put_str("AT");
 	_delay_ms(400);
 	serial_put_str("AT+RST");
@@ -49,12 +53,20 @@ void init_wifi() {
 	_delay_ms(200);
 
 			      
-	serial_put_str("AT+CIPSEND=0,26");
+	serial_put_str("AT+CIPSEND=0,19");
 	_delay_ms(200);
 
-	serial_put_str("<h1>ESP8266 Webserver</h1>");
+
+	serial_put_str("<h1>Incubadora</h1>");
 	_delay_ms(200);
 
+	serial_put_str("AT+CIPSEND=0,45");
+	_delay_ms(200);
+
+	am2320_read(&temp, &humi);
+	sprintf(msg, "<h2>temperatura: %2.1f     humedad: %2.1f </h2>", temp, humi);
+	serial_put_str(msg);
+	_delay_ms(200);
 
 	serial_put_str("AT+CIPSEND=0,14");
 	_delay_ms(200);
@@ -76,8 +88,8 @@ void main() {
 	uint16_t distance;
 
 	serial_init(115200);
-//	twi_init();		/* init i2c */
-//	sei();
+	twi_init();		/* init i2c */
+	sei();
 	_delay_ms(2000);
 	// am2320_init();	/* init lidar with some specific values (check code) */
 

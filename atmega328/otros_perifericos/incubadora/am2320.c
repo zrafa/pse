@@ -70,7 +70,7 @@ am2320_read(float *out_temperature, float *out_humidity)
   uint8_t c = 0;
   twi_write(SLAVE, &c, 0, NULL); 
   _delay_ms(100);
-  serial_put_str("hola3\n");
+  //serial_put_str("hola3\n");
   
   /* write at addr 0x03, start reg = 0x00, num regs = 0x04 */
   data[0] = 0x03; 
@@ -84,7 +84,7 @@ am2320_read(float *out_temperature, float *out_humidity)
   //usleep(1600); /* Wait atleast 1.5ms */
   _delay_ms(1000);
   _delay_ms(1000);
-  serial_put_str("hola3\n");
+  //serial_put_str("hola3\n");
   
   /*
    * Read out 8 bytes of data
@@ -106,7 +106,7 @@ am2320_read(float *out_temperature, float *out_humidity)
   _delay_ms(4);
   //printf("[0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x  0x%02x 0x%02x]\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] );
 
-  serial_put_str("hola3\n");
+  //serial_put_str("hola3\n");
   /* Check data[0] and data[1] */
   if (data[0] != 0x03 || data[1] != 0x04)
     return 9;
