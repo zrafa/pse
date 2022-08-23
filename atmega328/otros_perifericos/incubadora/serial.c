@@ -109,6 +109,6 @@ void serial_put_str(char * str)
                 str++;
         }
 
-        serial_put_char('\n');
         serial_put_char('\r');
+        serial_put_char('\n');
 }

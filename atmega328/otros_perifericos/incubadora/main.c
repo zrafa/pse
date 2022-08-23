@@ -18,6 +18,8 @@
 void init_wifi() {
 	serial_put_str("AT");
 	_delay_ms(400);
+	serial_put_str("AT+RST");
+	_delay_ms(400);
 
 	// access point
 	serial_put_str("AT+CWMODE=3");
@@ -35,6 +37,14 @@ void init_wifi() {
 	serial_put_str("AT+CIPSERVER=1,80");
 	_delay_ms(400);
 
+	while(1) {
+	serial_put_str("AT+CIPSEND=0,26");
+	_delay_ms(400);
+
+	serial_put_str("<h1>ESP8266 Webserver</h1>");
+	_delay_ms(400);
+	}
+
 }
 
 void main() {
@@ -43,8 +53,8 @@ void main() {
 	uint16_t distance;
 
 	serial_init(115200);
-	twi_init();		/* init i2c */
-	sei();
+//	twi_init();		/* init i2c */
+//	sei();
 	_delay_ms(2000);
 	// am2320_init();	/* init lidar with some specific values (check code) */
 

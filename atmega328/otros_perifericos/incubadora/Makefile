@@ -21,7 +21,7 @@ $(APP): $(OBJETOS)
 
 flash:
 	avr-objcopy -O ihex -R .eeprom $(APP) $(FIRMWARE)
-	avrdude -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:$(FIRMWARE):i
+	avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b 57600 -D -U flash:w:$(FIRMWARE):i
 	# avrdude -p atmega328p -c arduino -P /dev/ttyUSB0 -b 115200 -D -U flash:w:$(FIRMWARE):i
 clean:
 	rm $(OBJETOS) $(APP) $(FIRMWARE)
