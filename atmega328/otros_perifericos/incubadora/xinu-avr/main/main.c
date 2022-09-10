@@ -34,7 +34,7 @@ process main() {
 	// char msg[80];
 	//uint16_t distance;
 
-	serial_init(115200);
+	serial_init(9600);
 	twi_init();		/* init i2c */
 	sei();
 	sleepms(2000);

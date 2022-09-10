@@ -65,7 +65,7 @@ void cipsend_n(char * dest2, char * dest, const __flash char src[], int len, int
 	dest[len] = 0;
 	sprintf(dest2, dest, n);
 	serial_put_str(dest2);
-	sleepms(300);
+	sleepms(400);
 }
 
 process wifi() {
@@ -73,7 +73,6 @@ process wifi() {
 	char msg[46], msg2[20];
 	int n, i;
 
-	while(1) {
 
 	serial_put_str2(mm1);
 	sleepms(400);
@@ -96,6 +95,7 @@ process wifi() {
 	serial_put_str2(mm6);
 	sleepms(400);
 
+	while(1) {
 
 		n = wait_connection();
 
@@ -105,7 +105,7 @@ process wifi() {
 	//sleepms(300);
 
 	serial_put_str2(mm8);
-	sleepms(300);
+	sleepms(400);
 
 			      
 	cipsend_n(msg, msg2, mm9, 16, n);
@@ -114,7 +114,7 @@ process wifi() {
 
 
 	serial_put_str2(mm10);
-	sleepms(300);
+	sleepms(400);
 
 	cipsend_n(msg, msg2, mm11, 16, n);
 	//serial_put_str2(mm11);
@@ -124,14 +124,14 @@ process wifi() {
  	// dtostrf(temp, 2, 1, msg);
 	sprintf(msg, "<h2>temperatura: %2.1f     humedad: %2.1f </h2>", temp, humi);
 	serial_put_str(msg);
-	sleepms(300);
+	sleepms(400);
 
 	cipsend_n(msg, msg2, mm12, 16, n);
 	//serial_put_str2(mm12);
 	//sleepms(300);
 
 	serial_put_str2(mm13);
-	sleepms(300);
+	sleepms(400);
 
 	cipsend_n(msg, msg2, mm14, 14, n);
 	//serial_put_str2(mm14);
