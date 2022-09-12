@@ -18,18 +18,18 @@ volatile unsigned char estado=0;
 void port_b_init() {
         *(puerto_b) = *(puerto_b) & (~ prende);
         *(ddr_b) = *(ddr_b) | (prende);
-        *(pin_b) =  0x04;
+        *(ddr_b) = *(ddr_b) & (~bit2);
+        *(puerto_b) = *(puerto_b) | bit2;
+        // *(pin_b) =  bit2;
 }
 
 
-int button_get() {
+int button_pressed() {
 	volatile unsigned char valor_b = *(pin_b);
 
-        // valor_b &=  bit2 ;
-        if (valor_b && bit2)
-		return 0;
+        return !(valor_b && bit2);
 	
-	return 1;
+	//return 1;
 }
 
 

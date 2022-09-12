@@ -66,7 +66,7 @@ process tiempo_y_sensor() {
 
 extern process wifi();
 void port_b_init();
-int button_get();
+int button_pressed();
 void titilar_cinco();
 void apagar_foco();
 void prender_foco();
@@ -82,9 +82,6 @@ process main() {
 	twi_init();		/* init i2c */
 	sei();
 	sleepms(2000);
-	// am2320_init();	/* init lidar with some specific values (check code) */
-
-	//float temp, humi;
 
 	resume(create(wifi, 512, 20, "wifi", 0));
 	resume(create(tiempo_y_sensor, 128, 20, "sensor", 0));
@@ -95,19 +92,22 @@ process main() {
 		sleep(1);
 
 		/* intentando reset */
-		if (button_get()) {
+		if (button_pressed()) {
+			// prender_led();
 			for (i=0; i<10; i++) {
 				sleep(1);
-				if ( ! button_get() )
+				if ( ! button_pressed() )
 					break;
 			}
 
+			/* si pasaron 10 segundos con el boton presionado: RESET */
 			if (i == 10) {
 				dias = 0;
 				horas = 0;
 				minutos = 0;
 				titilar_cinco();
 			}
+			// apagar_led();
 		}
 	}
 
