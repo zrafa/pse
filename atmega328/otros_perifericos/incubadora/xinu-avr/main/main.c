@@ -29,14 +29,25 @@ process sensor() {
 }
 */
 
+#define TEMP_MAX 25
+#define TEMP_MIN 24
+
 process tiempo_y_sensor() {
 	minutos = 57;
 	dias = 11;
 	horas = 23;
 
 	for (;;) {
+		/* medir temperatura y humedad */
 		am2320_read(&temp, &humi);
 
+		/* prendemos o apagamos foco segun tempertura */
+		if (temp > TEMP_MAX)
+			apagar_foco();
+		else if (temp < TEMP_MIN)
+			prender_foco();
+
+		/* esperar un minuto de incubacion */
 		sleep(59);
 		minutos++;
 
@@ -52,33 +63,13 @@ process tiempo_y_sensor() {
 	}
 }
 
-/*
-process tiempo() {
-
-	minutos = 57;
-	dias = 11;
-	horas = 23;
-
-	sleep(60);
-	minutos++;
-
-	if (minutos == 60) {
-		minutos = 0;
-		horas++;
-	}
-
-	if (horas == 24) {
-		horas = 0;
-		dias++;
-	}
-}
-*/
-
 
 extern process wifi();
 void port_b_init();
 int button_get();
 void titilar_cinco();
+void apagar_foco();
+void prender_foco();
 
 
 process main() {

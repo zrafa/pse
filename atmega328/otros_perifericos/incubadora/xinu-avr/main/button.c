@@ -5,6 +5,8 @@
 
 #define prende (0x38)
 #define bit2 (0x04)
+#define led (0x20)
+#define foco (0x10)
 
 /* puertos de E/S */
 volatile unsigned char * puerto_b = (unsigned char *) 0x25; /* direccion de PORTB: SALIDA */
@@ -35,7 +37,8 @@ void prender_led() {
 
         volatile unsigned char valor_b = *(puerto_b);
 
-        valor_b |=  prende ;
+        //valor_b |=  prende ;
+        valor_b |=  led;
         *(puerto_b) = valor_b;
 }
 
@@ -43,7 +46,8 @@ void apagar_led() {
 
         volatile unsigned char valor_b = *(puerto_b);
 
-        valor_b &= ~(prende);
+        //valor_b &= ~(prende);
+        valor_b &= ~(led);
         *(puerto_b) = valor_b;
 }
 
@@ -57,3 +61,22 @@ void titilar_cinco() {
 		sleepms(250);
 	}
 }
+
+void apagar_foco() {
+
+        volatile unsigned char valor_b = *(puerto_b);
+
+       	valor_b |=  foco;
+
+        *(puerto_b) = valor_b;
+}
+
+void prender_foco() {
+
+        volatile unsigned char valor_b = *(puerto_b);
+
+	valor_b &= ~(foco);
+
+        *(puerto_b) = valor_b;
+}
+
