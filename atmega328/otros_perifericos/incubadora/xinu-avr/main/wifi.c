@@ -32,6 +32,7 @@ const __flash char mm14[] = "AT+CIPCLOSE=%i";
 const __flash int n2 = 5;
 
 extern float temp, humi;
+extern int dias, horas;
 
 int wait_connection() {
 	int found = 0;
@@ -116,13 +117,17 @@ process wifi() {
 	serial_put_str2(mm10);
 	sleepms(400);
 
-	cipsend_n(msg, msg2, mm11, 16, n);
-	//serial_put_str2(mm11);
-	//sleepms(300);
 
-	//sprintf(msg, "%2.1f", temp);
- 	// dtostrf(temp, 2, 1, msg);
+	cipsend_n(msg, msg2, mm11, 16, n);
+
 	sprintf(msg, "<h2>temperatura: %2.1f     humedad: %2.1f </h2>", temp, humi);
+	serial_put_str(msg);
+	sleepms(400);
+
+
+	cipsend_n(msg, msg2, mm11, 16, n);
+
+	sprintf(msg, "<h2>dias incubando: %2i (dias) y %2i (hs)   </h2>", dias, horas);
 	serial_put_str(msg);
 	sleepms(400);
 
