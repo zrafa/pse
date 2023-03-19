@@ -1,6 +1,7 @@
 body{
-    margin:auto;
-    max-width:60em;
+    /* margin:auto; */
+    margin:50px;
+    max-width:40em;
     /* font-family: "Serif"; */
     font-family: 'Roboto', sans-serif;
     font-size: 80%;
