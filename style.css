@@ -1,9 +1,9 @@
 body{
     margin:auto;
-    max-width:40em;
+    max-width:50em;
     /* font-family: "Serif"; */
     font-family: 'Roboto', sans-serif;
-    font-size: 100%;
+    font-size: 80%;
 }
 img{
         width:80%;
