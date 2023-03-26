@@ -52,18 +52,18 @@ void main()
 
 	while(1) {
 		//for (j=0; j<=180; j=j+10) {
-		for (j=0; j<=80; j=j+10) {
+		for (j=0; j<=110; j=j+10) {
 			mover(j);
-			for(i = 0; i < 50000;i++);
+			for(i = 0; i < 15000;i++);
 			//esperar(current, j);
 			current = j;
 			distance = lidar_v4_get_distance();
 			sprintf(msg, "distance (cm): %i \n", distance);
 			serial_put_str(msg);
 		}
-		for (j=80; j>=0; j=j-10) {
+		for (j=110; j>=0; j=j-10) {
 			mover(j);
-			for(i = 0; i < 50000;i++);
+			for(i = 0; i < 15000;i++);
 			//esperar(current, j);
 			current = j;
 			distance = lidar_v4_get_distance();

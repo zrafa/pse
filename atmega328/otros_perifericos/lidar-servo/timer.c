@@ -39,7 +39,8 @@ volatile unsigned char *timer1_timsk1 = (unsigned char *)(0x6F);
 #define TIMER1_ICR1H 0x9C /* ICR1 = 40000*/
 #define TIMER1_ICR1L 0x40
 
-int GRADO_CERO=0x03E8;
+int GRADO_CERO=0x02F8;
+//int GRADO_CERO=0x03E8;
 int GRADO_90=0x1388;
 int GRADO_180=0x1388;
 
