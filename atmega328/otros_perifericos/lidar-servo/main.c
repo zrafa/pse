@@ -47,43 +47,28 @@ void main()
         timer1_init();
 	mover(0);
 	current = 0;
-//	esperar(180, current);
 	for(i = 0; i < 450000;i++);
 
 	while(1) {
-		//for (j=0; j<=180; j=j+10) {
-		for (j=0; j<=110; j=j+10) {
+		for (j=0; j<=180; j=j+10) {
 			mover(j);
 			for(i = 0; i < 15000;i++);
-			//esperar(current, j);
 			current = j;
 			distance = lidar_v4_get_distance();
-			sprintf(msg, "distance (cm): %i \n", distance);
+			//sprintf(msg, "distance (cm): %i \n", distance);
+			sprintf(msg, "%.3d:%.3d\n", j, distance);
 			serial_put_str(msg);
 		}
-		for (j=110; j>=0; j=j-10) {
+		for (j=180; j>=0; j=j-10) {
 			mover(j);
 			for(i = 0; i < 15000;i++);
-			//esperar(current, j);
 			current = j;
 			distance = lidar_v4_get_distance();
-			sprintf(msg, "distance (cm): %i \n", distance);
+			//sprintf(msg, "distance (cm): %i \n", distance);
+			sprintf(msg, "%.3d:%.3d\n", j, distance);
 			serial_put_str(msg);
 		}
 
-/*
-		mover(0);
-		for(i = 0; i < 450000;i++);
-		distance = lidar_v4_get_distance();
-		sprintf(msg, "distance (cm): %i \n", distance);
-		serial_put_str(msg);
-
-		mover(180);
-		for(i = 0; i < 450000;i++);
-		distance = lidar_v4_get_distance();
-		sprintf(msg, "distance (cm): %i \n", distance);
-		serial_put_str(msg);
-*/
 	}
 }
 

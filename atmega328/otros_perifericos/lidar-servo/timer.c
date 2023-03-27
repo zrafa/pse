@@ -42,7 +42,9 @@ volatile unsigned char *timer1_timsk1 = (unsigned char *)(0x6F);
 int GRADO_CERO=0x02F8;
 //int GRADO_CERO=0x03E8;
 int GRADO_90=0x1388;
-int GRADO_180=0x1388;
+//int GRADO_180=0x1388;
+//int GRADO_180=0x0D17;
+int GRADO_180=0x0AD6;
 
 #define IZQ_H 0x03
 #define IZQ_L 0xE8
