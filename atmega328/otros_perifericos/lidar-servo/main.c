@@ -56,16 +56,16 @@ void main()
 			current = j;
 			distance = lidar_v4_get_distance();
 			//sprintf(msg, "distance (cm): %i \n", distance);
-			sprintf(msg, "%.3d:%.3d\n", j, distance);
+			sprintf(msg, "%.3d:%.3d", j, distance);
 			serial_put_str(msg);
 		}
-		for (j=180; j>=0; j=j-10) {
+		for (j=175; j>=0; j=j-10) {
 			mover(j);
 			for(i = 0; i < 15000;i++);
 			current = j;
 			distance = lidar_v4_get_distance();
 			//sprintf(msg, "distance (cm): %i \n", distance);
-			sprintf(msg, "%.3d:%.3d\n", j, distance);
+			sprintf(msg, "%.3d:%.3d", j, distance);
 			serial_put_str(msg);
 		}
 
