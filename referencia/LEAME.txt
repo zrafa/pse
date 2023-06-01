@@ -1,0 +1,26 @@
+
+Esta aplicación es un ejemplo de sistema embebido concurrente usando
+XINU RTOS.
+
+Existen tres tareas en ejecución (cuatro si contamos a la tarea null de XINU):
+
+main()		: muestra un mensaje por el UART indefinidamente cada 1 seg.
+		  prioridad 20, y 256 bytes de PILA.
+led_placa()	: parpadea el LED de la placa indefinidamente.
+		  prioridad 20, y 64 bytes de PILA.
+comunicacion()	: muestra un segundo mensaje por el UART indefinidamente.
+		  prioridad 20, y 256 bytes de PILA.
+
+Como las tareas main() y comunicacion() compiten por el uso del UART para
+emitir un mensaje, se utilizan dos semáforos para "alternar" el uso del 
+UART. Sin esta sincronización los mensajes "saldrian mezclados", porque
+el kernel XINU podría interrumpir al proceso emitiendo un mensaje y asignar
+la CPU al otro proceso.
+
+Si la alternancia no fuese importante, entonces simplemente se podría
+haber utilizado un único semáforo, para implementar un mutex, y que el 
+proceso que adquiere el mutex emita el mensaje.
+No habría alternancia, sino sólo protección de la región crítica (del recurso
+compartido).
+
+

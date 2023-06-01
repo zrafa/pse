@@ -1,0 +1,81 @@
+
+XINU avr es una versión de XINU para ser utilizado como RTOS en arquitectura
+AVR. Esta versión de XINU RTOS presenta los siguientes directorios de 
+código fuente:
+
+config/Configuration	: archivo de configuracion general
+include/		: cabeceras del kernel de XINU RTOS y sus bibliotecas
+lib/			: codigo fuente de las bibliotecas de XINU RTOS
+device/			: codigo fuente de los drivers de XINU RTOS
+system/			: codigo fuente del kernel de XINU RTOS
+main/			: codigo fuente de la aplicación embebida
+
+En general, el único directorio donde se trabaja es debajo de main/.
+Esta versión de XINU RTOS trae un gestor de memoria dinámica, gestor de tareas 
+(procesos), un driver del timer que el planificador de CPU del kernel de 
+XINU utiliza para obtener la CPU en intervalos regulares. Tambien para
+gestionar los procesos que delegaron voluntariamente la CPU via los system
+calls sleep() o sleepms() (y activarlos cuando sea necesario).
+
+El sistema trabaja en base a prioridades. El scheduller pone a ejecutar
+siempre al proceso de la mas alta prioridad. Si existen varios procesos
+con la misma prioridad el scheduller utiliza algoritmo round-robin 
+para asignar la CPU a cada proceso. 
+Cada proceso utiliza la CPU durante un milisegundo (1ms). Luego, el timer
+interrumpe la CPU, y el kernel de XINU obtiene el control de la CPU.
+Si no existe otro proceso listo para ejecutar con la prioridad necesaria,
+entonces el kernel de XINU asigna la CPU nuevamente al proceso que la estaba
+utilizando.
+
+Cuando un proceso desea colaborativamente delegar la CPU por un lapso de tiempo
+puede utilizar los system calls sleep() o sleepms(). El kernel XINU pone
+a ese proceso en estado DURMIENDO, y le asigna la CPU al proceso con la 
+mas alta prioridad en estado de LISTO.
+
+Si no existe ningun proceso en estado de LISTO, entonces el kernel de XINU
+le asigna la CPU al proceso null.
+
+Esta versión de XINU utiliza el timer0 del AVR. POR LO QUE NO PUEDE 
+USARSE ESE TIMER! para la aplicación embebida.
+
+También utiliza inicialmente el UART a 9600. Se puede agregar en main/
+un driver UART propio, pero se debe establecer la velocidad a 9600 (vea la
+aplicación de ejemplo).
+
+Cuando XINU RTOS "inicia", realiza dos veces un parpadeo del led de la placa.
+También informa la cantidad de memoria libre para usar para los procesos.
+En total, existen 1280 bytes de memoria libre.
+system/initialize.c crea el proceso main, y le asigna 256 bytes de esa memoria
+libre.
+
+
+Listado de algunos System calls de XINU RTOS
+--------------------------------------------
+
+create()	: crea un nuevo proceso (tarea)
+resume(pid)	: pone en estado de LISTO a un proceso
+sleep(n)	: el proceso delega la CPU al kernel XINU por n segundos
+sleepms(n)	: el proceso delega la CPU al kernel XINU por n milisegundos
+suspend(pid)	: se le solicita al kernel XINU que suspenda al proceso pid
+getpid()
+getprio()
+kill(pid)	: finalizar un proceso (tarea)
+kprinf( *char)	: utiliza el driver UART del kernel para emitir un msg 
+send(pid, msg)	: enviar el mensaje msg (un entero) a pid (no bloqueante)
+receive()	: el proceso espera por un mensaje (system call bloqueante)
+recvclr()
+
+
+Funciones de biblioteca para utilizar semáforos
+-----------------------------------------------
+
+Existen 4 semáforos para utilizar (para implementar un mutex, o 
+un sincronismo productor-consumidor, o implementar un buffer circular, etc).
+
+Se puede ampliar la cantidad de semáforos editando include/sync.h
+(nota: utilizar muchos semáforos puede volver complejo la verificación
+del sistema).
+
+sync_wait(n)	: espera a que el semáforo n esté habilitado
+sync_signal(n)	: señaliza el semáforo n 
+
