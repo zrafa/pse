@@ -1,0 +1,61 @@
+
+Pautas generales de programación al utilizar XINU RTOS sobre AVR
+----------------------------------------------------------------
+
+Estas pautas son una guía general. Si bien no son pautas obligatorias
+o imperativas, pueden ser eficaces a la hora de utilizar un RTOS
+sobre un sistema con recursos EXTREMADAMENTE LIMITADOS.
+
+- Es sumamente importante ser metódico y sistemático.
+- Agregue de a una tarea por vez.
+- Verifique el correcto funcionamiento del sistema con cada tarea agregada.
+- Las tareas completamente independientes (si las hay) podrían verificarse
+  individualmente, e integrarlas a todo el sistema al final del desarrollo.
+- Modele claramente.
+- Estilo de la Programación. Por ejemplo, no utilice mas de dos ifs anidados.
+  Analice en cambio si un switch case no es mas legible y mejor opción.
+- Cuanto MENOR sea la comunicación entre tareas más facil de
+  observar/verificar será el software. Pero, a no abusar. No utilice
+  "complejidades" o tricks con el fin de ahorrar variables globales o semáforos.
+  Ejemplo: "se me ocurrió que para ahorrar una variable global podría observar
+  la variable que mantiene la frecuencia actual del parpadeo del led para saber
+  si hay que apagar el motor". Tal frase, si implementada, parece críptica, o
+  dificil de entender a futuro (al leer el código fuente a futuro).
+
+- No se puede utilizar por ahora ninguna biblioteca de C (hay una excepción,
+  ver al final de este punto).
+  Esto significa que no se puede incluir .h de ningun tipo que no sea xinu.h
+  La exepción es avr/interrupt.h si se usan interrupciones en algún driver.
+
+El por qué: primero, porque no sabemos como están implementadas las funciones de
+la biblioteca de C de gcc-avr, por lo que no sabemos cuanta pila utiliza 
+cada función. Segundo, la biblioteca de C de avr está muy atada al hardware, con
+lo cual, podría interferir con funciones internas de xinu que también están
+atadas al hardware. Tercero, Douglas Comer agregó al código fuente de XINU unas
+pocas funciones de biblioteca de C, cuya implementación difiera de la
+de gcc-avr-libc. Por lo tanto, habría que observar si el compilador 
+utiliza una implementación u otra, etc. 
+
+Si uno utiliza funciones de la biblioteca de C avr-libc sobre XINU RTOS
+y sucede algun inconveniente, entonces el problema más comun es : una pila de
+un proceso pisa la pila de otro proceso de manera silenciosa.
+Cuando eso sucede pueden pasar infinidades de "anomalías"; algunas claras
+y visibles otras no tan visibles. Ejemplo: puede que el arduino se resetee
+sin que sepamos por qué, o que funcione pero mal: por ejemplo, recibimos por
+el serial basura en vez de lo que le pedimos imprimir, o los sleepms() o sleep()
+no funcionan como esperamos, etc. Otras veces la "anomalía" es invisible 
+(esta es peor que la anterior), es decir, está la anomalía pero no la "vemos".
+(por ejemplo, el valor de una variable local o argumento de una función
+se sobreescribe con otro valor de otra pila). 
+
+Dos detalles extras con respecto a esto:
+    1. a veces, con solo incluir un .h de avr libc (ejempo: stdALGO.h)
+       alguna anomalía aparece.
+    2. cuando SI o SI es necesaria una función de biblioteca de C, se puede 
+       corroborar que no está implementada también XINU RTOS. Luego, se debe
+       incluir el .h correspondiente, se agrega el uso de la función, y se
+       verifica el software SIN NINGUN AGREGADO más. Es decir, se compara la
+       funcionalidad que se tiene del sistema sin la función de biblioteca
+       y se la compara con la versión que incluye la función de biblioteca.
+       Si aparece alguna anomalía, se puede aumentar la pila del proceso que
+       utiliza la función de biblioteca, y observar si el problema se corrige.
