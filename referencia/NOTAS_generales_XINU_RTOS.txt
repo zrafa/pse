@@ -65,6 +65,40 @@ Xinu utiliza al menos 100 bytes por cada proceso aproximadamente.
 Así que cada vez que incrementen esa configuración en 1 van a contar
 con 100 bytes menos de RAM.
 
+Ejemplo de configuración extema
+-------------------------------
+
+Este ejemplo es mas o menos lo máximo que se puede expirmir este MCU
+con este RTOS.
+
+En config/Configuration:
+
+#define NPROC        7          /* number of user processes             */
+#define NSEM         0          /* number of semaphores                 */
+
+Aquí definimos 7 tareas máximo (recuerden que main y nullp ya son dos tareas).
+Podrían agregar máximo 5 tareas más.
+Semáforos de XINU 0. Eso nos da 100 bytes extras libres.
+
+Con esa configuración, quedan 1100 bytes aproximadamente para repartir 
+entre todas las tareas y variables globales.
+
+Supongamos que tenemos 
+tarea 1		nullp (64 bytes de pila)
+tarea 2		main (256 bytes de pila)
+tarea 3		64 bytes de pila
+tarea 4		64 bytes de pila
+tarea 5		64 bytes de pila
+tarea 6		256 bytes de pila
+tarea 7		256 bytes de pila
+
+Aquí estaríamos usando 1024 bytes de los 1100 libres. Casi no queda para nada.
+Ejemplo, casi queda muy poca RAM para variables globales.
+
+Las constantes tambien consumen RAM:
+Toda constante tipo serial_put_str("quiero mandar un mensaje por consola");
+Ese "quiero mandar un mensaje por consola" usa 36 bytes de RAM.
+
 
 Listado de algunos System calls de XINU RTOS
 --------------------------------------------
