@@ -49,6 +49,23 @@ system/initialize.c crea el proceso main, y le asigna 256 bytes de esa memoria
 libre.
 
 
+Configuracion
+-------------
+
+El archivo config/Configuration tiene la configuración general del kernel.
+Por ejemplo, ahí se define cuantos procesos máximo puede gestionar el sistema.
+De manera predeterminada son 4.
+main y nullp son procesos, así que sólo se pueden agregar dos procesos
+a esos dos.
+
+Si se desea contar con mas procesos, se modifica la línea 
+#define NPROC        4          /* number of user processes             */
+
+Xinu utiliza al menos 100 bytes por cada proceso aproximadamente.
+Así que cada vez que incrementen esa configuración en 1 van a contar
+con 100 bytes menos de RAM.
+
+
 Listado de algunos System calls de XINU RTOS
 --------------------------------------------
 
