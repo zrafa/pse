@@ -65,10 +65,10 @@ Xinu utiliza al menos 100 bytes por cada proceso aproximadamente.
 Así que cada vez que incrementen esa configuración en 1 van a contar
 con 100 bytes menos de RAM.
 
-Ejemplo de configuración extema
--------------------------------
+Ejemplo de configuración extrema
+--------------------------------
 
-Este ejemplo es mas o menos lo máximo que se puede expirmir este MCU
+Este ejemplo es mas o menos lo máximo que se puede exprimir este MCU
 con este RTOS.
 
 En config/Configuration:
@@ -98,6 +98,12 @@ Ejemplo, casi queda muy poca RAM para variables globales.
 Las constantes tambien consumen RAM:
 Toda constante tipo serial_put_str("quiero mandar un mensaje por consola");
 Ese "quiero mandar un mensaje por consola" usa 36 bytes de RAM.
+
+Las tareas que no tienen variables locales (o tiene solo un par) y no llaman
+a otras funciones pueden usar 64 bytes de pila.
+Ejemplo, la tarea que parpadea un led.
+Las tareas que llaman a dos o tres funciones anidadas, con poco uso de
+variables locales tal vez funcione bien con 128 bytes de pila.
 
 
 Listado de algunos System calls de XINU RTOS
