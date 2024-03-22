@@ -38,6 +38,7 @@ Al comenzar a explorar el mundo de la electricidad y la electrónica, es vital c
 % \chapter*{capitulo 4}
 % {\def\addcontentsline#1#2#3{}\maketitle}
 
+\setcounter{chapter}{-1}
 \chapter*{Voltage, Corriente y Resistencia - Ley de Ohm} 
 
 \begingroup
@@ -93,16 +94,15 @@ Al comenzar a explorar el mundo de la electricidad y la electrónica, es vital c
 
 
 
-\section{Fundamentos de la Electricidad}
 
 
 
 
-\subsection{Ley de Ohm - Cómo se relacionan el Voltaje, la Corriente y la Resistencia}
+\subsection{Cómo se relacionan el Voltaje, la Corriente y la Resistencia}
 
 La primera, y quizás la más importante, relación entre corriente, voltaje y resistencia se llama \textit{\textbf{Ley de Ohm}}, descubierta por Georg Simon Ohm y publicada en su artículo de 1827, Investigación Matemática del Circuito Galvánico.
 
-La corriente eléctrica el el flujo de electrones (carga eléctrica) que circula por un conductor en un determinado momento. Este flujo de carga eléctrica se puede aprovechar para hacer algún trabajo. Encender un foco, el tele, el teléfono, etc., todos aprovechan el movimiento de los electrones para realizar su trabajo. Todos operan utilizando la misma fuente de energía básica: el movimiento de electrones.
+La corriente eléctrica es el flujo de electrones (carga eléctrica) que circula por un conductor en un determinado momento. Este flujo de carga eléctrica se puede aprovechar para hacer algún trabajo. Encender un foco, el tele, el teléfono, etc., todos aprovechan el movimiento de los electrones para realizar su trabajo. Todos operan utilizando la misma fuente de energía básica: el movimiento de electrones.
 
 Un \textit{\textbf{circuito eléctrico}} se forma cuando se crea un camino conductivo para permitir que la carga eléctrica se mueva continuamente. Este movimiento continuo de carga eléctrica a través de los conductores de un circuito se llama \textit{\textbf{corriente}}, y a menudo se refiere en términos de flujo, al igual que el flujo del agua a través de una manguera.
 
@@ -144,12 +144,6 @@ Todos estos símbolos se expresan con letras mayúsculas, excepto en los casos e
 \subsection{La Ecuación de la Ley de Ohm}
 El principal descubrimiento de Ohm fue que la cantidad de corriente eléctrica a través de un conductor metálico en un circuito es directamente proporcional al voltaje aplicado a través de él, para cualquier temperatura dada. Ohm expresó su descubrimiento en forma de una ecuación simple, describiendo cómo se interrelacionan el voltaje, la corriente y la resistencia.
 
-1 amperio (corriente) = 1 coulomb por segundo. Es decir, si la intensidad de la corriente eléctira es de un amperio, entonces significa que en ese punto del material conductor pasan 6,250,000,000,000,000,000 de electrones por segundo. 
-
-1 Ohmio es la resistencia entre dos puntos en un conductor donde la aplicación de 1 voltio empujará 1 amperio, o 6.241 × 10\^18 electrones. 
-
-Combinando los elementos de voltaje, corriente y resistencia, Ohm desarrolló la fórmula:
-
 \[V = I \times R\]
 
 Donde:
@@ -161,7 +155,14 @@ Donde:
 \item R = Resistencia en ohmios
 \end{itemize}
 
-Esto se llama ley de Ohm. Digamos, por ejemplo, que tenemos un circuito con el potencial de 1 voltio, una corriente de 1 amperio y una resistencia de 1 ohmio. Usando la ley de Ohm, podemos decir:
+Esto se llama ley de Ohm. 
+
+1 amperio (corriente) = 1 coulomb por segundo. Es decir, si la intensidad de la corriente eléctira es de un amperio, entonces significa que en ese punto del material conductor pasan 6,250,000,000,000,000,000 de electrones por segundo. 
+
+1 Ohmio es la resistencia entre dos puntos en un conductor donde la aplicación de 1 voltio empujará 1 amperio, o 6.241 × 10\^18 electrones. 
+
+
+Digamos, por ejemplo, que tenemos un circuito con el potencial de 1 voltio, una corriente de 1 amperio y una resistencia de 1 ohmio. Usando la ley de Ohm, podemos decir:
 
 \[1V = 1A \times 1Ω\]
 
@@ -223,9 +224,7 @@ Para este ejemplo, tenemos una batería de 9 voltios y un LED rojo con una clasi
 
 \[0.018A = 9V / 0Ω\]
 
-¡Dividir por cero nos da una corriente infinita! Bueno, no infinita en la práctica, pero tanta corriente como la batería pueda suministrar. Dado que NO queremos que tanta corriente fluya a través de nuestro LED, vamos a necesitar una resistencia. Nuestro circuito debería verse así:
-
-Podemos usar la Ley de Ohm de la misma manera exacta para determinar el valor de la resistencia que nos dará el valor de corriente deseado:
+¡Dividir por cero nos da una corriente infinita! Bueno, no infinita en la práctica, pero tanta corriente como la batería pueda suministrar. Dado que NO queremos que tanta corriente fluya a través de nuestro LED, vamos a necesitar una resistencia.  Podemos usar la Ley de Ohm para determinar el valor de la resistencia que nos dará el valor de corriente deseado:
 
 \[R = V / I\]
 \[R = 9V / 0.018A\]
@@ -263,6 +262,7 @@ Veamos cómo podrían funcionar estas ecuaciones para ayudarnos a analizar circu
 
 
 En el circuito anterior (a), solo hay una fuente de voltaje (la batería, a la izquierda) y solo una fuente de resistencia a la corriente (la lámpara, a la derecha). Esto hace que sea muy fácil aplicar la Ley de Ohm. Si conocemos los valores de dos de las tres cantidades (voltaje, corriente y resistencia) en este circuito, podemos usar la Ley de Ohm para determinar la tercera.
+
 \begin{itemize}
   \setlength\itemsep{-0.5em}
 \item En la Figura 5 (b) calcularemos la cantidad de corriente (I) en un circuito, dados los valores de voltaje (E) y resistencia (R): ¿Cuál es la cantidad de corriente (I) en este circuito?
@@ -295,12 +295,21 @@ Eventualmente, tendrás que estar familiarizado con el álgebra para estudiar se
 
 \subsection{REVISIÓN:}
 
-- El voltaje se mide en voltios, simbolizado por las letras E o V.
-- La corriente se mide en amperios, simbolizada por la letra I.
-- La resistencia se mide en ohmios, simbolizada por la letra R.
-- Ley de Ohm: E = IR; I = E/R; R = E/I
+\begin{itemize}
+  \setlength\itemsep{-0.5em}
+\item El voltaje se mide en voltios, simbolizado por las letras E o V.
+\item La corriente se mide en amperios, simbolizada por la letra I.
+\item La resistencia se mide en ohmios, simbolizada por la letra R.
+\item Ley de Ohm: E = IR; I = E/R; R = E/I
+\end{itemize}
 
 
+\subsection{Bibliografia:}
 
+\begin{enumerate}
+  \setlength\itemsep{-0.5em}
+\item Ohm’s Law - How Voltage, Current, and Resistance Relate \url{https://www.allaboutcircuits.com/textbook/direct-current/chpt-2/voltage-current-resistance-relate/}
+\item Voltage, Current, Resistance, and Ohm's Law \url{https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law/all}
+\end{enumerate}
 
 \end{document}
