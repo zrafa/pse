@@ -1,0 +1,149 @@
+
+Fundamentos de la Electricidad
+
+Al comenzar a explorar el mundo de la electricidad y la electrónica, es vital comenzar por entender los conceptos básicos de voltaje, corriente y resistencia. Estos son los tres bloques básicos necesarios para manipular y utilizar la electricidad. Al principio, estos conceptos pueden ser difíciles de entender porque no podemos "verlos". No podemos ver a simple vista la energía fluyendo a través de un cable o el voltaje de una batería colocada sobre una mesa. Incluso los rayos en el cielo, aunque visibles, no son realmente el intercambio de energía que ocurre entre las nubes y la tierra, sino una reacción en el aire a la energía que pasa a través de él. Para detectar esta transferencia de energía, debemos usar herramientas de medición como multímetros, analizadores de espectro y osciloscopios para visualizar qué está sucediendo con la carga en un sistema. Sin embargo, no temas, este tutorial te dará la comprensión básica del voltaje, la corriente y la resistencia y cómo los tres se relacionan entre sí.
+
+Carga Eléctrica
+
+La electricidad es el movimiento de electrones. Los electrones crean carga, que podemos aprovechar para hacer trabajo. Tu bombilla, tu estéreo, tu teléfono, etc., todos aprovechan el movimiento de los electrones para realizar trabajo. Todos operan utilizando la misma fuente de energía básica: el movimiento de electrones.
+
+Los tres principios básicos de este tutorial se pueden explicar usando electrones, o más específicamente, la carga que crean:
+
+El voltaje es la diferencia de carga entre dos puntos.
+La corriente es la velocidad a la que fluye la carga.
+La resistencia es la tendencia de un material a resistir el flujo de carga (corriente).
+Entonces, cuando hablamos de estos valores, realmente estamos describiendo el movimiento de carga y, por lo tanto, el comportamiento de los electrones. Un circuito es un bucle cerrado que permite que la carga se mueva de un lugar a otro. Los componentes en el circuito nos permiten controlar esta carga y usarla para realizar trabajo.
+
+Georg Ohm fue un científico bávaro que estudió la electricidad. Ohm comienza describiendo una unidad de resistencia definida por corriente y voltaje. Entonces, comencemos con el voltaje y avancemos desde allí.
+
+Voltaje
+
+Definimos el voltaje como la cantidad de energía potencial entre dos puntos en un circuito. Un punto tiene más carga que otro. Esta diferencia de carga entre los dos puntos se llama voltaje. Se mide en voltios, que, técnicamente, es la diferencia de energía potencial entre dos puntos que impartirá un julio de energía por culombio de carga que pasa a través de él (no te preocupes si esto no tiene sentido, todo se explicará). La unidad "voltio" lleva el nombre del físico italiano Alessandro Volta, quien inventó lo que se considera la primera batería química. El voltaje se representa en ecuaciones y esquemas con la letra "V".
+
+Al describir el voltaje, la corriente y la resistencia, una analogía común es un tanque de agua. En esta analogía, la carga se representa por la cantidad de agua, el voltaje se representa por la presión del agua y la corriente se representa por el flujo de agua. Así que para esta analogía, recuerda:
+
+Agua = Carga
+Presión = Voltaje
+Flujo = Corriente
+Considera un tanque de agua a cierta altura sobre el suelo. En la parte inferior de este tanque hay una manguera.
+
+El voltaje es como la presión creada por el agua.
+La presión en el extremo de la manguera puede representar el voltaje. El agua en el tanque representa la carga. Cuanta más agua haya en el tanque, mayor será la carga, mayor será la presión que se mida en el extremo de la manguera.
+
+Podemos pensar en este tanque como una batería, un lugar donde almacenamos una cierta cantidad de energía y luego la liberamos. Si vaciamos nuestro tanque una cierta cantidad, la presión creada en el extremo de la manguera disminuye. Podemos pensar en esto como una disminución del voltaje, como cuando una linterna se vuelve más tenue a medida que las pilas se agotan. También hay una disminución en la cantidad de agua que fluirá a través de la manguera. Menos presión significa menos agua fluyendo, lo que nos lleva a la corriente.
+
+Corriente
+
+Podemos pensar en la cantidad de agua que fluye a través de la manguera desde el tanque como corriente. Cuanta más presión, mayor será el flujo, y viceversa. Con el agua, mediríamos el volumen de agua que fluye a través de la manguera durante un cierto período de tiempo. Con la electricidad, medimos la cantidad de carga que fluye a través del circuito durante un período de tiempo. La corriente se mide en amperios (generalmente solo se llama "amperios"). Un amperio se define como 6.241 * 10^18 electrones (1 culombio) por segundo que pasan por un punto en un circuito. Los amperios se representan en ecuaciones con la letra "I".
+
+Digamos ahora que tenemos dos tanques, cada uno con una manguera que sale desde la parte inferior. Cada tanque tiene exactamente la misma cantidad de agua, pero la manguera en un tanque es más estrecha que la manguera en el otro.
+
+Estos dos tanques crean diferentes presiones.
+Medimos la misma cantidad de presión en el extremo de cualquiera de las mangueras, pero cuando el agua comienza a fluir, la velocidad de flujo del agua en el tanque con la manguera más estrecha será menor que la velocidad de flujo del agua en el tanque con la manguera más ancha. En términos eléctricos, la corriente a través de la manguera más estrecha es menor que la corriente a través de la manguera más ancha. Si queremos que el flujo sea el mismo a través de ambas mangueras, tenemos que aumentar la cantidad de agua (carga) en el tanque con la manguera más estrecha.
+
+Estos dos tanques crean la misma presión.
+Esto aumenta la presión (voltaje) en el extremo de la manguera más estrecha, empujando más agua a través del tanque. Esto es análogo a
+un aumento en el voltaje que causa un aumento en la corriente.
+
+Ahora estamos empezando a ver la relación entre el voltaje y la corriente. Pero hay un tercer factor a considerar aquí: el ancho de la manguera. En esta analogía, el ancho de la manguera es la resistencia. Esto significa que necesitamos agregar otro término a nuestro modelo:
+
+Agua = Carga (medida en culombios)
+Presión = Voltaje (medida en voltios)
+Flujo = Corriente (medida en amperios, o "amperios" en abreviado)
+Ancho de la manguera = Resistencia
+
+Resistencia
+
+Considera nuevamente nuestros dos tanques de agua, uno con un tubo estrecho y otro con un tubo ancho.
+
+El tanque con el tubo estrecho crea una resistencia más alta.
+Tiene sentido que no podamos pasar tanto volumen a través de un tubo estrecho como a través de uno más ancho con la misma presión. Esto es resistencia. El tubo estrecho "resiste" el flujo de agua a través de él, aunque el agua esté a la misma presión que el tanque con el tubo más ancho.
+
+El tubo estrecho resiste el flujo.
+En términos eléctricos, esto se representa con dos circuitos con voltajes iguales y resistencias diferentes. El circuito con la resistencia más alta permitirá que menos carga fluya, lo que significa que el circuito con la resistencia más alta tiene menos corriente pasando por él.
+
+Esto nos lleva de nuevo a Georg Ohm. Ohm define la unidad de resistencia de "1 Ohmio" como la resistencia entre dos puntos en un conductor donde la aplicación de 1 voltio empujará 1 amperio, o 6.241 × 10^18 electrones. Este valor generalmente se representa en esquemas con la letra griega "Ω", que se llama omega, y se pronuncia "ohmio".
+
+Ley de Ohm
+
+Combinando los elementos de voltaje, corriente y resistencia, Ohm desarrolló la fórmula:
+
+\[V = I \times R\]
+
+Donde:
+
+V = Voltaje en voltios
+I = Corriente en amperios
+R = Resistencia en ohmios
+
+Esto se llama ley de Ohm. Digamos, por ejemplo, que tenemos un circuito con el potencial de 1 voltio, una corriente de 1 amperio y una resistencia de 1 ohmio. Usando la ley de Ohm, podemos decir:
+
+\[1V = 1A \times 1Ω\]
+
+Digamos que esto representa nuestro tanque con una manguera ancha. La cantidad de agua en el tanque se define como 1 voltio y la "estrechez" (resistencia al flujo) de la manguera se define como 1 ohmio. Usando la Ley de Ohm, esto nos da un flujo (corriente) de 1 amperio.
+
+Usando esta analogía, ahora veamos el tanque con la manguera estrecha. Debido a que la manguera es más estrecha, su resistencia al flujo es mayor. Definamos esta resistencia como 2 ohmios. La cantidad de agua en el tanque es la misma que en el otro tanque, por lo que, usando la Ley de Ohm, nuestra ecuación para el tanque con la manguera estrecha es:
+
+\[1V = I \times 2Ω\]
+
+Pero, ¿cuál es la corriente? Debido a que la resistencia es mayor y el voltaje es el mismo, esto nos da un valor de corriente de 0.5 amperios:
+
+\[0.5A = 1V / 2Ω\]
+
+Entonces, la corriente es menor en el tanque con mayor resistencia. Ahora podemos ver que si conocemos dos de los valores para la ley de Ohm, podemos resolver el tercero. Demostremos esto con un experimento."
+
+"Un Experimento de la Ley de Ohm
+
+Para este experimento, queremos usar una batería de 9 voltios para alimentar un LED. Los LEDs son frágiles y solo pueden tener cierta cantidad de corriente fluyendo a través de ellos antes de quemarse. En la documentación de un LED, siempre habrá una "clasificación de corriente". Esta es la cantidad máxima de corriente que puede pasar a través del LED en particular antes de quemarse.
+
+Materiales Necesarios
+
+Para realizar los experimentos enumerados al final del tutorial, necesitarás:
+
+Un multímetro
+Una batería de 9 voltios
+Una resistencia de 560 ohmios (o el valor más cercano)
+Un LED
+NOTA: Los LEDs son lo que se conoce como dispositivos "no ohmicos". Esto significa que la ecuación para la corriente que fluye a través del LED en sí no es tan simple como V=IR. El LED introduce algo llamado "caída de voltaje" en el circuito, lo que cambia la cantidad de corriente que circula a través de él. Sin embargo, en este experimento simplemente estamos tratando de proteger al LED del exceso de corriente, por lo que vamos a ignorar las características de corriente del LED y elegir el valor de la resistencia usando la Ley de Ohm para asegurarnos de que la corriente a través del LED esté seguramente por debajo de 20 mA.
+
+Para este ejemplo, tenemos una batería de 9 voltios y un LED rojo con una clasificación de corriente de 20 miliamperios, o 0.020 amperios. Para estar seguros, preferiríamos no hacer funcionar el LED a su corriente máxima, sino más bien a su corriente sugerida, que se lista en su hoja de datos como 18 mA, o 0.018 amperios. Si simplemente conectamos el LED directamente a la batería, los valores para la ley de Ohm se verían así:
+
+\[0.018A = 9V / 0Ω\]
+
+¡Dividir por cero nos da una corriente infinita! Bueno, no infinita en la práctica, pero tanta corriente como la batería pueda suministrar. Dado que NO queremos que tanta corriente fluya a través de nuestro LED, vamos a necesitar una resistencia. Nuestro circuito debería verse así:
+
+Podemos usar la Ley de Ohm de la misma manera exacta para determinar el valor de la resistencia que nos dará el valor de corriente deseado:
+
+\[R = V / I\]
+\[R = 9V / 0.018A\]
+\[R = 500Ω\]
+
+Entonces, necesitamos un valor de resistencia de alrededor de 500 ohmios para mantener la corriente a través del LED por debajo de la clasificación de corriente máxima.
+
+Resistencia de 560 ohmios.
+
+500 ohmios no es un valor común para resistencias de estantes, por lo que este dispositivo usa una resistencia de 560 ohmios en su lugar. Así es como se ve nuestro dispositivo completamente ensamblado.
+
+¡Éxito!
+
+¡Éxito! Hemos elegido un valor de resistencia lo suficientemente alto como para mantener la corriente a través del LED por debajo de su clasificación máxima, pero lo suficientemente bajo como para que la corriente sea suficiente para mantener el LED bien brillante.
+
+Este ejemplo de LED/resistencia limitadora de corriente es una ocurrencia común en la electrónica de hobby. A menudo necesitarás usar la Ley de Ohm para cambiar la cantidad de corriente que fluye a través del circuito. Otro ejemplo de esta implementación se ve en las placas de LED LilyPad.
+
+Placa de batería LilyPad con una placa de LED LilyPad
+
+Con esta configuración, en lugar de tener que elegir la resistencia para el LED, la resistencia ya está integrada en la placa con el LED, por lo que el límite de corriente se logra sin tener que agregar una resistencia manualmente.
+
+¿Limitar la Corriente Antes o Después del LED?
+
+Para complicar un poco las cosas, puedes colocar la resistencia limitadora de corriente en cualquier lado del LED, ¡y funcionará igual!
+
+Muchas personas que aprenden electrónica por primera vez luchan con la idea de que una resistencia limitadora de corriente puede estar en cualquier lado del LED y el circuito seguirá funcionando como de costumbre.
+
+Imagina un río en un bucle continuo, un río infinito, circular, que fluye. Si colocáramos una represa en él, todo el río dejaría de fluir, no solo un lado. Ahora imagina que colocamos una rueda de agua en el río que ralentiza el flujo del río. No importaría dónde en el círculo se coloque la rueda de agua, seguiría ralentizando el flujo en todo el río.
+
+Esta es una simplificación excesiva, ya que la resistencia limitadora de corriente no se puede colocar en cualquier lugar del circuito; puede colocarse en cualquier lado del LED para cumplir su función.
+
+Para obtener una respuesta más científica, recurrimos a la Ley de Voltaje de Kirchoff. Es debido a esta ley que la resistencia limitadora de corriente puede colocarse en cualquier lado del LED y aún así tener el mismo efecto."
+
+
