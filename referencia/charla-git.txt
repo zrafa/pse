@@ -1,0 +1,347 @@
+     Charla Introductoria a GIT
+                      “the stupid content tracker”
+                               Linus Torvalds
+     Junio 2021
+     Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
+
+
+Git es un sistema de control de versiones, creado para gestionar 
+el desarrollo del proyecto Linux,
+distribuido, basado en snapshots explícitos, llamados cambios 
+permanentes (commits)
+
+
+Caracteristicas
+===============
+
+- Posibilita ir al pasado y verificar por qué, quien, y cuando se incorporó una porción de código
+- Desarrollo distribuido (paralelo)
+- Ligero (mayormente todo trabajo es local)
+- Escalable (ej: el proyecto Linux tiene ~30 millones de lineas de codigo, en ~27 mil archivos de codigo fuente en C,
+              y trabajaron ~30 mil desarrolladores)
+- Una copia contiene todo el historial
+- Soporta acceso remoto por ssh, http, y git
+- Permite realizar busqueda binaria en una regresión
+
+1. Instalación
+en Linux: apt-get install git
+en Windows: video de.. (instala git y un ambiente de desarrollo UNIX)
+
+2. Configuración (datos del desarrollador)
+git config --global user.name "Rafael Ignacio Zurita" 
+      git config --global user.email rafa@fi.uncoma.edu.ar
+                                                         
+                                                        
+3. Obteniendo ayuda
+# en Linux
+man git add      # pagina de manual de git-add
+man git commit # pagina de manual de git-commit
+apropos git      # encuentra todas las paginas de manual sobre git
+
+
+
+
+Iniciando un repositorio – commits – Ejemplo 1
+----------------------------------------------
+
+1. Crear un repositorio vacio (ver sección github tambien)   
+                                                            
+  mkdir repo                                                 
+  cd repo/
+                                                            
+  git init .
+                                                           
+                                                          
+2. Primer commit                                         
+                                                        
+  # creamos un archivo (ej: echo "hola mundo" > LEAME)
+  git add LEAME                                        
+  git commit -m "agregando el archivo inicial"        
+                                                     
+
+3. Verificamos el cambio
+
+  git log
+
+
+1. Varios cambios permanentes
+
+  # creamos los archivos README main.c LICENSE y Makefile
+  git add README main.c
+  git add LICENSE
+  git commit -m "segunda version"
+
+  # creamos o modificamos varios archivos más
+  git add utils.c utils.h
+  git add include/ # ATENCION: agrega a staging todos los archivos
+                    #     dentro del directorio recursivamente
+  git commit -m "tercera version"
+
+2. Verificamos los cambios
+
+  git log
+
+
+Iniciando repositorio - commits
+-------------------------------
+
+git presta atención a todos los archivos locales:
+- Los que pertenecen al repo
+- Los que no pertenecen
+- Los que pertenecen y fueron modificados
+
+# Verificamos las areas y cambios pendientes
+git status
+git diff
+
+
+
+
+Las descripciones completas para commits se pueden realizar ejecutando simplemente:
+  git commit
+  # ejecutará un editor predeterminado (vi / nano / ed en Linux)
+  # para redactar todas estas descripciones manualmente
+
+Versiones pasadas
+-----------------
+
+1. Leer el historial de cambios (commits)
+
+  git log # ver todo el historial de cambios (commits)
+  git log -p # ver todo el historial de parches (commits patchs)
+  git log foo.c # ver todos los commits que afectan a este archivo
+  git log hash/tag..hash/tag # ver todo el historial entre dos commits
+  git show hash/tag # ver el cambio en forma de parche
+
+2. Viajar en el tiempo y trabajar con una versión anterior – Ejemplo 2
+
+  git log # busco el hash que me interesa
+  git checkout hash # viajamos a una versión anterior del proyecto
+  git branch -a # lista las ramas y donde estamos
+  # aquí podemos compilar el software, probarlo, recuperar un archivo, ej:
+  cp LEAME /tmp # copio el archivo LEAME antiguo al directorio /tmp
+  git checkout master # volvemos a la rama master (presente del proyecto)
+    o
+  git checkout -f master # volvemos a master y eliminamos las modificaciones realizadas a archivos del pasado
+
+Git tips
+--------
+
+ git mv archivo nuevo_nombre_o_lugar # mueve el archivo (o lo renombra)
+ git rm archivo # elimina un archivo del repositorio y fisicamente
+ git commit -m "quitamos tal y renombramos aquel" # Es necesario confirmar el cambio
+
+ # ATENCiÓN: si por un descuido movemos o borramos un archivo sin usar git habrá
+ #     que ejecutar en algun momento los comandos anteriores igualmente (puede quejarse,
+ #     habrá que preguntar a google como subsanar)
+
+ git checkout . # elimina cambios en los archivos que pertenecen al repo
+ git reset           # quita de stage todo lo que se agregó con git add
+ git reset HEAD~1 # elimina el ultimo commit (no recomendado: pregunte por qué)
+
+ git tag -a v0.2 -m 'version alfa funcional' # crea una etiqueta al commit actual
+ # Las etiquetas son utiles: cada vez que alguien quiera usar el software en un “momento funcional”
+ # puede simplemente ir a esa versión con git checkout v0.2
+
+ # NO almacenar en repositorios git archivos binarios grandes, o binarios que se modifican todo el tiempo
+ # (harán al historial del repositorio muy muy pesado: dificil de clonar por ejemplo).
+
+
+Ramas
+=====
+
+Las ramas es probablemente la característica “mas potente y útil” de git.
+
+- “livianas/ligeras”
+- Fáciles de usar
+- Generalmente arrancan en master
+- Probar ideas, corregir un bug, mejorar un código
+- Se comparten facilmente con los demás desarrolladores
+
+
+
+Ramas
+-----
+
+Las ramas es probablemente la característica “mas potente y útil” de git.
+
+Generalmente se crea una rama a partir del codigo “estable” o “principal” (master)
+y se desarrollan ahí ideas o correcciones al proyecto. Una rama por idea.
+
+Cuando se logra una idea y parece util, o se soluciona algun problema que tenia el proyecto “estable”,
+se puede compartir la rama con otros desarrolladores.
+
+Las ramas se crean y se utilizan localmente, son “ligeras”.
+En otros sistemas son complejas de crear y mantener, pero en git no.
+
+Lamentablemente, para la gran mayoria de los proyectos en sitios publicos como
+Github, gitlab, bitbucket, no se usan muy seguido. Hay una o mas razones.
+
+
+
+
+Ramas – Ejemplo 3
+-----------------
+
+- Creamos una rama,
+- desarrollamos una idea,
+- la integramos a master,
+- borramos la rama.
+
+
+
+    cd repotest/
+    git checkout -b nueva-idea master # esto ejecuta git branch nueva-idea
+                                      #        git checkout nueva-idea
+    git commit -m "…" # o varios commits
+
+    # estamos contentos? Entonces fusionamos con master
+    git checkout master # pregunte que pasa si en la rama anterior quedan cosas sueltas
+    git merge nueva-idea
+
+    # borramos la rama
+    Git branch -d nueva-idea
+
+
+Practica 3: crear dos ramas, crear un commit en cada una, fusionar con master. Hacer push al remoto.
+
+Ramas : Git merge puede crear commits al proyecto al fusionar ramas
+
+
+
+
+Flujos de trabajo
+=================
+
+Varios desarrolladores, un unico repositorio, una unica rama
+
+- Cómodo para cuando el proyecto es pequeño
+- Git pull hará merges automaticamente
+- Si hay conflictos no resolubles automaticamente se deben resolver manualmente
+- No escala de manera ordenada (muchos conflictos)
+- Para escalar: crear ramas, y uno o mas desarrolladores (pocos) se encargan unicamente de m
+
+
+Flujos de trabajo
+Varios desarrolladores, cada uno con su repositorio publico
+
+
+Flujos de trabajo
+- Varios desarrolladores, los principales con repositorios publicos,
+- Los demás participan enviando parches por mail.
+- Hay una jerarquia que acepta, o no, a mayor nivel.
+- Organización en el kernel Linux
+
+
+
+Flujos de trabajo - Varios desarrolladores, cada uno con su repositorio
+-----------------------------------------------------------------------
+
+Creamos una rama, desarrollamos una caracteristica (commits), publicamos la rama.
+Luego que el desarrollador apruebe (merge) los cambios en el proyecto principal borramos la rama publicamente.
+
+ git clone ssh://user@pse.fi.uncoma.edu.ar:/home/git/repotest.git
+
+ git clone --bare repotest/
+ # Se genera repotest.git ademas de repotest
+ # Enviamos repotest.git a un servidor publico
+ scp -r repotest.git/ user@pse.fi.uncoma.edu.ar:/home/user/
+ cd repotest/ # seguimos local
+ git checkout -b idea master
+ git commits...
+ git push user@pse.fi.uncoma.edu.ar:/home/user/repotest.git idea:ideapub
+ # creamos un pull request
+ git request-pull master ssh://pse.fi.uncoma.edu.ar:/home/rafa/repotest.git idea:ideapub
+ # enviamos el texto de salida por mail al desarrollador principal
+
+ # El desarrollador principal crea una rama en su pc:
+ git checkout -b idea-user master
+ git pull user@pse.fi.uncoma.edu.ar:/home/user/repotest.git ideapub
+ git checkout master
+ git merge idea-user
+ git push
+
+
+
+Github, gitlab, bitbucket
+=========================
+
+- Repositorio online
+- Interfaz web de gestión. Aplicaciones móviles
+- Permisos y seguridad sencillo
+- Se trabaja localmente con git como visto en la charla
+- Gestion de “problemas” (issues), wiki para documentación, gestión de proyectos
+- Interfaces visuales del avance del código
+- Util para divulgar proyectos
+
+
+Github, gitlab, bitbucket
+-------------------------
+
+Estos servicios web gratuitos permiten tener un “repositorio online”. 
+Se puede pagar por un servicio empresarial.
+Util cuando no se trabaja con máquinas publicamente visibles en internet.
+
+Los proyectos pueden crearse, borrarse, desde la interfaz web de gestión. 
+Aplicaciones móviles para gestión.
+
+Manejo de los permisos y seguridad (colaboradores, etc) sencillo. 
+En un servidor privado se debe administrar el sistemas de archivos 
+y usuarios manualmente.
+
+Luego de configurar el proyecto, y dar visibilidad, los integrantes 
+pueden trabajar localmente con git como visto en la charla.
+
+Proveen gestion de “problemas” (issues), con foros de discusión, wiki 
+para documentacion con markdown, varias cosas utiles mas.
+
+Los managers “gustan” las interfaces visuales del avance de los 
+proyectos (git log es para nerds).
+
+Utiles como plataforma de divulgación de proyectos: se puede llegar a una 
+gran cantidad de usuarios y desarrolladores
+
+
+
+Características avanzadas: Busqueda binaria de bugs. (regresión)
+================================================================
+
+Uno detecta un bug, e intuye que está ahí desde hace mucho tiempo 
+(tal vez miles de commits atrás).
+
+Se desea enontrar el commit que introdujo el bug, y por supuesto, 
+conocer cuál es el bug.
+
+Se realiza un viaje a un commit antiguo, hasta un punto en el historial 
+del proyecto donde al probar el software, funciona bien 
+(el bug no está presente).
+
+Se le indica a git que ese commit es “bueno”, y el ultimo commit 
+del proyecto es “malo”.
+
+Git encuentra entonces el commit que está a la mitad del historial 
+entre el commit “bueno” y “malo”.
+
+Se comprueba si el software funciona bien en ese commit 
+(el bug no está presente).
+Si el software no tiene el bug, se marca ese commit como “bueno”.
+Si el software tiene el bug, se marca el bug como “malo”
+
+Git vuelve a realizar una busqueda binaria (commit del medio en el 
+historial, entre el commit “bueno” y “malo”).
+
+Esta busqueda se repite hasta aislar el commit que introdujo el bug. 
+La busqueda se hace rapidamente ya que la busqueda es binaria.
+
+
+Algunas referencias útiles:
+===========================
+
+- apropos git – man git-subcomando
+- Libro Pro Git. Autores: Scott Chacon, Ben Straub, Apress. Disponible gratuitamente (c
+https://git-scm.com/book/es/v2
+- Arrancando git en gitlab: https://docs.gitlab.com/ee/gitlab-basics/start-using-git.htm
+- Crear un repo en github: https://docs.github.com/en/get-started/quickstart/create-a
+- 4 pasos para empezar con git y bitbucket:
+https://bitbucket.org/product/es/guides/basics/four-starting-steps#step-1-put-your-
+
