@@ -1,0 +1,266 @@
+
+Normas de Estilo en la Programación de Sistemas Embebidos
+=========================================================
+
+Versión modificada del Estilo de codificación del kernel Linux
+https://www.kernel.org/doc/html/v4.10/_sources/process/coding-style.txt
+https://www.kernel.org/doc/html/v4.10/process/coding-style.html#placing-braces-and-spaces
+
+
+Este es un pequeño documento que describe las normas del estilo de progrmación
+para la materia Programación de Sistemas Embebidos. El documento es una 
+versión adaptada de las normas de estilo para el kernel Linux.  
+
+Las normas de estilo de programación es muy personal, pero esta forma de 
+programar es la que hará posible que podamos comprender facilmente
+el código de todos.
+
+
+	 	Capítulo 1: Sangrías
+
+Las tabulaciones tienen 8 caracteres, y por lo tanto las sangrías
+también.
+
+Razón: La única idea que hay detrás de las sangrías es definir claramente
+dónde empieza y acaba un bloque de control.  Después de haber estado mirando
+a la pantalla durante 20 horas seguidas, se dará cuenta de que es mucho más
+fácil ver cómo funciona una sangría si usted tiene sangrías grandes.
+
+Ahora, alguna gente diría que tener TABS de 8 caracteres hace que
+el código se mueva demasiado a la derecha, lo que hace que sea difícil de
+leer en un terminal de 80 caracteres de ancho. La respuesta para ello es
+que si se necesitan más de tres niveles de sangría, algo va mal y se
+debería reestructurar el programa.
+
+Abreviando, las sangrías con TABs de 8 caracteres hacen las cosas más 
+fáciles de leer y tienen el beneficio añadido de señalar cuándo se 
+están anidando demasiado las cosas. Y es una advertencia a tener en cuenta.
+
+Sangría para una construcción switch case:
+
+	switch (suffix) {
+	case 'G':
+	case 'g':
+		mem <<= 30;
+		break;
+	case 'M':
+	case 'm':
+		mem <<= 20;
+		break;
+	case 'K':
+	case 'k':
+		mem <<= 10;
+		fallthrough;
+	default:
+		break;
+	}
+
+No coloque mas de una declaración por línea. Como aquí:
+	if (condition) do_this;
+  	  do_something_everytime;
+
+
+		Capítulo 2: Colocando llaves
+
+El modo preferido como nos mostraron los profetas Kernighan y Ritchie, 
+es colocar la llave de apertura al final de la línea y poner la llave 
+de cierre al principio, como
+en este ejemplo:
+
+	if (x es verdad) {
+		haremos y
+	}
+
+Lo mismo aplica a las demas construcciones. Por ejemplo:
+
+	switch (action) {
+	case KOBJ_ADD:
+		return "add";
+	case KOBJ_REMOVE:
+		return "remove";
+	case KOBJ_CHANGE:
+		return "change";
+	default:
+		return NULL;
+	}
+
+Sin embargo, hay un caso especial, la definición de funciones: estas tienen
+la llave de apertura al principio de la línea siguiente, como aquí:
+
+	int función(int x)
+	{
+		cuerpo de la función
+	}
+
+En principio, observe que la llave de cierre es el único carácter en su línea,
+_excepto_ en los casos donde está seguida por una continuación de la misma
+función, como un "while" en una función do, o un "else" en una función if.
+Por ejemplo:
+
+	do {
+		cuerpo del bucle do
+	} while (condición);
+
+y
+
+	if (x == y) {
+		..
+	} else if (x > y) {
+		...
+	} else {
+		....
+	}
+			
+No coloque innecsaria llaves si sólo hay una declaración. Ejemplo:
+
+	if (condition)
+		action();
+
+	/* o */
+
+	if (condition)
+		do_this();
+	else
+		do_that();
+
+En cambio, si en una de las ramas de una sentencia condicional, existe más
+de una sentencia, coloque llaves en todas las ramas:
+
+	if (condition) {
+		do_this();
+		do_that();
+	} else {
+		otherwise();
+	}
+
+Espacios
+--------
+
+Utilice un espacio en blanco luego de cada palabra reservada, excepto luego
+de sizeof, typeof, alignof, y __atribute_.
+
+Así que utilice un espacio en blanco luego de 
+	if, switch, case, for, do, while, etc
+
+Pero no luego de sizeof, typeof, alignof, or __attribute__.
+
+No agregue espacios dentro de expresiones con paréntesis.
+Este ejemplo es de estilo malo:
+	s = sizeof( struct file );
+
+Cuando se declara un puntero o una función que devuelve un puntero,
+el * debería ir junto al nombre del puntero o nombre de la función:
+	char *linux_banner;
+	unsigned long long memparse(char *ptr, char **retptr);
+	char *match_strdup(substring_t *s);
+
+Utilice un espacio en blanco alrededor (ambos lados) de un operador ternario:
+	=  +  -  <  >  *  /  %  |  &  ^  <=  >=  ==  !=  ?  
+
+No utilice un espacio en blanco luego de un operador unitario:
+	&  *  +  -  ~  !  sizeof  typeof  alignof  __attribute__  defined
+
+No utilice un espacio en blanco entre el operador unitario ++ o -- y el
+operando:
+	i++;
+	--j;
+
+No deje espacios en blanco al final de una línea.
+
+
+		Chapter 3: Política de nombres
+
+C es un lenguaje muy utilizado en la programación de sistemas.
+Al contrario que los programadores de Java, C++, Modula-2 o Pascal, los 
+programadores en C no utilizan usualmente nombres con MayúsculasMezcladas,
+la razón es sencilla. Observe las diferencias entre estas dos formas: 
+
+1) EstaVariableJrEsUnContadorTemporal
+
+2) esta_variable_jr_es_un_contador_temporal
+
+¿Cuál forma le pareció mas sencilla de leer? 1) o 2)
+
+En C tampoco llamaría a la variable esta_variable_jr_es_un_contador_temporal,
+sino que mas bien en C llamaría tal vez a esa variable "tmp", lo que es mucho 
+más fácil de escribir y mucho más fácil de entender.
+
+SIN EMBARGO, aunque los nombres con mayúsculas mezcladas son mirados con
+desdén, el uso de nombres descriptivos para variables globales es una
+necesidad.
+
+Las variables GLOBALES (que deben usarse sólo si _realmente_ se necesitan)
+deben tener nombres descriptivos, al igual que las funciones globales.  Si
+se tiene una función que cuente el número de usuarios activos, debería
+llamarse "contar_usuarios_activos()" o algo parecido. NO debería llamarse
+"cntusr()".
+
+Incluir el tipo de una función en el nombre (la llamada notación húngara) es
+para gente con el cerebro dañado - el compilador sabe los tipos siempre y
+puede comprobarlos, y lo único que se consigue es confundir al programador. 
+
+Los nombres de variables LOCALES deberían ser cortos y precisos.  
+Si se tiene un entero contador de un bucle, debería ser llamado "i", y luego
+"j". 
+Llamarlo "contador_bucle" es algo no productivo, ya que no hay 
+ninguna posibilidad de que sea mal interpretado. De manera similar 
+"tmp" puede estar bien si su función sólo necesita una única variable temporal.
+
+		
+		Chapter 4: Funciones
+
+Las funciones deben ser cortas y sencillas de leer, y deben hacer sólo una cosa
+(y hacerla bien). 
+
+Deberían ajustarse a una o dos pantallas de texto (la pantalla de texto
+ISO/ANSI es 80x24).
+
+La longitud máxima de una función es inversamente proporcional a la
+complejidad y grado de sangría de esa función. Por lo que si se tiene
+una función conceptualmente simple que es sólo una larga (pero simple)
+función case, en la que se tienen que hacer muchas cositas para muchos casos
+distintos, será correcto tener una función más larga. 
+
+Sin embargo, si se tiene una función compleja, y es difícil de "seguir"
+rapidamente por un colega, debería adherirse a los límites recomendados de
+manera más palpable. Use funciones de ayuda con nombres descriptivos
+(siempre se puede pedir al compilador que las inserte si cree que se
+requiere gran velocidad, y probablemente lo hará mejor que lo que se había
+hecho).
+
+Otra medida para la función es el número de variables locales. No deberían
+pasar de las 5-10. Si lo hace, es probable que esté haciendo algo mal.
+Piense de nuevo la función y divídala en pequeños trozos. Una persona
+puede, generalmente, mantener la atención alrededor de unas siete cosas 
+distintas, pero si se le dan más suele confundirse. Sabemos que usted es 
+un genio, pero quizá le gustaría comprender lo que hizo hace 2 semanas atrás.
+
+
+		Capítulo 5: Comentarios
+
+Los comentarios son buenos, pero también existe el peligro de comentar por
+exceso. NUNCA intente explicar COMO funciona su código en un comentario: es
+mucho mejor escribir el código de manera que su funcionamiento sea obvio, y
+es una pérdida de tiempo explicar código mal escrito.
+
+Generalmente, se pide que los comentarios expliquen _qué_ hace el código, no
+_cómo_ lo hace.  Intente evitar poner comentarios dentro del cuerpo de una
+función: si la función es tan compleja que necesita comentar separadamente
+partes de la misma, será mejor que vuelva al capítulo 4 un momento.  Puede
+hacer pequeños comentarios para denotar o advertir sobre algo
+particularmente raro, pero trate de evitar el exceso. En su lugar, ponga
+los comentarios al principio de la función, explicando lo que hace, y si es
+posible, _por_qué_ lo hace. 
+
+
+		Capítulo 6: final.
+
+Si una función tiene varias "salidas", probablemente conviene 
+verificarlas primero y salir. Mezclarlas con el core de la función hace
+al código dificil de entender. 
+
+Las sentencias goto fueron etiquetadas como malignas y prohibidas. Peero,
+existe un uso elegante para tomar distintos caminos de "exit" de una función.
+Observe ejemplos en el código del kernel Linux.
+
+
