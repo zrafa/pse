@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+            <title>
+             Incubadora 
+            </title>
+            <meta charset="UTF-8">
+            <link rel="stylesheet" type="text/css" href="estilos.css" />
+    </head>
+
+    <body>
+        <div >
+           
+            <h1 id="titulo">
+                Sensor de Temperatura/Humedad
+            </h1>
+            <img src="imagenes/sensorHT.jpg" id="img_principal"/>
+                      
+        </div>
+               
+        <div id="texto">
+            <section>
+                <h2>
+                    Sensor de Temperatura y Humedad DHT11
+                </h2>    
+                <p>
+                    Para la automatizacion de la incubadora se utilizo un sensor de temperatura y 
+                    humedad DHT11. El cual cuenta con tres pines: 
+                    VCC (fuente de alimentacion de 3,5 a 5,5 V) 
+                    DATA (serial de datos) y
+                    GND (tierra). <br>
+                    Para realizar las lecturas del sensor se deben tomar encuenta los 
+                    siguientes paso:
+                    <ol>
+                        <li> 
+                            Desde la placa enviar una señal en baja de por lo menos 
+                            18 milisegundos.
+                        </li>
+                        <li>
+                            Luego enviar la señal en alto, entre 20 a 40 microsegundos
+                        </li>
+                        <li>
+                            Una vez que a transcurrido el tiempo del anterior paso,
+                            el sensor enviara una señal en bajo por 80 microsegundos.
+                        </li>
+                        <li>
+                            Posteriormente subira la señal por otros 80 microsegundos.
+                        </li>
+                        <li>
+                            Una vez que el sensor baje la señal se enviaran la mediciones.
+                        </li>
+
+                    </ol>
+                </p>
+                <img src="imagenes/inicio_sensorHT.png" id="img_inicioSHT">
+                <p id="texto_img">
+                     Linea roja: señal del microprocesaror. Linea azul: señal del sensor.
+                </p>
+                <p>Las lecturas del sensor son envia de a 40 bits, los 16 primeros corresponden 
+                    a la humedad (8bits parte entera y 8 parte decimal), 
+                    los 16 siguientes a la temperatura y por ultimo se envian 8 bits
+                    (8bits parte entera y 8 parte decimal)
+                    de paridad. 
+                    <br>
+                    Para detectar el valor del bir se realiza de acuerdo al tiempo que la señal este en alto. 
+                    Si la señal se encuentra entre 26 a 28 microsegundos en alto se corresponde con un cero, 
+                    mientras que si esta 70 microsegundos en alto se corresponde con un uno.
+                </p>
+                <img src="imagenes/lectura_sensor.png" id="lectura_sensor">
+            </section>
+            <section>
+                <h2>Esquema de conexion </h2>
+            </section>
+            <p>
+                A continuación se observa el esquema de conexión del sensor de Temperatura/Humedad.
+            </p>
+        </div>
+        <img src="imagenes/esq_sensorHT.jpg" id="img_HT"/>
+        <div id="texto">
+            <p>
+                Dicho sensor se conecta desde el pin denominado Data, 
+                al pin 12 de la placa (se corresponde con MISO en el microprocesador), mediante el cual recibe
+                los valores de temperatura y humedad.
+                A su vez, el sensor, se conecta a GND (negativo) y VCC (positivo) en las filas correspondientes 
+                de la protoboard.
+                <br>
+                En la siguiente imagen podemos ver la conexión de dicho componente.
+            </p>
+            <img src="imagenes/img_sensorHT.jpg" id="img_HT"/>
+        </div>
+        
+        <a href="https://github.com/katynavarrete/TP_Incubadora/tree/main/pantalla_sensorTH"> codigo sensor TH </a>
+        
+        <div id="Boton">
+            <a href="pagina1.html" class="Boton_Sig" > Atras </a>
+            <a href="pagina3.html" class="Boton_Sig" > Siguente </a>
+        </div>
+
+        <br>
+        <footer id="pie_pag">
+            Realizado por: Navarrete Katherina, Flores Karen
+        </footer>
+
+    </body>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+            <title>
+             Incubadora 
+            </title>
+            <meta charset="UTF-8">
+            <link rel="stylesheet" type="text/css" href="estilos.css" />
+    </head>
+
+    <body>
+        <div >
+           
+            <h1 id="titulo">
+                Conexión del Software
+            </h1>
+            <img src="imagenes/Esquema de conexión de Software - Incubadora.jpg" id="img_HT"/>
+          
+        </div>
+       
+        <div id="texto">
+            <p>
+                Se realizó la automatización de una incubadora de pollitos. Para lograrlo, se desarrollaron y/o
+                utilizaron las tareas y drivers, que se explicarán a continuación, que se ejecutan en el 
+                microcontrolador AVR con el objetivo de controlar el hardware.
+                <br>
+                La primer tarea es el Sensor Humedad/Temperatura, que realiza la configuración correspondiente, 
+                mediante el driver denominado utils_hum_tem. Lee los datos provenientes del ambiente externo, y se 
+                los envía al microcontrolador para ver si los datos recibidos están dentro de los parámetros esperados.
+                A continuación, se ejecuta una tarea que utiliza el driver lcd_ssd1306, enviando los datos, cuando estos
+                no están dentro de los parámetros deseado, a la pantalla. Además, se envía una señal al parlante mediante 
+                el driver utils_parlante, para que realice un sonido.
+                Dentro de los controles realizados, se realiza una comparación con la temperatura mínima y máxima 
+                para la incubación. Si la temperatura leída es menor a la mínima definida, se envía una señal al reley,
+                para que el mismo, mediante el driver utils_reley, encienda el foco que cumple la función de aumentar la
+                temperatura. En caso de alcanzar la temperatura deseada, se envía otra señal a dicho componente para que
+                apague el foco. 
+                La siguiente tarea a ejecutar es la del sensor de corriente, que utiliza el driver utils_corriente, 
+                el cuál verifica si recibe electricidad. En caso de no percibir corriente, envía una señal a la pantalla
+                y al parlante, mediante los drivers mencionados anteriormente, para que cada uno cumpla la función 
+                correspondiente. 
+                Luego, se muestran por pantalla los valores de la humedad y temperatura.
+                Otra de las tareas que se ejecuta, llamada timer_tiempo, se encarga de contar cantidad de días,
+                horas y minutos, para luego ser consultada por el microcontrolador, y así, cuando sea el momento, 
+                enviar los datos al driver timer1_servo, indicándole al servo que debe realizar un movimiento.
+            </p>
+        </div>
+        <div id="texto">
+            <p>
+                Para instalar el software en el microcontrolador, con Sistema Operativo Linux, se deben 
+                seguir los siguientes pasos:
+                <ul>
+                    <li>(1) Enchufar el cable USB a la PC.</li>
+                    <li>(2) En la terminal ejecutar los comandos: 
+                        <br>
+                        make clean
+                        <br>
+                        make
+                        <br>
+                        sudo make flash (mantener presionado el botón reset de la placa mientras se ejecuta el mismo) </li>
+                </ul>
+            </p>
+        </div>
+        <div id="Boton">
+            <a href="pagina7.html" class="Boton_Sig" > Atras </a>
+            <a href="pagina9.html" class="Boton_Sig" > Siguiente </a>
+        </div>
+
+        <br>
+        <footer id="pie_pag">
+            Realizado por: Navarrete Katherina, Flores Karen
+        </footer>
+
+    </body>
+
+</html>

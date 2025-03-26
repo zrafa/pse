@@ -1,0 +1,29 @@
+
+Desarrollo de una aplicación embebida para controlar el robot N6, utilizando como núcleo de gestión de tareas FreeRTOS.
+Cliver Carrascal, Marcos Picucci 
+https://github.com/zrafa/pselab/tree/master/clivercarrascal/Trabajo%20FINAL/Control%20Remoto
+https://www.youtube.com/watch?v=g8w5wVpEBaE
+
+
+Alcoholimetro digital implementado con freertos sobre AVR
+Martin Bucarey y Alejandro Mora
+http://se.fi.uncoma.edu.ar/pse/proyectos/alcoholimetro-digital
+
+
+Controladora de incubadora de huevos de gallina
+Karen Flores y Katherina Navarrete
+http://se.fi.uncoma.edu.ar/pse/proyectos/incubadora
+
+
+Analizador de baterias 
+Alejandro Younes
+https://github.com/yoalejandro/pse-tpf
+
+
+Brazo robótico de 4 ejes. Implementación de software PWM.
+Manuel Latorre
+http://se.fi.uncoma.edu.ar/pse/proyectos/brazo
+
+
+Panel de control de simulador de aeroplano - interfaz con flight simulator
+Dario Roth

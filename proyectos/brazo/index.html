@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información de Conexiones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #007BFF;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .image-container {
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+        .video {
+            text-align: center;
+            margin-bottom: 40px;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+      <h1>BRAZO ROBOT</h1>
+      <h2>Alumno: Manuel Latorre</h2>
+      <h2>Año: 2024</h2>
+    </div>
+    <div class="image-container">
+      <img src="4.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+    <h1>Información de Conexiones</h1>
+
+    <div class="section">
+        <h2>CONEXIÓN STICKS</h2>
+        <ul>
+            <li><strong>GND:</strong> GND</li>
+            <li><strong>+5V:</strong> VCC</li>
+        </ul>
+        <h3>Izquierdo</h3>
+        <ul>
+            <li><strong>VRX:</strong> A0 (adc 0)</li>
+            <li><strong>VRY:</strong> A1 (adc 1)</li>
+            <li><strong>SW (cierre de garra):</strong> PIN2 (pd2)</li>
+        </ul>
+        <h3>Derecho</h3>
+        <ul>
+            <li><strong>VRX:</strong> A2 (adc 2)</li>
+            <li><strong>VRY:</strong> A3 (adc 3)</li>
+            <li><strong>SW (apertura de garra):</strong> PIN3 (pd3)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>SERVOS</h2>
+        <ul>
+            <li><strong>GND (Cable Negro/Marrón):</strong> GND</li>
+            <li><strong>VCC (Cable Rojo):</strong> VCC 6.6V (usar fuente)</li>
+            <li><strong>PWM/Señal Salida (Servo0 garra):</strong> PIN8 Pb0</li>
+            <li><strong>PWM/Señal Salida (Servo1 muñeca):</strong> PIN9 Pb1</li>
+            <li><strong>PWM/Señal Salida (Servo2 base):</strong> PIN10 Pb2</li>
+            <li><strong>PWM/Señal Salida (Servo3 sin uso):</strong> PIN11 Pb3</li>
+            <li><strong>PWM/Señal Salida (Servo4 codo):</strong> PIN12 Pb4</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>TESTING</h2>
+        <p>Con <code>screen /dev/ttyUSB0 9600</code> (2400 en arduino chino) se puede observar el array con los ticks/grados de los servos. - Estos van de 90 a 270 (osea 180°).</p>
+        <p>90 ticks = 1ms, 270 ticks = 2ms.</p>
+    </div>
+
+    <div class="section">
+        <h2>CALIBRACIÓN BRAZO</h2>
+        <p>Arrancar el brazo.</p>
+        <p>Mover todos los servos para que esté inicializado el array de ángulos.</p>
+        <p>Mover cada servo hacia un límite y ubicar correctamente la pieza.</p>
+    </div>
+
+    <div class="video">
+      <video width="640" height="360" controls>
+        <source src="vid.mp4" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+      </video>
+
+      <video width="640" height="360" controls>
+        <source src="vidlar.mp4" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+      </video>
+  </div>
+    <div class="image-container">
+      <img src="1.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+    <div class="image-container">
+      <img src="2.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+    <div class="image-container">
+      <img src="3.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+    <div class="image-container">
+      <img src="4.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+    <div class="image-container">
+      <img src="5.jpeg" alt="Descripción de la imagen" width="300">
+    </div>
+
+</body>
+</html>

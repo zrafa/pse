@@ -1,0 +1,111 @@
+.Boton_Sig{
+    padding: 5px 15px;
+    border-radius: 5px;
+    border-color: rgb(230, 96, 167);
+    background: rgb(230, 96, 167);
+    color: aliceblue;
+    cursor: pointer;
+}
+.Boton_Sig:hover{ /* hover permite cambiar de color al pasar el cursor por el botón*/
+    padding: 5px 15px;
+    border-radius: 5px;
+    border-color: aliceblue;
+    background: aliceblue;
+    color: rgb(230, 96, 167);
+    cursor: pointer;
+}
+#Boton{
+    text-align: right;
+    margin-top: 80px;
+}
+#img_pollos{
+    text-align: center;
+    margin-top: 70px;
+}
+#imagenes{
+    text-align: center;
+}
+#video{
+    width: 300px;
+    margin-left: 500px;
+}
+#img_placa{
+    width: 500px;
+}
+#img_HT{
+    width: 800px;
+    margin-left: 300px;
+}
+#img_principal{
+    width: 200px;
+    margin-left: 530px;
+}
+
+#img_inicioSHT{
+    margin-left: 350px;
+}
+#texto_img{
+    margin-left: 475px;
+    font-size: small;
+}
+#lectura_sensor{
+    margin-left: 450px;
+    width: 300px;
+}
+#img_sensorElec{
+    width: 800px;
+    margin-left: 300px;
+}
+#img_Servo{
+    text-align: center;
+}
+#foto_Servo{
+    width: 600px;
+    margin-left: 10px;
+}
+#esq_Servo{
+    width: 700px;
+}
+#img_foco{
+width: 500px;
+margin-left: 450px;
+}
+#img_Conexion{
+    width: 900px;
+    margin-left: 300px;
+}
+#img_comp{
+    width: 650px;
+    margin-left: 350px;
+}
+#subt2{
+    margin-top: 50px ;    
+    text-align: center;
+    color: black;
+    font-weight: bold; 
+}
+#titulo{
+    margin-top: 50px ;    
+    text-align: center;
+    color: cornflowerblue;
+    
+}
+#subtitulo{
+    margin-top: 50px ;    
+    text-align: left;
+    margin-left: 25px;
+    color: black;
+    font-weight: bold; 
+
+}
+#texto{
+    text-align: justify;
+    font-size: large;
+}
+body{
+    background: wheat;
+}
+#pie_pag{
+    color: dimgray;
+    text-align: center;
+}
