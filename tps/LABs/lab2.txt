@@ -1,0 +1,62 @@
+Programación de Sistemas Embebidos
+
+Entrada y Salidas Digitales
+---------------------------
+
+El laboratorio 2 está compuesto de tres proyectos:
+
+contador_binario/	(entrada digital - pulsador)
+	Implementación del Control de pulsador. Configuración de pullpup, 
+	Implementar con los leds un contadora binario de 5 bits.
+	Simplemente se debe contar dejando un delay de unos 300ms
+	entre valor y valor.
+
+	Si se presiona el pulsador (conectado a un pin del puerto C)
+	se detiene el conteo.
+	Si se presiona nuevamente el pulsador entonces continua el conteo.
+
+ultrasonido/ 
+	Utilizando lab2_delay.txt implementar delay_us(int n);
+
+	Utilizar el hello world con delay_us(n) para
+        obtener frecuencias de pruebas. Verificar con el osciloscopio.
+
+	Desarrollar el control de un sensor digital de ultrasonido HC-SR04
+	utilizando la informacion de referencia de la pagina web
+        (especificamente pagina 6 :)
+
+	En la carpeta ultrasound/ se encuentra el código esqueleto
+        para este trabajo. Viene con una biblioteca serial para poder
+        enviar por el serial del arduino (a nuestra notebook) información
+        en texto plano (asciis). El código esqueleto tiene un ejemplo.
+
+	Este programa debe reportar a su notebook la distancia del 
+	objeto detectado en cm. En el código esqueleto existe una
+        biblioteca para utilizar el serial y enviar información,
+        con un ejemplo.
+
+melody/
+	Controlar un piezo speaker utilizando un pin digital.
+	Buscar la frecuencias de las notas musicales para una octava.
+
+	Implementar la reproducción de una nota utilizando el control
+	de la frecuencia de períodos de una señal digital sobre un pin.
+	Utilice el delay_us(n) y un pin del arduino para generar una
+	señal digital con la frecuencia necesaria. 
+
+	Por ejemplo, el DO en escala 7ma tiene una frecuencia de 2093hz.
+        Para lograr esa frecuencia, habría que :
+            poner_en_alto la señal
+	    esperar 248 microsegundos
+            poner_en_bajo la señal
+	    esperar 248 microsegundos
+	Eso genera un período que dura 476 microsegundos.
+	En un segundo, con períodos de esa duración, habrán sucedido
+	2093 períodos (2093hz, que se la frecuencia buscada y se 
+ 	escucharía el DO en séptima).
+
+	Buscar una melodia sencilla. Colocar las notas y duración
+	en una estructura de datos (por ej. un arreglo).
+	Desarrollar un reproductor elegante para la melodia.
+	
+	

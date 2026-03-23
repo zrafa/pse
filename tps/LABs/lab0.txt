@@ -1,0 +1,174 @@
+Programación de Sistemas Embebidos - Repaso de lenguaje C - LAB 0
+=================================================================
+
+Bibliografia: 
+	Brian Kernighan y Dennis Ritchie, El lenguaje de programación C (título
+	original en inglés: The C Programming Language)
+
+	Eduardo Grosclaude, Taller de Lenguaje en C
+	http://se.fi.uncoma.edu.ar/pse2020/taller-c/index.html
+
+0. Escriba un programa hello world. Compilar y ejecutar.
+   Por ejemplo: 
+		vi hello.c   # edicion. Usar vi u otro editor preferido
+		make hello   # compilacion
+		./hello	     # ejecucion
+
+1. Enumerar los tipos de datos básicos en C. 
+   Escriba una definición de una variable por cada tipo. Por ej.  :  int a;
+
+2. Explique qué significa la palabra word cuando el contexto es la 
+   Arquitectura de una Computadora.
+
+3. ¿Cuántos bits puede almacenar una variable declarada como int (ej. int var;)
+    en 3 computadoras de arquitecturas diferentes: arquitecturas de 8bits, 32bits 
+    y 64bits?.
+
+    NOTA: la respuesta no es tan trivial como parece. Deberá buscar información
+          sobre el lenguaje de programación C. Use wikipedia u otros recursos.
+
+4. Explique la difercia en la salida de las siguientes instrucciones:
+
+   char a = 'M';
+   printf ("a = %i \n", a);
+   printf ("La letra %c \n", a);
+
+   ¿Cuál es el valor numérico de a?
+
+5. ¿Cuál es el rango numérico de i y j?
+   
+   char i;
+   unsigned char j;
+
+6. ¿Cuál es el valor en base 2 (binario) de i, j, k, m, n, p ?
+
+   char i = 'a';
+   char j = 77;
+   char k = 0x4D;
+   unsigned char m = 'a';
+   unsigned char n = 0x4d;
+   unsigned char p = 'A';
+
+   Explique el por qué de su repuesta. Contestar: Las variables
+   anteriores, ¿fueron declaradas e inicializadas con valores diferente?
+
+
+7. Arreglos, Punteros y Operaciones
+-----------------------------------
+
+    Comprender las siguientes definiciones y operaciones
+
+
+    main () {
+
+	int x[3];
+	int *ptr;
+
+	char a;
+	char *b;
+
+        x[0] = 1024;
+        x[1] = 32;
+        x[2] = -1;
+	ptr = &x[0];
+	ptr++;
+	ptr++;
+
+	a = 5;
+	b = &a;
+	printf ("a=%i, lo apuntado por b=%i, el contenido de b=%X, y la direccion de b=%X \n", a, *b, b, &b);
+	
+	*b = 21;
+    }
+
+
+    Si al comenzar el programa el sistema asignó la dirección 0xFFA00004 al
+    arreglo x[], 
+	¿Cuál es el valor final del contenido de ptr al finalizar la
+	ejecución del programa?
+
+	¿Cuál es el valor final del contenido de la variable 'a' al 
+	finalizar el programa? 
+
+	¿Cuál es la dirección de la variable x[2]?
+
+7.2 Arreglos y punteros: Comprender el siguiente código.
+
+    unsigned int array[5];
+    array[2] = 99;
+
+    unsigned int *pointer;
+    pointer = &array[0];
+    *(pointer+2) = 99;
+
+    pointer = array;
+
+
+8 .Operaciones sobre bits particulares
+--------------------------------------
+
+    En la programación de sistemas embebidos es muy común leer y escribir
+    registros del hardware. En particular, se requiere poder modificar 
+    ciertos bits y otros no. O conocer el valor de un bit particular.
+
+8.1 Comprender una operación shift. Por ejemplo: (1 << 5)
+    Escriba un programa que defina una variable de tipo char.
+    Asigne la operacion shift mencionada arriba a esa variable.
+    Indique cual es el valor en base 2 de la variable de tipo char.
+    Indique cual es el valor en decimal.
+
+8.2 Comprender una operación shift que luego se niega. Por ejemplo: ~(1 << 5)
+    Escriba un programa que defina una variable de tipo char.
+    Asigne a la variable la operacion shift mencionada arriba.
+    Indique cual es el valor en base 2 de la variable de tipo char.
+    Indique cual es el valor en decimal.
+
+8.3 Comprender los operadores AND y OR (& y |)
+
+    #define BIT3 3
+    unsigned char status;
+
+    status = 0b00110101;
+    status = status | 0xFA;
+    status = status & 20;
+    status |= (1 << 6);
+    status &= ~(1 << BIT3)
+    status |= (1 << BIT3)
+
+    - Poder verificar el estado de un bit.
+    - Poder obtener sólo una parte de los bits. Por ejemplo: & 0xF0
+
+8.4 Para la siguiente definición:
+
+    unsigned char x = 11;
+
+    Indique el valor binario de cada bit de la variable x
+    (bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0)
+
+8.5 Se desea ejecutar un bloque de código en C si el bit 3 de la variable
+    x anterior está en 1. Complete la siguiente sentencia condicional if
+
+    if (  COMPLETAR  ) printf ("el bit3 de la variable registro es 1 \n");
+
+8.6 Escriba una sentencia en C para eliminar los bits2, bit1 y bit0
+    (ponerlos en cero), sin modificar el resto de los bits.
+
+8.7 Escriba una sentencia en C para poner asertar los bits7 y bit6 
+    (ponerlos en uno), sin modificar el resto de los bits.
+
+
+9. Registros de 8 bits, aritmetica de 16 a 32 bits
+--------------------------------------------------
+
+    En ocasiones queremos realizar un cómputo, cuyo resultado debe ser
+    almacenado en un registro de 8 bits.
+
+    ¿Qué sucede con el resultado de la siguiente operación?
+
+    unsigned char RES;
+    unsigned char var;
+    var = 190;
+    RES = (unsigned char)(var * 500) /190;
+
+
+10. Desarrollar el programa que se detalle en archivo aparte.

@@ -1,0 +1,23 @@
+
+/*
+ * esperar_1us: funcion que puede realizar una demora de aproximadamente de 
+ * 1 microsegundo, utilizando instrucciones nop en ensamblador
+ *
+ */
+inline void esperar_1us(void)
+{
+
+  	    asm volatile ("nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			"nop" "\n\t"
+			);
+}
+
+

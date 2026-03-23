@@ -1,0 +1,140 @@
+LAB 0 - Parte 2
+----------------
+
+En los drivers LCD utilizados en sistemas embebidos (ejemplo: el display
+en el panel de los autos) se utilizan pantallas que dibujan a resolución
+de pixel.
+
+Para poder mostrar un mensaje, las letras del mensaje deben ser dibujadas
+pixel a pixel. Por lo que se necesita generalmente una biblioteca
+útil, que pueda mostrar un mensaje en alguna parte de la pantalla.
+
+Esta biblioteca sería utilizada por el desarrollador de aplicaciones
+del sistema embebido, si el equipo de desarrollo está compuesto por más 
+de una persona.
+
+font.h
+------
+
+La cabecera font contiene los valores de los pixeles de cada letra.
+Un bit == 1 significa que ese pixel de la letra debe ser dibujado.
+Para salvaguardar espacio, las cabeceras font.h para LCD, usualmente
+guardan los datos de los pixeles en columnas, ya que es mas eficiente
+en el uso del espacio (algo importante en el desarrollo de sistemas embebidos
+con poca memoria).
+
+El font.h de este ejercicio contiene los valores de los pixeles
+para todos los caracteres ASCII, en el orden de la tabla ASCII.
+Por cada valor ASCII, existe en font.h, 5 bytes.
+Esto significa que los primeros cinco bytes en font.h son para el
+primer caracter ASCII de la tabla ASCII. Los siguientes 5 bytes
+son para el segundo caracter. Etc. Si queremos obtener
+los cinco bytes para la letra 'M', deberíamos posicionarnos
+en el arreglo de font.h en arreglo[5*'M']. A partir de ese
+elemento y los siguientes 4 estarían los cinco bytes 
+correspondientes a la letra 'M'.
+
+Cada byte contiene los valores de los pixeles de cada columna de la letra
+a ser dibujada en el LCD.
+Por lo que cada letra se representa por 5 columnas de 8 filas (5 bytes). 
+
+Observe la imagen de ejemplo que acompaña este enunciado (ejemplo_font_h.jpg).
+O el archivo ejemplo_font_h.ods
+
+Una complicacion adicional (o no, depende de como quiera verse)
+es que si se recorre los bits de cada byte desde el mas significativo
+al menos significativo las letras saldrán invertidas.
+
+En la imagen de ejemplo se analizan un par de letras
+y se los bits de izquierda a derecha (del mas significativo
+al menos significativo) como presentado, por lo que de esta 
+manera están invertidos (ejemplo_font_h.jpg).
+
+
+Tareas
+------
+
+Para esta tarea necesita:
+
+- saber utilizar las páginas de manual del programador. Por ejemplo,
+en una terminal Linux, debería poder ejecutar "man memcpy" y el
+manual de la función memcpy() debería verse en pantalla.
+
+Teniendo las páginas de manual del programador ayuda mucho a conocer
+que realiza cada función o cabecera de la biblioteca estándar de C.
+
+Si cuenta con el sistema de compilación buil-essential en su sistema
+entonces es probable que tenga las páginas de manual del programador
+instaladas. Sino, consulte a la cátedra con su distribución Linux
+para saber que paquetes instalar extras.
+ 
+- Tener a mano la tabla ASCII. En una terminal Linux es ultra sencillo:
+man ascii
+
+- Conocer como leer un bit particular en un byte (usualmente con
+& y |). Tambien es útil saber desplazar un byte a la izquierda o 
+a la derecha (con << y >>).
+
+- Conocer como usar de manera correcta el contenido de a lo
+que apunta un puntero y el puntero. Y conocer como 
+usar un puntero en vez de un arreglo. 
+(leer del apunte del Taller de C de Eduardo Grosclaude
+el cápitulo de punteros).
+
+Recomendacion: Utlizar las normas de estilo propuesta. El código de 
+este lab las sigue en gran medida.
+
+- Puede descargar todos los prácticos con (en una terminal Linux):
+
+git clone https://github.com/zrafa/pse2024
+
+(eso descargará todo el repositorio y dejará el mismo en una carpeta
+llamada pse2024/ ).
+
+
+- Para compilar el programa
+cd pse2024/LABs/lab0-mastering_en_c/
+make clean
+make
+
+(el make clean antes de compilar cada vez es importante).
+
+
+-------------------------------------------------------------------------------
+
+0. Escriba un programa en C que incluya la cabecera font.h. El programa
+debe ser ejecutado con un argumento, que debe ser una letra del abecedario.
+El programa debe imprimir en la salida estandar los 5 valores de los 5 bytes 
+obtenidos de font.h para esa letra.
+
+Este programa será útil en el desarrollo del punto 1.
+
+
+1. Complete el programa lab0-mastering.c
+Al finalizar y ejecutar correctamente, podrá ejecutar su programa así:
+./lab0-mastering Laboratorio 0
+y el programa debe emitir como salida en PANTALLA como se muestra
+en la figura : lab0-salida.jpg
+
+El programa lab0-mastering.c imprime en una terminal Linux un texto
+pasado como argumento, pero utilizando el font ya definido en font.h
+
+Observe en la imagen de ejemplo como es una salida típica.
+(lab0-salida.jpg);
+
+1.0 La primera parte es de análisis. Si bien el programa no es demasiado extenso
+intente realizar una traza de cómo funciona el programa, comenzando
+con main y yendo por las diferentes funciones.
+
+1.1 Complete las funciones draw_char_on_buffer() y print_text_on_buffer().
+
+1.2 Explique como funciona el memset() que ya se encuentre en el programa.
+
+1.3 Debe entregra dos versiones de su programa. Una versión con las funciones
+implementadas utilizando arreglos. También, una segunda versión con las
+funciones implementadas utilizando punteros.
+
+
+2. Ese ejercicio contiene un Makefile muy sencillo. Lea su contenido
+y trate de entender su uso con ayuda de bibliografía (Taller de C
+o internet). Consulte todas las dudas.

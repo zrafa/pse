@@ -1,0 +1,71 @@
+Programación de Sistemas Embebidos
+
+LAB  1: Cadena de herramientas y primer programa embebido
+=========================================================
+
+Bibliografia: 
+	Brian Kernighan y Dennis Ritchie, El lenguaje de programación C (título
+	original en inglés: The C Programming Language)
+
+	Eduardo Grosclaude, Taller de Lenguaje en C
+	https://se.fi.uncoma.edu.ar/so/clases/apuntes/taller-c.pdf
+
+	Apuntes: - cadena de herramientas
+  		 - primer programa embebido
+
+0- Subir la resolucion del lab0 utilizando lo indicado en instrucciones.txt
+   del repositorio https://github.com/zrafa/pse2025/
+
+https://raw.githubusercontent.com/zrafa/pse2025/refs/heads/main/instrucciones.txt
+
+   (subir unicamente archivos de texto plano. No subir ejecutables, pdf
+   u otro tipo de archivos).
+
+1- Instalar un toochain para cross-compiling a AVR. Tambien avrdude.
+	¿Qué paquetes componen el toolchain para AVR en su sistema?
+
+2- a. Completar el programa hello world en C que acompaña este lab 
+      (carpeta led_blink/).
+   b. Compilar con:
+	make clean
+	make
+   c. Transferir el firmware generado al MCU con:
+	make flash
+   d. Comprobar que el programa se ejecuta correctamente.
+
+
+Manejo de herramientas del toolchain
+------------------------------------
+
+3- Utilice el comando file para verificar que el archivo elf ejecutable
+   generado al compilar es de la arquitectura adecuada.
+
+4- Verifique donde instaló, el sistema de paquetes de Linux, las binutils de
+   avr.
+
+5- ¿Donde están los encabezados y las bibliotecas de C para avr?
+
+6- ¿Donde se instaló el compilador avr-gcc?
+
+7- a. Utilice avr-objdump para realizar un decodificado del programa binario elf
+      (obtener el código en lenguaje ensamblador AVR a partir del binario elf)
+   b. Utilice el comando avr-size para obtener el espacio que ocupará
+      el programa en el sistema. ¿Cuántos bytes ocupa la sección de código?
+      ¿Y la de datos?. 
+
+8- Utilizando el programa decodificado por avr-objdump en 7- a. 
+   ¿Es el código de main() lo primero que se ejecuta en su program? 
+   ¿Puede encontrar la llamada a la función main? ¿En qué dirección comienza
+   el código de la función main? ¿Qué son todas las instrucciones anteriores
+   a main?
+
+9- Ejercicio knight_rider: Conecte 5 leds a 5 pines controlados por el puerto B
+   Desarrollar un programa que genere el efecto del knight_rider:
+   https://wallpapercave.com/wp/wp3292242.gif
+   ayuda de programación: tal vez, se podría definir un arreglo de elementos 
+   unsigned char. Y cada elemento del arreglo puede contener un valor 
+   completo de la animacion, para el registro data del puerto b. 
+   De esta manera puede ir escribiendo, iterando, cada elemento del arreglo, 
+   al registro data del puerto b (con una pausa entre escritura y escritura).
+
+
