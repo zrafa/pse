@@ -25,7 +25,7 @@ https://raw.githubusercontent.com/zrafa/pse2025/refs/heads/main/instrucciones.tx
 	¿Qué paquetes componen el toolchain para AVR en su sistema?
 
 2- a. Completar el programa hello world en C que acompaña este lab 
-      (carpeta led_blink/).
+      (led_blink.tar.gz carpeta led_blink/).
    b. Compilar con:
 	make clean
 	make
