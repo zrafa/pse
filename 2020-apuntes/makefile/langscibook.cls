@@ -279,7 +279,7 @@
 
 \usepackage{morewrites} %more helper files to write to
 \usepackage{etex}
-\reserveinserts{18}
+% \reserveinserts{18}
 \usepackage{xstring}
 \usepackage{graphicx}
 \usepackage{hyphenat}
@@ -1293,7 +1293,8 @@ Storage and cataloguing done by FU Berlin \\[3ex]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{datetime}
-\usepackage{scrpage2}
+% \usepackage{scrpage2}
+\usepackage{scrlayer-scrpage}
 \ohead{\headmark}
 \ihead{}
 \cfoot{}

@@ -279,7 +279,7 @@
 
 \usepackage{morewrites} %more helper files to write to
 \usepackage{etex}
-\reserveinserts{18}
+% \reserveinserts{18}
 \usepackage{xstring}
 \usepackage{graphicx}
 \usepackage{hyphenat}
