@@ -1293,7 +1293,8 @@ Storage and cataloguing done by FU Berlin \\[3ex]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{datetime}
-\usepackage{scrpage2}
+% \usepackage{scrpage2}
+\usepackage{scrlayer-scrpage}
 \ohead{\headmark}
 \ihead{}
 \cfoot{}
