@@ -1,0 +1,39 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%      File: langsci-osl.sty
+%%    Author: Radek Simik and Language Science Press (http://langsci-press.org)
+%%      Date: 2019-02-18
+%%   Purpose: This file contains macros for the Open Slavic Linguistics at Language Science Press series and is included 
+%%            into langscibook.cls
+%%  Language: LaTeX
+%%   Licence: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FIXING GRAY
+
+\definecolor{lsDOIGray}{cmyk}{0,0,0,0.45}
+
+% PACKAGES REQUIRED
+
+\RequirePackage{relsize}
+\RequirePackage{stmaryrd}
+
+% KEYWORDS
+
+\newcommand{\keywords}[1]{\noindent\textbf{Keywords:} {#1}}
+
+% SEMANTICS MACROS
+
+\newcommand{\sib}[1]{$\llbracket${#1}$\rrbracket$} % = semantic interpretation brackets; puts text into double square brackets
+\newcommand{\stb}[1]{\langle{#1}\rangle} % = semantic type brackets; puts stuff into semantic type brackets; necessary to use in the form $\st{}$
+\newcommand{\cnst}[1]{\textsf{\relsize{-1}\MakeUppercase{#1}}} %creates sans-serif small-caps, used for typesetting logical constants
+
+% MINUS HSPACE MACRO
+
+\newcommand{\minsp}[1]{#1\hspace{-2.5pt}} % use for non-glossed elements in glossed examples (typically stars, brackets, slashes, ...)
+
+% CITATION MACROS
+
+\newcommand{\citeposst}[1]{\citeauthor{#1}'s (\citeyear{#1})} % produces Chomsky's (1995)
+\newcommand{\citeposstpg}[2]{\citeauthor{#1}'s (\citeyear[#2]{#1})} % produces Chomsky's (1995: page)
+\newcommand{\citepossalt}[1]{\citeauthor{#1}'s \citeyear{#1}} % produces Chomsky's 1995
+\newcommand{\citepossaltpg}[2]{\citeauthor{#1}'s \citeyear[#2]{#1}} % produces Chomsky's 1995: page
