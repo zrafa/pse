@@ -121,48 +121,46 @@ Un sistema es de tiempo real cuando en la especificación de sus requerimientos
 existen requisitos de tiempo de respuesta limites.
 Por lo que su correctitud, una vez implementado, esta definida por la correctitud de los resultados computados, y porque cumple con los tiempos de respuesta definidos en sus especificaciones. Si el sistema no es capaz de responder a un evento o tarea —definida en los requerimientos del sistema— en el tiempo maximo permitido, tambien definido en las especificaciones, entonces se dice que el sistema falló, y no es de tiempo real.
 
-\begin{center}
-\begin{tabularx}{\textwidth}{|X|}
-%\hline
-\rowcolor{aliceblue}
-Un sistema es de tiempo real si su correctitud esta definida por:
-  1.  La correctitud de los resultados computados.
-  2.  El cumplimiento de los tiempos de respuesta definidos en sus especificaciones.
-Un resultado correcto producido fuera de tiempo equivale, en este contexto, a un resultado incorrecto.
-%\hline
-\end{tabularx}
-\end{center}
-
+Se los categoriza en dos tipo. \textbf{Hard Real-Time (tiempo real estricto)}: Cuando los plazos temporales deben ser cumplidos siempre. En este tipo están los sistemas que ante un fallo corre riesgo la vida humana o la estabilidad del sistema. Por ejemplo, la activación de un airbag en un automóvil.  \textbf{Soft Real-Time (tiempo real flexible)}: Son los sistemas en donde incumplir ocasionalmente un tiempo de respuesta degrada el rendimiento, pero no provoca un fallo crítico. Por ejemplo, un sistema de reproducción de video en streaming.
 
 \begin{center}
 \begin{tabularx}{\textwidth}{|X|}
 %\hline
 \rowcolor{aliceblue}
-\textbf{Objetivo de diseño}\\
-Un sistema es de tiempo real si su correctitud esta definida por:
-  1.  La correctitud de los resultados computados.
-  2.  El cumplimiento de los tiempos de respuesta definidos en sus especificaciones.
-Un resultado correcto producido fuera de tiempo equivale, en este contexto, a un resultado incorrecto.
+\textbf{Un Sistema es de Tiempo Real si..}\\
+  1.  Los resultados computados son correctos. \\
+  2.  Se cumplen los tiempos de respuesta definidos en sus especificaciones. \\
+Un resultado producido fuera del plazo definido equivale, en este contexto, a un sistema que NO es de tiempo real.
 %\hline
 \end{tabularx}
 \end{center}
 
 
-Usualmente, al disenar un sistema de tiempo real, se definen eventos y acciones a ser llevadas a cabo. Para cada uno de estos eventos se define tambien, con precision, el tiempo de respuesta maximo permitido por parte del sistema. Luego, este diseno se divide usualmente en tareas independientes, que seran ejecutadas de manera concurrente en tiempo de ejecucion. 
+Usualmente, al diseñar un sistema de tiempo real, se definen dos clases de tareas que son llevadas a cabo: tareas periódicas estrictas, y tareas activadas por eventos. Para cada uno de estas tareas se define tambien, con precision, el tiempo de respuesta maximo permitido por parte del sistema (sobre todo para las tareas activadas por eventos). Luego, este diseño se divide usualmente en tareas independientes, que seran ejecutadas de manera concurrente en tiempo de ejecucion. 
+
 Como software de apoyo, se utiliza un sistema operativo de tiempo real 
 (RTOS, por su sigla en ingles en Real Time Operating System).
 Estos se ejecutan principalmente en microprocesadores de baja complejidad y, mayormente, en microcontroladores. 
 Este software es el encargado de ejecutar las tareas de manera concurrente, y tambien da soporte para lograr los tiempos de respuesta requeridos.
-
 Sin embargo, esto no es un proceso automatico. Es decir, utilizar un sistema 
 operativo de tiempo real no implica que el sistema logrado sea de tiempo real. 
 
 
-Importante
-Utilizar un RTOS NO garantiza automaticamente que el sistema sea de tiempo real. Para lograrlo, los desarrolladores deben ademas asignar correctamente prioridades a cada tarea, relacionar las tareas con los eventos, y definir como deben sincronizarse y comunicarse entre si.
+\begin{center}
+\begin{tabularx}{\textwidth}{|X|}
+%\hline
+\rowcolor{aliceblue}
+\textbf{Importante}\\
+	Utilizar un RTOS NO garantiza automaticamente que el sistema sea de tiempo real. Para lograrlo, los desarrolladores deben diseñarlo apropiadamente. Por ejemplo, asignando prioridades correctas a cada tarea (si el sistema gestiona tareas con prioridades), asignando eventos a cada tarea, y definiendo como deben sincronizarse y comunicarse entre si.
+%\hline
+\end{tabularx}
+\end{center}
+
 
 \subsection{Sistema Operativo de Tiempo Real}
-Existen distintos metodos y formas de desarrollar un sistema de tiempo real. Una de las mas comunes, pero no la unica, es el uso de un RTOS con planificador de prioridad fija y apropiativo. Generalmente, el planificador de CPU (scheduler) de un sistema operativo de tiempo real es de prioridad fija —la prioridad de cada tarea se define en tiempo de compilacion— y apropiativo (preemptive). Cuando el sistema esta en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es mas alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
+
+Existen distintos metodos y mecanismos por las que un sosftware de apoyo como RTOS posibilita el desarrollo de un sistema de tiempo real.
+Uno ampliamente utilizado es el uso de un RTOS con planificador de prioridad fija y apropiativo. Generalmente, el planificador de CPU (scheduler) de un sistema operativo de tiempo real es de prioridad fija —la prioridad de cada tarea se define en tiempo de compilacion— y apropiativo (preemptive). Cuando el sistema esta en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es mas alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
 
 Si existen varias tareas listas con la misma prioridad que la tarea que esta actualmente utilizando la CPU, entonces el RTOS realiza una expropiacion de la CPU en intervalos regulares, empleando round-robin para asignarla a otra tarea.
 
