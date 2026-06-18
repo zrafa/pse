@@ -31,6 +31,7 @@ periféricos de ambos tipos.
 \usepackage[spanish]{babel}
 \usepackage[bottom]{footmisc}
 \usepackage{tabularx}
+\usepackage[table]{xcolor}
 
 \definecolor{aliceblue}{rgb}{0.90, 0.93, 0.96}
 
@@ -288,8 +289,10 @@ Como se vió en módulos teóricos previos, una rutina de atención de interrupc
 \subsubsection{Solucion con RTOS y prioridades}
 
 Utilizando como herramenta de apoyo un RTOS, cada requisito se convierte en una tarea independiente con su propia prioridad. El planificador siempre asigna la CPU a la tarea de mayor prioridad lista para ejecutarse. 
-Esto es, independientemente de lo que este haciendo alguna otra tarea de menor prioridad, 
-cuando utiliza la CPU, si una tarea de mayor prioridad se activa, el planificador de CPU del RTOS realiza un cambio de contexto y pone a ejecutar la tarea de mayor prioridad.
+Esto es, independientemente de lo que este haciendo alguna otra tarea de menor prioridad. 
+Cuando una tarea de mayor prioridad se activa, mientras otra está utilizando
+la CPU, el planificador de CPU del RTOS realiza un cambio de contexto,
+y pone a ejecutar la tarea de mayor prioridad.
 
 \begin{verbatim}
 // ---- Solucion utilizando un RTOS ----
@@ -318,8 +321,8 @@ process tarea_odometria(void) {
 }
 
 void main(void) {
-    resume(create(tarea_temperatura,256, 15, "temp", 0));
-    resume(create(tarea_odometria,  256, 40, "odom", 0));
+    resume(create(tarea_temperatura, 256, 15, "temp", 0));
+    resume(create(tarea_odometria, 256, 40, "odom", 0));
 }
 \end{verbatim}
 
@@ -338,7 +341,7 @@ el RTOS asegura su ejecución inmediata.
 El plazo de 5 ms se cumple siempre, sin necesidad de calcular 
 manualmente cuanto tarda cada funcion.
 
-Un lector atento observará que poner sleepms(5); no sería tan adecuado.
+Un lector atento observará que poner sleepms(5); no sería adecuado.
 Si la tarea demora 3ms en ejecutarse, entonces la tarea se estaría
 ejecutando cada 8ms (y no cada 5ms). sleepms(2) sería mas apropiado.
 Otra solución mas eficiente podría ser utilizando un timer y un semáforo
@@ -353,176 +356,259 @@ el comportamiento de manera predecible, y cumplir con los tiempos
 de respuesta necesarios para cada funcionalidad.
 
 \subsection{Ejemplo de un sistema con eventos asincronicos}
-Ahora consideremos un sistema que ademas debe atender comandos que llegan por UART desde una computadora. Los comandos no llegan en forma periodica: pueden llegar en cualquier momento, y el sistema debe responder dentro de 20 ms desde la recepcion. Si no responde a tiempo, la comunicacion se pierde.
-Agregamos este requisito al escenario anterior:
-    • Requisito A — Odometria: cada 5 ms. Prioridad maxima.
-    • Requisito B — Comandos UART: responder en menos de 20 ms desde la llegada del byte. Prioridad alta.
-    • Requisito C — Temperatura: cada 100 ms. Prioridad baja.
 
-Intento con bucle infinito + ISR
+Ahora se agrega, al mismo ejemplo de la sección anterior,  
+un requisito extra:
+el sistema debe poder atender comandos que 
+llegan por una interfaz de hardware serie desde un dispositivo remoto.
+Los comandos no llegan en forma periodica. Pueden llegar en cualquier 
+momento, y el sistema debe responder dentro de los 20ms desde la recepcion. 
+Si no responde a tiempo, el sistema se vuelve inestable.
 
-\begin{verbatim}
-// ---- Tres requisitos con bucle + ISR: AUN MAS PROBLEMATICO ----
+Al implementar esta funcionalidad se evalúa que su ejecución demora 10ms.
 
-volatile bool flag_odom  = false;
-volatile bool flag_uart  = false;
-volatile bool flag_temp  = false;
-volatile char cmd_byte   = 0;
+Como la tarea de odometría es muy justa en tiempo de ejecución con
+respecto a su tiempo de activación, aún sigue siendo la tarea más crítica.
+Agregando este requisito al escenario anterior:
+\begin{itemize}
+	\item Tarea Odometria: cada 5 ms. Prioridad maxima.
+	\item Tarea de Comandos: responder en menos de 20 ms desde la llegada del comando a procesar. Prioridad alta.
+	\item Tarea Temperatura: cada 10 ms. Prioridad baja.
+\end{itemize}
 
-ISR(TIMER0_OVF_vect)  { flag_odom = true; }           // cada 5 ms
-ISR(USART_RX_vect)    { cmd_byte = UDR0;
-                         flag_uart = true; }           // asincrono
-ISR(TIMER1_OVF_vect)  { flag_temp = true; }           // cada 100 ms
-
-int main(void) {
-    sei();
-    while (1) {
-        // El orden de atencion lo define el programador, no las prioridades reales.
-        // Si odometria tarda 6 ms y justo llega un comando UART, perdemos el plazo.
-        if (flag_odom) { flag_odom = false; calcular_odometria(); }
-        if (flag_uart) { flag_uart = false; procesar_comando(cmd_byte); }
-        if (flag_temp) { flag_temp = false; verificar_temperatura(); }
-    }
-}
-\end{verbatim}
-
-El problema de fondo
-El orden de atencion de los flags en el bucle lo decide el programador en tiempo de escritura del codigo, no las prioridades reales del sistema en tiempo de ejecucion. Si calcular\_odometria() tarda mas de lo esperado y durante esa ejecucion llega un byte UART, el flag\_uart se activa pero no sera atendido hasta que el bucle vuelva a chequearlo. Si para entonces han pasado mas de 20 ms, el plazo se perdio.
-Este problema no tiene solucion limpia dentro del esquema de bucle + ISR. Se pueden hacer particiones de tiempo manuales, dividir las funciones en "slices" mas pequenos, o usar maquinas de estado que se ejecutan por partes... pero toda esa complejidad es exactamente lo que un RTOS resuelve de forma sistematica y formal.
-
-Solucion con RTOS: eventos que despiertan tareas
-Con un RTOS, la ISR de UART simplemente despierta a la tarea de comandos via un semaforo. La tarea no consume CPU mientras espera; en cuanto llega el byte, el planificador la activa y, si su prioridad es mayor que la tarea en ejecucion, la pone a correr inmediatamente:
+Se debe agregar la nueva funcionalidad
+como tarea independiente, y su prioridad debe estar definida con un valor
+intermedio, de manera que todas las tareas se cumplan a tiempo.
 
 \begin{verbatim}
-// ---- Solucion con XINU (AVR) ----
+// ---- Solucion utilizando un RTOS ----
 
-sid32 sem_uart;   // semaforo global, inicializado en 0
-volatile char cmd_byte = 0;
+sid32 sem_comando;   // semaforo global, inicializado en 0
+char cmd_byte = 0;
 
-// ISR: solo guarda el dato y despierta a la tarea consumidora
+// ISR: solo toma el dato comando y activa a la tarea consumidora
 ISR(USART_RX_vect) {
-    cmd_byte = UDR0;
-    signal(sem_uart);   // despierta tarea_comandos si esta bloqueada
+    cmd_byte = UDR0;    // leer el dato del hardware serial
+    signal(sem_comando);   // activar a tarea_comandos 
 }
 
-// PRIORIDAD 40 — critica: 5 ms
-process tarea_odometria(void) {
-    while (TRUE) {
-        calcular_odometria(leer_encoder());
-        sleep(5);
-    }
-}
-
-// PRIORIDAD 30 — alta: responde en cuanto llega el byte (< 20 ms garantizado)
-process tarea_comandos(void) {
-    while (TRUE) {
-        wait(sem_uart);          // bloqueada hasta que ISR haga signal()
-        procesar_comando(cmd_byte);
-    }
-}
-
-// PRIORIDAD 10 — baja: 100 ms
+// PRIORIDAD 15 — tarea de mas baja prioridad
 process tarea_temperatura(void) {
-    while (TRUE) {
-        if (leer_sensor_temp() > UMBRAL) encender_LED();
-        else                             apagar_LED();
-        sleep(100);
+   for (;;) {
+        temperaturas = leer_sensores_temp();
+        PELIGRO = procesar(temperaturas);     // demora 3ms
+                        
+        if (PELIGRO)
+              alarma_ON();	
+
+        sleepms(10);
     }
+}
+
+// PRIORIDAD 40 — tarea critica: finalizar antes de 5 ms
+process tarea_odometria(void) {
+   for (;;) {
+        velocidad = leer_encoder();
+        calcular_odometria(velocidad);      // demora 3ms
+	
+        sleepms(5);   
+    }         
+}
+
+// PRIORIDAD 20 — tarea intermedia 
+process tarea_comandos(void) {
+   for (;;) {
+        wait(sem_comando);             // bloquea a la espera
+                                       // de un comando
+
+        accionar_comando(cmd_byte);    // demora 10ms
+    }         
 }
 
 void main(void) {
-    sem_uart = screate(0);
-    resume(create(tarea_odometria,  256, 40, "odom", 0));
-    resume(create(tarea_comandos,   256, 30, "cmd",  0));
-    resume(create(tarea_temperatura,256, 10, "temp", 0));
+    sem_comando = semcreate(0);
+    resume(create(tarea_temperatura, 256, 15, "temp", 0));
+    resume(create(tarea_odometria, 256, 40, "odom", 0));
+    resume(create(tarea_comandos, 256, 20, "comm", 0));
 }
 \end{verbatim}
 
-Cuando la ISR ejecuta signal(sem\_uart), el planificador de XINU despierta a tarea\_comandos. Como su prioridad (30) es mayor que la de tarea\_temperatura (10), si esta ultima estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20 ms se cumple con amplio margen.
 
-Escenario	Con bucle + ISR	Con RTOS y prioridades
-1 tarea periodica	Funciona bien	Funciona bien (mas simple de escribir)
-2 tareas con plazos distintos	Requiere analisis manual de tiempos	El planificador garantiza los plazos
-3+ tareas con plazos distintos	Muy dificil, propenso a errores	Cada tarea tiene su prioridad; sistematico
-Evento asincrono (UART, sensor)	El flag puede llegar tarde	ISR + signal(): respuesta inmediata
-Agregar una nueva tarea	Redisenar el bucle y recalcular tiempos	Crear la tarea con la prioridad adecuada
+Cuando la rutina de atención de interrupciones ejecuta signal(sem\_comando), el planificador del RTOS despierta a tarea\_comandos. Como su prioridad (20) es mayor que la de tarea\_temperatura (10), si esta ultima se estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte via el hardware serie y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20 ms se cumple con amplio margen.
 
-3. Patrones tipicos de uso de tareas en un RTOS
-Mas alla de los ejemplos anteriores, en la practica, casi todas las tareas de un sistema embebido con RTOS caen en uno de los siguientes tres patrones. Conocerlos permite disenar el sistema de forma ordenada desde el principio.
+\section{Patrones tipicos de uso de tareas con un RTOS}
+Mas alla de los ejemplos anteriores, en la practica, casi todas las tareas de un sistema embebido con RTOS caen en uno de los siguientes tres patrones. Conocerlos permite disenar un sistema de forma adecuada.
 
-\subsection{ Tarea periodica (hace algo y duerme)}
-La tarea realiza su trabajo y luego duerme por un periodo fijo. Al despertar, vuelve a ejecutarse. Este patron es el mas directo para requisitos como muestreo de sensores, control PID, actualizacion de displays, o calculo de odometria. El RTOS garantiza que, si la tarea tiene la prioridad adecuada, sera activada a tiempo independientemente de lo que hagan las demas.
+\subsection{Tarea periodica }
+La tarea realiza su trabajo y luego "duerme" (es bloqueada por el RTOS) durante
+un periodo fijo. Al activarse nuevamente vuelve a ejecutarse. Este patron es 
+el muy utilizado para el muestreo de diferentes eventos u observaciones.
+Por ejemplo, para leer un sensor con una frecuencia definida. O para la actualizaciónde un control PID, o la actualización de una pantalla, o calculos
+o acciones en momentos periódicos.
+El RTOS garantiza que, si la tarea tiene la prioridad adecuada, sea 
+activada a tiempo, independientemente de lo que hagan las demas.
 
 \begin{verbatim}
 process tarea_control_pid(void) {
-    while (TRUE) {
+    for (;;) {
         int error = setpoint - leer_sensor_velocidad();
         int salida = calcular_pid(error);
         aplicar_pwm(salida);
-        sleep(10);   // periodo de 10 ms
+
+        sleepms(10);   // periodo de 10 ms
     }
 }
 \end{verbatim}
 
-\subsection{ Tarea que espera un evento (semaforo o senal)}
-La tarea permanece bloqueada hasta que ocurre un evento externo. Mientras espera, no consume CPU: el planificador la ignora y ejecuta otras tareas. En cuanto el evento ocurre y alguien hace signal() sobre su semaforo, la tarea se desbloquea y, si su prioridad es la mas alta entre las listas, el planificador le da la CPU inmediatamente.
-Este patron es ideal cuando la tarea no debe estar activa continuamente, sino solo cuando hay trabajo real que hacer: llegada de un comando por UART, deteccion de un evento de hardware, finalizacion de una conversion ADC, etc.
+\subsection{Tarea activada por eventos}
+
+En esta categoría la tarea permanece bloqueada hasta que ocurre un evento.
+Mientras espera, no consume CPU. El planificador la ignora y ejecuta en 
+modo round-robin (y/o en base a sus prioridades) otras tareas. 
+En cuanto el evento que espera la tarea bloquead ocurre
+la tarea se desbloquea y, si su prioridad es la mas alta entre 
+las tareas listas, el planificador le da la CPU inmediatamente.
+Este patron es ideal cuando la tarea no debe estar activa continuamente, 
+sino unicamente cuando hay trabajo que realizar. Por ejemplo, 
+cuando llegan datos desde un hardware externo, u otra tarea productora
+genera el evento, etc.
+
+Usualmente, los RTOS proveen, como mecanismo de sincroniación para este
+tipo de tareas semáforos. El concepto en sí y su mecanismo no se explica
+en este apunte. Puede leerse sobre los mismos en algun libro sobre
+conceptos de Sistemas Operativos.
 
 \begin{verbatim}
 sid32 sem_conversion_adc;
 
+/* La siguiente rutina de atención de interrupciones se activa
+ * cuando el conversor analógico a digital finaliza de realizar
+ * una conversión.
+ */
 ISR(ADC_vect) {
     resultado_adc = ADCW;
-    signal(sem_conversion_adc);   // conversion terminada: despierta la tarea
+    signal(sem_conversion_adc);  // generar evento para desbloquear tarea
 }
 
 process tarea_procesar_adc(void) {
-    while (TRUE) {
-        wait(sem_conversion_adc);   // bloqueada hasta que ISR haga signal()
+    for (;;) {
+        wait(sem_conversion_adc);   // bloqueada hasta que suceda evento
         procesar_muestra(resultado_adc);
         iniciar_nueva_conversion();
     }
 }
 \end{verbatim}
 
-\subsection{ ISR como productora, tarea como consumidora}
-Los datos llegan por interrupcion en forma rapida y frecuente. La ISR no puede procesar: solo debe depositar el dato en un buffer y despertar a la tarea consumidora. La tarea consumidora procesa los datos a su ritmo, sin riesgo de perder interrupciones porque el buffer actua como cola.
-Este patron es especialmente util para UART, SPI, I2C, o cualquier periferico que genera datos a alta velocidad. La ISR es minima y rapida; el procesamiento pesado queda en la tarea.
+\subsection{Productor-consumidor via interrupciones}
+Los datos son producidos por interrupciones de hardware en ráfagas, y frecuentemente.  La ISR no los puede procesar, así que sólo los deposita en un buffer y 
+activa a la tarea que los procesa (consumidora). La tarea consumidora procesa 
+datos desde el buffer compartido, sin riesgo de perder interrupciones. 
+Este patron es util para perifericos que genera datos a alta velocidad en 
+ráfagas, y que su procesamiento está a cargo de alguna tarea que eventualmente
+obtendrá la CPU. La rutina de atención de interrupciones es básica y rapida; el procesamiento pesado queda en la tarea. 
+
+En el ejemplo del Código N se observa una rutina de atención de 
+interrupciones productora, que obtiene datos de una interfaz serie,
+y los deposita en un buffer. Además, activa a la tarea consumidora
+por cada dato que llega, utilizando sincronización mediante un 
+semáforo provisto
+por el RTOS. Si la tarea que consume, demora en procesar
+un dato, y llegan nuevos datos, la rutina de atención de interrupciones
+depositará automaticamente los nuevos datos en el buffer, y activará
+el semáforo del consumidor tantas veces como datos en el buffer haya.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{|X|}
+\hline
+\rowcolor{aliceblue}
+\textit{
+IMPORTANTE: Para que este mecanismo funcione correctamente el buffer debe 
+ser lo suficientemente grande como para albergar
+a todos los datos recibidos a la máxima frecuencia, hasta que el RTOS
+ponga a ejecutar la tarea consumidora. Además, en una ráfaga de CPU la
+tarea consumidora debe ser capaz de procesar y vaciar el buffer.
+Si el buffer es muy chico se perderán datos (la ISR los descartará).
+Si el buffer es muy grande consumirá mucha RAM (recurso muy excaso en 
+microcontroladores). Si la máxima frecuencia de producción de datos es mayor
+a la capacidad de procesamiento en una rafaga (QUANTUM) de una tarea, 
+el problema no es el tamaño del buffer, es de procesamiento.
+} \\
+\hline
+\end{tabularx}
+\end{center}
+
 
 \begin{verbatim}
-#define BUF_SIZE 16
 
-volatile char buffer[BUF_SIZE];
-volatile int  buf_in    = 0;
-volatile int  buf_count = 0;
-sid32         sem_datos;   // inicializado en 0
+sid32 sem_consumidor;         // inicializado en 0
 
+/* rutina de atención de interrupciones */
 ISR(USART_RX_vect) {
-    if (buf_count < BUF_SIZE) {
-        buffer[buf_in] = UDR0;
-        buf_in = (buf_in + 1) % BUF_SIZE;
-        buf_count++;
-    }
-    signal(sem_datos);   // despierta al consumidor
+    buffer_put(UDR0);
+    signal(sem_consumidor);   // activar consumidor
 }
 
 process tarea_consumidor_uart(void) {
-    int out = 0;
     while (TRUE) {
-        wait(sem_datos);             // espera hasta que haya dato
-        char d = buffer[out];
-        out = (out + 1) % BUF_SIZE;
-        buf_count--;
+        wait(sem_consumidor);        // bloqueado hasta que 
+                                     // existan datos para procesar
+        char d = buffer_get();
         procesar_caracter(d);
     }
 }
 \end{verbatim}
 
-Resumen de patrones
-Periodica:  sleep(N ms) al final del ciclo. Ideal para control, muestreo, actualizacion periodica.
-Evento:  wait(sem) hasta que alguien haga signal(). Ideal para responder a eventos externos sin consumir CPU.
-ISR + consumidor:  ISR deposita en buffer y hace signal(); tarea procesa a su ritmo. Ideal para perifericos de alta velocidad (UART, ADC, SPI).
-Estos tres patrones, combinados con prioridades bien asignadas, cubren la gran mayoria de los sistemas embebidos reales.
+\subsection{Productor-consumidor}
+
+Un variante del caso anterior es un clásico. Son dos tareas, una
+que produce datos y la otra las que los procesa.
+En el Código N se observa un ejemplo, utilizando las herramientas del RTOS
+que soluciona este problema de manera sencilla.
+Como se observa, el productor no produce mas datos hasta que el consumidor
+no lo active nuevamente. Es el típico patrón productor-consumidor 
+sincronizados mediante dos semáforos provistos por el RTOS.
+
+
+\begin{verbatim}
+sid32 produced;
+sid32 consumed;
+int n = 0;        // buffer
+
+void prod(void)
+{
+    int i;
+
+    for (i=0; i<9999; i++) {
+        wait(consumed);
+	n++;                 // producir n
+        signal(produced);
+    }
+}
+
+void cons(void)
+{
+    int i,n;
+
+    for (i=0; i<9999; i++) {
+        wait(produced);
+	procesar(n);          // consumir n
+        signal(consumed);
+    }
+}
+
+void main(void) {
+    consumed = semcreate(1);	
+    produced = semcreate(0);	
+
+    resume(create(prod, 256, 20, "pro", 0));
+    resume(create(cons, 256, 20, "con", 0));
+
+    for(;;);
+
+}
+\end{verbatim}
+
+
 
 \section{XINU en Arduino (AVR atmega328p)}
 XINU es un sistema operativo academico desarrollado originalmente por Douglas Comer en la Universidad de Purdue, a fines de los anos 70. Desde entonces, ha sido re-escrito y portado a una gran variedad de plataformas de hardware y arquitecturas, y es utilizado, principalmente, como herramienta de investigacion y educacion.
