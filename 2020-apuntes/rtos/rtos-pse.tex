@@ -40,30 +40,16 @@ periféricos de ambos tipos.
 \selectlanguage{spanish}
 
 \chapterfont{\Large\color{LightBlue}} 
-\chapter*{Programación de Sistemas Embebidos 2020\\ Makefiles}
-{\def\addcontentsline#1#2#3{}\maketitle}
-\chapter*{capitulo 3}
-{\def\addcontentsline#1#2#3{}\maketitle}
-\chapter*{capitulo 4}
-{\def\addcontentsline#1#2#3{}\maketitle}
-\chapter*{capitulo 5}
-{\def\addcontentsline#1#2#3{}\maketitle}
-
 \chapter*{Programación de Sistemas Embebidos 2020\\ Dispositivos de E/S (periféricos)}
 
 \begingroup
 \let\clearpage\relax
 \cleardoublepage
 \hypersetup{linkcolor=blue}
-\tableofcontents
-\let\clearpage\relax
-\cleardoublepage
+\tableofcontents*
 \endgroup
 
-
-
 {\def\addcontentsline#1#2#3{}\maketitle}
-
 
 \setcounter{page}{1}
 
@@ -159,143 +145,214 @@ operativo de tiempo real no implica que el sistema logrado sea de tiempo real.
 
 \subsection{Sistema Operativo de Tiempo Real}
 
-Existen distintos metodos y mecanismos por las que un sosftware de apoyo como RTOS posibilita el desarrollo de un sistema de tiempo real.
-Uno ampliamente utilizado es el uso de un RTOS con planificador de prioridad fija y apropiativo. Generalmente, el planificador de CPU (scheduler) de un sistema operativo de tiempo real es de prioridad fija —la prioridad de cada tarea se define en tiempo de compilacion— y apropiativo (preemptive). Cuando el sistema esta en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es mas alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
+Existen distintos metodos y mecanismos que un sosftware de apoyo RTOS puede incluir para el desarrollo de un sistema de tiempo real.
+Uno ampliamente utilizado es el uso de un RTOS con planificador de prioridad fija y apropiativo. Cuando el sistema está en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es más alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
 
-Si existen varias tareas listas con la misma prioridad que la tarea que esta actualmente utilizando la CPU, entonces el RTOS realiza una expropiacion de la CPU en intervalos regulares, empleando round-robin para asignarla a otra tarea.
+Si existen varias tareas listas para ejecutar, con la misma prioridad que la tarea que esta actualmente utilizando la CPU, entonces el RTOS realiza una expropiacion de la CPU en intervalos regulares, empleando la planificación round-robin para asignarla a
+otra tarea. Aquí, cada tarea se ejecuta durante un QUANTUM de tiempo fijo, antes de ser interrumpida, para que la CPU sea luego asignada a otra tarea de la misma prioridad. Luego de que todas las tareas de la misma prioridad se ejecutaron
+durante su QUANTUM, el RTOS volverá a asignar la CPU a la primera tarea
+de esta cola FIFO.
 
-Contando con estas caracteristicas, los desarrolladores pueden disenar un sistema cuyo funcionamiento es predecible, lo cual es una condicion necesaria para evaluar el diseno y conocer si el sistema resultante cumple con los plazos definidos y puede, por lo tanto, ser de tiempo real.
 
-Por lo tanto, al dise;ar un sistema de tiempo real utilizando como 
-herramienta de apoyo un RTOS un desarrollador 
-debe especificar para cada tarea una prioridad de acuerdo a si esa tarea
-debe tener un tiempo de respuesta limite. Tambien relacionar las tareas 
+Contando con estas caracteristicas, los desarrolladores pueden diseñar un sistema cuyo funcionamiento es predecible, lo cual es una condicion necesaria para evaluar y conocer si el sistema resultante cumple con los plazos definidos y puede, por lo tanto, ser de tiempo real.
+
+En el momento de modelado y diseño del sistema, con esta técnica en mente, 
+el desarrollador 
+debe especificar para cada tarea una prioridad, de acuerdo a si esa tarea
+debe tener o no un tiempo de respuesta limite. Tambien relacionar las tareas 
 con los eventos, y definir como deben sincronizarse y comunicarse esas tareas. 
-En tiempo de ejecucion, el sistema operativo de tiempo real sera el encargado de asegurar que siempre se este ejecutando la tarea de mayor prioridad. 
+En tiempo de ejecucion, el sistema operativo de tiempo real será el encargado 
+de asegurar que siempre se este ejecutando la tarea de mayor prioridad. 
+
 Como el comportamiento del sistema bajo un RTOS es predecible
-el desarrollador del sistema embebido podra evaluar el modelo disenado 
+el desarrollador del sistema embebido puede evaluar el modelo diseñado 
 ante todas las situaciones posibles, para corroborar que siempre 
-se cumple el tiempo de respuesta para un evento y/o tarea.
+se cumplen los tiempos de respuestas definidos.
 Si la cantidad de estados del sistema y situaciones posibles son 
 inabarcables, los desarrolladores pueden realizar simulaciones y 
-aproximaciones para evaluar si el modelo disenado cumplira con los 
+aproximaciones para evaluar si el sistema cumplirá con los 
 plazos requeridos.
 
-Existe tambien un modelo formal para validar un proyecto de tiempo real
-basado en convertir los eventos asincronicos a periodicos, y evaluar
+Existe tambien un modelo formal para validar un modelo de sistema de tiempo real
+el cual se basa en convertir los eventos asincronicos a periodicos, y evaluar
 todo el sistema con por ejemplo ............
 Puede leer mayor documentacion en : AGREGAR REFERENCIA.
 
-\subsubsection{ Caracteristicas de un RTOS}
-En sintesis, un RTOS que implementa el esquema de prioridad fija y apropiatividad —el mas comun en sistemas embebidos— debe contar con las siguientes caracteristicas:
-    • Gestion de multiples tareas: debe poder gestionar tareas diferentes (multiprogramacion / multi hilos) y ser apropiativo (preemptive).
-    • Planificacion por prioridades: cada tarea debe contar con una prioridad, y el RTOS siempre ejecuta la tarea lista de mayor prioridad.
-    • Sincronizacion y comunicacion de tareas: el RTOS debe contar con mecanismos para que las tareas puedan coordinarse y transferirse datos de forma segura (semaforos, mutex, colas de mensajes, etc.).
-    • Herencia de prioridad: debe existir un sistema de herencia de prioridad para evitar la inversion de prioridades, esto es, que una tarea de baja prioridad no bloquee indefinidamente a una de alta.
-    • Eventos asincronicos: el RTOS debe permitir eventos asincronicos, como pueden ser interrupciones de E/S, permitiendo reaccionar ante eventos externos sin consulta activa (polling).
+\subsubsection{Caracteristicas de un RTOS}
 
-Contando con estas caracteristicas, los desarrolladores pueden disenar un sistema cuyo funcionamiento es predecible, la cual es una condicion necesaria para evaluar el diseno, y conocer si el sistema resultante cumple con los plazos definidos, y por lo tanto, ser de tiempo real.
+En sintesis, un RTOS que implementa el esquema de prioridad fija y 
+apropiatividad (que es el caso más común) debe contar con las siguientes 
+caracteristicas:
+\begin{itemize}
+	\item Administrador de tareas: debe poder ejecutar tareas diferentes 
+	via multiprogramacion o multi-hilos,  y ser apropiativo (preemptive).
+\item Planificador por prioridades: cada tarea debe contar con una prioridad, y el RTOS se encarga de que la tarea de mayor prioridad es la que utiliza la CPU.
+\item Sincronizacion y comunicacion entre tareas: el RTOS debe contar con mecanismos para que las tareas puedan coordinarse y transferirse datos de forma segura (semaforos, mutex, colas de mensajes, etc.).
+\item Herencia de prioridad: debe existir un mecanismo de herencia de prioridad para evitar la inversion de prioridades, esto es, que una tarea de baja prioridad no bloquee indefinidamente a una de alta prioridad.
+\item Eventos asincronicos: el RTOS debe permitir eventos asincronicos, como pueden ser las interrupciones de E/S, permitiendo reaccionar ante eventos externos sin consulta activa (polling).
+\end{itemize}
+
 
 \subsubsection{ Donde se usan los RTOS}
-Los sistemas operativos de tiempo real no son sistemas operativos completos. Estan compuestos, basicamente, por un gestor de tareas apropiativo y de mecanismos para la sincronizacion y comunicacion entre las mismas. Este reducido conjunto de caracteristicas esta directamente relacionado con el hardware donde se ejecuta: los RTOS son utilizados mayormente en plataformas de computo basado en microcontroladores de bajos recursos para automatizacion y control.
-En los ultimos anos, con el crecimiento exponencial de desarrollo de dispositivos IOT, su uso ha crecido en ambientes de sensores conectados a Internet, tambien controlados generalmente por microcontroladores. Aplicaciones tipicas incluyen:
-    • Robots moviles: control de motores, lectura de encoders opticos, calculo de odometria.
-    • Sistemas de adquisicion de datos: muestreo periodico de sensores con restricciones temporales.
-    • Controladores de procesos industriales: automatizacion con respuesta garantizada ante eventos.
-    • Dispositivos IOT: sensores conectados que reportan valores dentro de tiempos limite.
-    • Sistemas de navegacion: fusion de datos de magnetometro, acelerometro y encoders con plazos estrictos.
 
-\section{El limite del bucle infinito con interrupciones}
-Antes de introducir un RTOS, muchos sistemas embebidos de baja complejidad se implementan con un esquema simple: un bucle infinito principal (superloop) que atiende la logica de la aplicacion, combinado con rutinas de servicio de interrupcion (ISR) para manejar eventos asincronicos. Este esquema es facil de entender y funciona bien cuando existe un unico requisito de tiempo de respuesta o las tareas tienen plazos muy similares. Pero en cuanto aparecen dos o mas requisitos temporales diferentes, el diseno se vuelve rapidamente inviable.
+Los sistemas operativos de tiempo real no son sistemas operativos completos. Estan compuestos, basicamente, por un gestor de tareas apropiativo y de mecanismos para la sincronizacion y comunicacion entre las mismas. Este reducido conjunto de caracteristicas esta directamente relacionado con el hardware donde se ejecuta: los RTOS son utilizados mayormente en plataformas de computo basado en microcontroladores de bajos recursos para automatizacion y control.
+
+En los ultimos anos, con el crecimiento exponencial de desarrollo de dispositivos IOT, su uso ha crecido en ambientes de sensores conectados a Internet, tambien controlados generalmente por microcontroladores. Algunos ejemplos de aplicaciones embebidas típicas desarrolladas utilizando un RTOS son: 
+\begin{itemize}
+	\item Robots moviles, : control de motores, lectura de encoders opticos, calculo de odometria.
+	\item Sistemas de adquisicion de datos: muestreo periodico de sensores con restricciones temporales.
+	\item Controladores de procesos industriales: automatizacion con respuesta garantizada ante eventos.
+	\item Dispositivos IOT: sensores conectados que reportan valores dentro de tiempos limite.
+	\item Sistemas de navegacion: fusion de datos de magnetometro, acelerometro y encoders con plazos estrictos.
+\end{itemize}
+
+\section{El limite del bucle infinito}
+
+Para apreciar por qué es muy comun utilizar un RTOS al desarrollar un sistema embebido
+comenzaremos con un ejemplo típico.
+		Antes de introducir un RTOS, muchos sistemas embebidos de baja complejidad se implementan con un esquema simple: un bucle infinito principal (superloop) que atiende la logica de la aplicacion, combinado con rutinas de servicio de interrupcion (ISR) para manejar eventos asincronicos. Este esquema es facil de entender y funciona bien cuando existe un unico requisito de tiempo de respuesta o las tareas tienen plazos muy similares. Pero en cuanto aparecen dos o mas requisitos temporales diferentes, el diseno se vuelve rapidamente inviable.
+
 La razon de fondo es sencilla: en un bucle infinito, todas las tareas comparten el mismo hilo de ejecucion. No existe ningun mecanismo que garantice que una tarea critica sea atendida a tiempo si otra tarea menos critica esta en ese momento ocupando la CPU. La ISR puede despertar un flag o actualizar una variable, pero si el bucle principal esta en medio de una operacion larga, el procesamiento del evento llegara tarde.
 
-\subsection{ Ejemplo 1: robot movil con odometria y temperatura}
-Consideremos un sistema embebido en una placa Arduino Nano (AVR atmega328p) que debe cumplir dos requisitos de tiempo real:
-    • Requisito A — Odometria: leer los encoders opticos del motor y actualizar la posicion estimada del robot cada 5 ms. Si el calculo llega tarde, el error acumulado en la posicion supera el margen aceptable.
-    • Requisito B — Temperatura: leer un sensor de temperatura y encender un LED de alarma si se supera un umbral, con un periodo de 100 ms. No es critico al milisegundo, pero tampoco puede perderse por segundos.
+\subsection{Ejemplo: robot movil con odometria y temperatura}
 
-Intento con bucle infinito + ISR
-Un primer intento natural seria usar dos timers con ISR y procesar todo en el bucle principal:
+Suponga que se debe desarrollar un sistema embebido robotico que navega y controla la temperatura en diferentes ambientes.
+El robot realiza dos funciones principales:
+
+\begin{itemize}
+	\item Temperatura: el sistema debe leer varios sensores de temperatura. Si al procesar esos valores se exede un umbral se activa una alarma. Esta función debe realizarse al menos \textbf{una vez cada 10ms}. Al implementar esta funcionalidad se evalúa y se demuestra que esta funcionalidad se logra en \textbf{3ms} utilizando este microcontrolador.
+	\item Odometria: el sistema debe leer encoders opticos que permiten calcular la velocidad de cada rueda del robot, y con esta información, calcular la posicion del robot \textbf{una vez cada 5ms} al menos. Si el calculo se realiza luego de 5ms el error de posicionamiento supera el margen aceptable. Al implementar la funcionalidad se evalúa y se demuestra que el computo demora \textbf{3ms} en este microcontrolador. \textbf{Esta tarea se define como la de mayor importancia}.
+\end{itemize}
+
+\subsubsection{Intento con bucle infinito e interrupciones}
+
+Una primera implementación tradicional es utilizar dos timers por hardware para activar las diferentes tareas a tiempo, mediante interrupciones (cada 10ms y cada 5ms). Luego, procesar todo en el bucle principal de main.
 
 \begin{verbatim}
 // ---- Intento con bucle + ISR: PROBLEMATICO ----
 
-volatile int  velocidad   = 0;
-volatile int  temperatura = 0;
-volatile bool flag_odom   = false;
-volatile bool flag_temp   = false;
-
-ISR(TIMER0_OVF_vect) {        // cada 5 ms
-    velocidad = leer_encoder();
-    flag_odom = true;
+ISR(TIMER1_OVF_vect) {        // interrupcion cada 10 ms
+  temperaturas = leer_sensores_temp();
+  tarea_temp = 1;
 }
 
-ISR(TIMER1_OVF_vect) {        // cada 100 ms
-    temperatura = leer_sensor_temp();
-    flag_temp = true;
+ISR(TIMER0_OVF_vect) {        // interrupcion cada 5 ms
+  velocidad = leer_encoder();
+  tarea_odom = 1;
 }
 
 int main(void) {
-    iniciar_timers();
-    sei();
-    while (1) {
-        if (flag_odom) {
-            flag_odom = false;
-            // PROBLEMA: si esta funcion tarda 8 ms,
-            // el siguiente pulso del encoder se procesa
-            // con 3 ms de retraso -> error de posicion
-            calcular_odometria(velocidad);
-        }
-        if (flag_temp) {
-            flag_temp = false;
-            // Si llegamos aqui tarde por culpa de odometria,
-            // el LED de alarma se activa con retraso
-            if (temperatura > UMBRAL) encender_LED();
-            else                      apagar_LED();
-        }
-    }
+  for(;;) {
+      if (tarea_temp) {	  /* temperatura */
+          tarea_temp = 0;
+          PELIGRO = procesar(temperaturas);    // demora 3ms
+                                               // PROBLEMA !!
+          if (PELIGRO)
+              alarma_ON();	
+      }
+
+      if (tarea_odom) {	  /* odometria */
+          tarea_odom = 0; 		
+          calcular_odometria(velocidad);      // demora 3ms
+      }
+  }
 }
 \end{verbatim}
 
-Donde falla este diseno
-calcular\_odometria() puede tardar mas de 5 ms si involucra operaciones de punto flotante o multiplicaciones sobre el AVR de 8 bits. En ese caso, el siguiente pulso del encoder ya llego y fue sobrescrito por la ISR antes de ser procesado. El calculo de posicion acumula error.
-Si flag\_temp y flag\_odom se activan al mismo tiempo, el bucle atiende primero odometria. Si esa funcion es larga, la alarma de temperatura puede demorarse decenas de milisegundos. No hay manera de garantizar que temperatura sea atendida dentro de su plazo.
-Agregar una tercera tarea (por ejemplo, enviar estado por UART cada 50 ms) hace que el problema sea aun mas dificil de analizar. Con N tareas y plazos distintos, calcular a mano si el diseno cumple todos los plazos se vuelve inviable.
+\subsubsection*{Donde falla este diseño}
 
-Solucion con RTOS y prioridades
-Con un RTOS, cada requisito se convierte en una tarea independiente con su propia prioridad. El planificador garantiza que la tarea de mayor prioridad lista siempre ocupa la CPU, independientemente de lo que este haciendo la de menor prioridad:
+\begin{itemize}
+	\item procesar(temperaturas) demora 3ms, y debe finalizar este cálculo en menos de 10ms desde que se activó la tarea. 
+
+	\item calcular\_odometria() demora 3ms, y debe finalizar este cálculo en menos de 5ms desde que se activó la tarea. 
+\end{itemize}
+
+El problema con la solución tradicional es que si las tareas se activan en algun momento casi simultaneamente,  con tarea\_temp en primer lugar, entonces 
+tarea\_odom finalizará a los 6ms, lo que producirá como resultado que la \textbf{tarea crítica superó el tiempo límite}.
+Tal incumplimento del plazo producirá un error irrecuperable. En este ejemplo, el robot no logra calcular su posición a tiempo, y probablemente comenzará a malfuncionar (chocando o realizando movimientos fuera de lugar).
+
+
+% "La tarea no cumplió con el plazo."
+% "El sistema superó el tiempo límite."
+% "El proceso no alcanzó a terminar dentro del tiempo establecido."
+% "Se venció el tiempo antes de que terminara el cómputo."
+% "La tarea excedió el tiempo máximo permitido."
+% "No se logró completar el cálculo dentro de la ventana de tiempo."
+
+Una alternativa que inmediatamente muchos estudiantes intentan proponer es modificar las rutinas de atencón de interrupciones, y colocar dentro el procesamiento de cada tarea. De esta manera, si se está procesando las temperaturas, y aparece una interrupción de odometría, se ejecutará inmediatamente la rutina de atención de interrupciones calculando la odometría a tiempo.
+Esta solución, aparentemente apropiada en principio, tiene el inconveniente que las rutinas de atención de interrupciones toman mucho tiempo en ejecutarse. 
+Como se vió en módulos teóricos previos, una rutina de atención de interrupciones debe activarse, realizar alguna acción lo más rápido posible y finalizar. No es aceptable tener a estas rutinas en ejecución por varios ms. La principal razón es que otras interrupciones no serán atendidas (mientras se ejecuta una rutina de este tipo las interrupciones están desactivadas). En caso de activar las interrupciones dentro de rutinas críticas, para no perder otras interrupciones, aún sigue siendo un gran problema mantener este código. Casi imposible ampliarlo con mayores funcionalidades por rutinas de atención de interrupciones anidadas.
+
+
+
+\subsubsection{Solucion con RTOS y prioridades}
+
+Utilizando como herramenta de apoyo un RTOS, cada requisito se convierte en una tarea independiente con su propia prioridad. El planificador siempre asigna la CPU a la tarea de mayor prioridad lista para ejecutarse. 
+Esto es, independientemente de lo que este haciendo alguna otra tarea de menor prioridad, 
+cuando utiliza la CPU, si una tarea de mayor prioridad se activa, el planificador de CPU del RTOS realiza un cambio de contexto y pone a ejecutar la tarea de mayor prioridad.
 
 \begin{verbatim}
-// ---- Solucion con XINU (AVR) ----
+// ---- Solucion utilizando un RTOS ----
 
-// PRIORIDAD 40 — critica: 5 ms
-process tarea_odometria(void) {
-    while (TRUE) {
-        int v = leer_encoder();
-        calcular_odometria(v);   // si tarda mas de 5 ms, el planificador
-        sleep(5);                // la interrumpira al vencer su quantum
-    }                            // pero la proxima activacion es siempre a tiempo
+// PRIORIDAD 15 — 10 ms
+process tarea_temperatura(void) {
+   for (;;) {
+        temperaturas = leer_sensores_temp();
+        PELIGRO = procesar(temperaturas);     // demora 3ms
+                        
+        if (PELIGRO)
+              alarma_ON();	
+
+        sleepms(10);
+    }
 }
 
-// PRIORIDAD 15 — menos critica: 100 ms
-process tarea_temperatura(void) {
-    while (TRUE) {
-        int t = leer_sensor_temp();
-        if (t > UMBRAL) encender_LED();
-        else             apagar_LED();
-        sleep(100);
-    }
+// PRIORIDAD 40 — tarea critica: finalizar antes de 5 ms
+process tarea_odometria(void) {
+   for (;;) {
+        velocidad = leer_encoder();
+        calcular_odometria(velocidad);      // demora 3ms
+	
+        sleepms(5);   
+    }         
 }
 
 void main(void) {
-    resume(create(tarea_odometria,  256, 40, "odom", 0));
     resume(create(tarea_temperatura,256, 15, "temp", 0));
+    resume(create(tarea_odometria,  256, 40, "odom", 0));
 }
 \end{verbatim}
 
-Aqui, si tarea\_temperatura esta ejecutando y vence el periodo de tarea\_odometria, el planificador interrumpe a tarea\_temperatura y le da la CPU a tarea\_odometria. Cuando esta termina o se duerme, tarea\_temperatura retoma exactamente donde la dejo. El plazo de 5 ms se cumple siempre, sin necesidad de calcular manualmente cuanto tarda cada funcion.
+Aqui, si tarea\_temperatura se está ejecutando, y en ese
+instante vence el periodo de espera de 5ms de la tarea\_odometria, 
+el planificador interrumpe a 
+tarea\_temperatura y le da la CPU a tarea\_odometria. 
+Cuando esta termina, el RTOS bloquea a tarea\_odometria por otros 5ms. 
 
-\subsection{ Ejemplo 2: sistema de comunicacion con eventos asincronicos}
+Es decir, sleepms() no hace una espera activa. sleepms()
+es una llamada al sistema del RTOS
+que pone a la tarea en estado SLEEPING. En ese estado, la tarea nunca
+consume CPU. Cuando sucedan exactamente 5ms, el RTOS pone a la tarea\_odometria en estado de LISTO. En este punto, inmediatamente la coloca en estado EJECUTANDO y realiza un cambio de contexto para que utilice la CPU, 
+ya que al ingresar al estado de LISTO, y ser de la mas alta prioridad, 
+el RTOS asegura su ejecución inmediata.
+El plazo de 5 ms se cumple siempre, sin necesidad de calcular 
+manualmente cuanto tarda cada funcion.
+
+Un lector atento observará que poner sleepms(5); no sería tan adecuado.
+Si la tarea demora 3ms en ejecutarse, entonces la tarea se estaría
+ejecutando cada 8ms (y no cada 5ms). sleepms(2) sería mas apropiado.
+Otra solución mas eficiente podría ser utilizando un timer y un semáforo
+provisto por el RTOS para activar la tarea, o tener una tarea que haga
+de temporizador con igual mecanismo.
+
+El lector puede además, utilizando este ejemplo, observar lo sencillo
+que sería agregar mayores funcionalidades. Si el sistema requiere
+otras tareas, simplemente se las desarrolla de manera independiente, como 
+en este caso. Utilizando las prioridades adecuadas se puede modelar
+el comportamiento de manera predecible, y cumplir con los tiempos
+de respuesta necesarios para cada funcionalidad.
+
+\subsection{Ejemplo de un sistema con eventos asincronicos}
 Ahora consideremos un sistema que ademas debe atender comandos que llegan por UART desde una computadora. Los comandos no llegan en forma periodica: pueden llegar en cualquier momento, y el sistema debe responder dentro de 20 ms desde la recepcion. Si no responde a tiempo, la comunicacion se pierde.
 Agregamos este requisito al escenario anterior:
     • Requisito A — Odometria: cada 5 ms. Prioridad maxima.
