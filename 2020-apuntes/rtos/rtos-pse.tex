@@ -6,22 +6,32 @@ newtxmath
 \bibliography{localbibliography}
 
 \author{Rafael Ignacio Zurita\affiliation{Universidad Nacional del Comahue}}
-\title{Dispositivos de E/S (periféricos)}  
+\title{Sistemas de Tiempo Real y RTOS \\ Conceptos fundamentales basado en XINU RTOS}
 \abstract{
-Además del procesador y memoria, la mayoría de los sistemas embebidos
-contienen varios dispositivos de hardware extra. Algunos de estos
-dispositivos son específicos a la aplicación, mientras que otros -como los
-relojes y puertos seriales- son útiles de una manera general a una gran 
-variedad de sistemas distintos.
-Los que residen junto con el procesador dentro del mismo chip se los
-denomina periféricos internos, u on-chip. Los que se encuentran fuera
-del chip donde está el procesador se los denomina de manera opuesta,
-es decir, periféricos externos. En este capítulo se detalla la
-mayoría de los problemas de software comunes que surgen cuando se programan
-periféricos de ambos tipos.
+Muchos sistemas embebidos deben responder a eventos dentro de plazos
+temporales definidos. En estos casos, no alcanza con que los resultados
+computados sean correctos: tambien es necesario que sean producidos dentro
+del tiempo especificado. A este tipo de aplicaciones se las denomina
+sistemas de tiempo real.
 
-\keywords{sistema embebido, dispositivos de E/S, periféricos, registro de E/S, controladores de E/S, drivers de dispositivos}
+En este capítulo se introducen los conceptos fundamentales de los sistemas
+de tiempo real, las diferencias entre sistemas hard y soft real-time, y el
+papel que cumplen los sistemas operativos de tiempo real (RTOS) en su
+implementación. Se analiza por qué los esquemas tradicionales basados en
+un bucle infinito principal presentan limitaciones cuando existen múltiples
+requisitos temporales, y cómo un RTOS permite organizar la aplicación en
+tareas concurrentes con prioridades definidas.
+
+Además, se presentan los mecanismos básicos que ofrecen los RTOS modernos,
+incluyendo planificación apropiativa, sincronización, comunicación entre
+tareas y manejo de eventos asincrónicos. Finalmente, se describen patrones
+habituales de diseño de tareas en sistemas embebidos y se introduce una
+adaptación del sistema operativo XINU para microcontroladores AVR como
+plataforma de estudio y experimentación.
+
+\keywords{sistemas de tiempo real, RTOS, planificación de tareas, sistemas embebidos, concurrencia, sincronización, XINU}
 }
+
 
 
 \input{localpackages.tex}
@@ -56,18 +66,8 @@ periféricos de ambos tipos.
 
 
 \hfill\begin{minipage}{0.8\linewidth} \footnotesize
-The moral is obvious. You can't trust code that you did
-not totally create yourself. (Especially code from companies
-that employ people like me.) No amount of
-source-level verification or scrutiny will protect you
-from using untrusted code. In demonstrating the possibility
-of this kind of attack, I picked on the C compiler.
-I could have picked on any program-handling program
-such as an assembler, a loader, or even hardware microcode.
-As the level of program gets lower, these bugs
-will be harder and harder to detect. A well-installed
-microcode bug will be almost impossible to detect.\\ 
-—Ken Thompson aug-1984, Reflections on Trusting Trust.
+\_\\One of my most productive days was throwing away 1000 lines of code.\\
+— Ken Thompson
 \end{minipage}
 
 % \togglepaper[0]
@@ -106,9 +106,10 @@ microcode bug will be almost impossible to detect.\\
 \subsection{Sistemas de tiempo real}
 Un sistema es de tiempo real cuando en la especificación de sus requerimientos
 existen requisitos de tiempo de respuesta limites.
-Por lo que su correctitud, una vez implementado, esta definida por la correctitud de los resultados computados, y porque cumple con los tiempos de respuesta definidos en sus especificaciones. Si el sistema no es capaz de responder a un evento o tarea —definida en los requerimientos del sistema— en el tiempo maximo permitido, tambien definido en las especificaciones, entonces se dice que el sistema falló, y no es de tiempo real.
+Por lo que su correctitud, una vez implementado, esta definida no sólo 
+por la correctitud de los resultados computados, sino también porque cumple con los tiempos de respuesta definidos en sus especificaciones. Si el sistema no es capaz de responder a un evento o tarea —definida en los requerimientos del sistema— en el tiempo maximo permitido, tambien definido en las especificaciones, entonces se dice que el sistema falló, y no es de tiempo real.
 
-Se los categoriza en dos tipo. \textbf{Hard Real-Time (tiempo real estricto)}: Cuando los plazos temporales deben ser cumplidos siempre. En este tipo están los sistemas que ante un fallo corre riesgo la vida humana o la estabilidad del sistema. Por ejemplo, la activación de un airbag en un automóvil.  \textbf{Soft Real-Time (tiempo real flexible)}: Son los sistemas en donde incumplir ocasionalmente un tiempo de respuesta degrada el rendimiento, pero no provoca un fallo crítico. Por ejemplo, un sistema de reproducción de video en streaming.
+Se los categoriza en dos tipos. \textbf{Hard Real-Time (tiempo real estricto)}: Cuando los plazos temporales deben ser cumplidos siempre. En este tipo de sistemas están los sistemas llamados \textit{\textbf{críticos}}, en donde una resputa fuera de tiempo puede poner en riesgo la vida humana o la estabilidad del sistema. Por ejemplo, la activación de un airbag en un automóvil.  \textbf{Soft Real-Time (tiempo real flexible)}: Son los sistemas en donde incumplir ocasionalmente un tiempo de respuesta degrada el rendimiento, pero no provoca un fallo catastrófico. Por ejemplo, un sistema de reproducción de video en streaming.
 
 \begin{center}
 \begin{tabularx}{\textwidth}{|X|}
@@ -123,7 +124,10 @@ Un resultado producido fuera del plazo definido equivale, en este contexto, a un
 \end{center}
 
 
-Usualmente, al diseñar un sistema de tiempo real, se definen dos clases de tareas que son llevadas a cabo: tareas periódicas estrictas, y tareas activadas por eventos. Para cada uno de estas tareas se define tambien, con precision, el tiempo de respuesta maximo permitido por parte del sistema (sobre todo para las tareas activadas por eventos). Luego, este diseño se divide usualmente en tareas independientes, que seran ejecutadas de manera concurrente en tiempo de ejecucion. 
+Usualmente, al diseñar un sistema de tiempo real, se definen funcionalidades
+principalmente de dos categorías: periódicas o activadas por eventos. 
+Para cada una de estas se definen tambien, con precision, los tiempos de respuesta maximos permitido por parte del sistema (sobre todo para las funcionalidades
+activadas por eventos). Luego, este diseño se implementa\footnote{Etapa de desarrollo y programación del código fuente} generalmente como tareas independientes, que seran ejecutadas de manera concurrente en tiempo de ejecucion. 
 
 Como software de apoyo, se utiliza un sistema operativo de tiempo real 
 (RTOS, por su sigla en ingles en Real Time Operating System).
@@ -146,16 +150,23 @@ operativo de tiempo real no implica que el sistema logrado sea de tiempo real.
 
 \subsection{Sistema Operativo de Tiempo Real}
 
-Existen distintos metodos y mecanismos que un sosftware de apoyo RTOS puede incluir para el desarrollo de un sistema de tiempo real.
-Uno ampliamente utilizado es el uso de un RTOS con planificador de prioridad fija y apropiativo. Cuando el sistema está en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es más alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
+Existen distintos métodos y mecanismos que un software de apoyo RTOS 
+puede incluir para soportar el desarrollo de un sistema de tiempo real.
+Uno ampliamente utilizado es el uso de un RTOS con planificador de CPU 
+basado en \textit{prioridades y apropiativo}. Cuando el sistema está en ejecucion, cada vez que el RTOS activa una tarea, esto es, la coloca en estado de "listo para ejecutar", verifica su prioridad. Si esta prioridad es más alta que la de la tarea que actualmente utiliza la CPU, entonces el RTOS realiza un cambio de contexto y coloca a la nueva tarea de mas alta prioridad a ejecutar.
 
-Si existen varias tareas listas para ejecutar, con la misma prioridad que la tarea que esta actualmente utilizando la CPU, entonces el RTOS realiza una expropiacion de la CPU en intervalos regulares, empleando la planificación round-robin para asignarla a
-otra tarea. Aquí, cada tarea se ejecuta durante un QUANTUM de tiempo fijo, antes de ser interrumpida, para que la CPU sea luego asignada a otra tarea de la misma prioridad. Luego de que todas las tareas de la misma prioridad se ejecutaron
+Si existen varias tareas listas para ejecutar, con la misma prioridad que la tarea que esta actualmente utilizando la CPU, entonces el RTOS se apropia
+de la CPU en intervalos regulares, empleando la planificación \textit{Round-Robin} para asignar la CPU a otra tarea. Aquí, cada tarea se ejecuta durante 
+un QUANTUM de tiempo fijo, antes de ser interrumpida nuevamente, para que 
+el planificador asigne la CPU a otra tarea de la misma prioridad. 
+Luego de que todas las tareas de la misma prioridad se ejecutaron
 durante su QUANTUM, el RTOS volverá a asignar la CPU a la primera tarea
 de esta cola FIFO.
 
-
-Contando con estas caracteristicas, los desarrolladores pueden diseñar un sistema cuyo funcionamiento es predecible, lo cual es una condicion necesaria para evaluar y conocer si el sistema resultante cumple con los plazos definidos y puede, por lo tanto, ser de tiempo real.
+Cuando un RTOS funciona con estas caracteristicas, los desarrolladores 
+pueden diseñar un sistema cuyo funcionamiento es predecible, lo cual es 
+una condicion necesaria para luego evaluar su comportamienteo y conocer 
+si el sistema resultante cumple con los plazos definidos.
 
 En el momento de modelado y diseño del sistema, con esta técnica en mente, 
 el desarrollador 
@@ -221,7 +232,7 @@ Suponga que se debe desarrollar un sistema embebido robotico que navega y contro
 El robot realiza dos funciones principales:
 
 \begin{itemize}
-	\item Temperatura: el sistema debe leer varios sensores de temperatura. Si al procesar esos valores se exede un umbral se activa una alarma. Esta función debe realizarse al menos \textbf{una vez cada 10ms}. Al implementar esta funcionalidad se evalúa y se demuestra que esta funcionalidad se logra en \textbf{3ms} utilizando este microcontrolador.
+	\item Temperatura: el sistema debe leer varios sensores de temperatura. Si al procesar esos valores se exede un umbral se activa una alarma. Esta función debe realizarse al menos \textbf{una vez cada 10ms}. Al implementar esta funcionalidad se evalúa y se demuestra que esta funcionalidad se logra en \textbf{3ms} utilizando el microcontrolador seleccionado.
 	\item Odometria: el sistema debe leer encoders opticos que permiten calcular la velocidad de cada rueda del robot, y con esta información, calcular la posicion del robot \textbf{una vez cada 5ms} al menos. Si el calculo se realiza luego de 5ms el error de posicionamiento supera el margen aceptable. Al implementar la funcionalidad se evalúa y se demuestra que el computo demora \textbf{3ms} en este microcontrolador. \textbf{Esta tarea se define como la de mayor importancia}.
 \end{itemize}
 
@@ -610,17 +621,42 @@ void main(void) {
 
 
 
-\section{XINU en Arduino (AVR atmega328p)}
-XINU es un sistema operativo academico desarrollado originalmente por Douglas Comer en la Universidad de Purdue, a fines de los anos 70. Desde entonces, ha sido re-escrito y portado a una gran variedad de plataformas de hardware y arquitecturas, y es utilizado, principalmente, como herramienta de investigacion y educacion.
-A pesar de que XINU comparte algunos conceptos y alguna terminologia de componentes con UNIX, el diseno interno de XINU difiere completamente de UNIX. XINU es un sistema operativo con un diseno elegante, cuya estructura interna esta conformada por una jerarquia multinivel de componentes esenciales, pero con las cuales puede luego desarrollarse otras mas complejas. Tiene soporte para la creacion dinamica de procesos, reserva dinamica de memoria, sistemas de archivos, soporte de red, y funciones de E/S independiente de los dispositivos. Tambien ofrece servicios de comunicacion y sincronizacion entre procesos.
-XINU no implementa memoria virtual, ni tiene soporte para hardware de paginacion. En tiempo de ejecucion, la imagen de XINU con un conjunto de aplicaciones se carga completamente en memoria RAM, utilizando un unico espacio de direcciones para todos los procesos. Esto significa que los procesos comparten la memoria, aunque XINU gestiona para cada proceso su propia pila.
-El codigo fuente del kernel de XINU contiene aproximadamente 2500 lineas de codigo en lenguaje C, lo que lo hace completamente explorable en el contexto de una materia de grado. Esta es una de sus principales virtudes academicas: no solo se puede usar como RTOS, sino tambien entender, modificar y extender su funcionamiento interno.
+\section{XINU en atmega328p RTOS}
 
-XINU para AVR (Arduino Nano)
-El port de XINU para arquitectura AVR corre sobre el microcontrolador atmega328p: arquitectura Harvard, 32 KB de memoria flash y 2 KB de RAM. Fue evaluado exitosamente en:
-  - La materia Programacion de Sistemas Embebidos (Lic. en Ciencias de la Computacion, UNComa).
-  - Un trabajo experimental de tesis de grado que requirio un RTOS para controlar un robot movil con magnetometro y encoders opticos, cuyos eventos asincronicos requerian reportar valores en tiempos limite para que el calculo de odometria tuviese un error en los margenes esperados.
-Codigo fuente disponible en:  http://se.fi.uncoma.edu.ar/xinu-avr/
+XINU es un sistema operativo academico desarrollado originalmente por Douglas Comer en la Universidad de Purdue, a fines de los anos 70. Desde entonces, ha sido re-escrito y portado a una gran variedad de plataformas de hardware y arquitecturas, y es utilizado, principalmente, como herramienta de investigacion y educacion.
+
+A pesar de que XINU comparte algunos conceptos y alguna terminologia de componentes con UNIX, el diseño interno de XINU difiere completamente de UNIX. 
+XINU es un sistema operativo pequeño (microkernel) con un diseño elegante, 
+cuya estructura interna esta conformada por una jerarquia multinivel de 
+componentes esenciales, pero con las cuales puede luego desarrollarse 
+otras mas complejas. La versión actual de XINU para computadoras complejas tiene soporte para la creacion dinamica de procesos, reserva dinamica de memoria, sistemas de archivos, soporte de red, y funciones de E/S independiente de los dispositivos. Tambien ofrece servicios de comunicacion y sincronizacion entre procesos.
+
+XINU no implementa memoria virtual, ni tiene soporte para hardware de 
+paginacion. En tiempo de ejecucion, la imagen de XINU con un conjunto 
+de aplicaciones se carga completamente en memoria RAM, 
+utilizando un unico espacio de direcciones para todos los procesos. 
+Esto significa que los procesos comparten la memoria, aunque XINU gestiona para cada proceso su propia pila.
+El codigo fuente del kernel de XINU contiene aproximadamente 
+2500 lineas de codigo en lenguaje C, lo que lo hace completamente 
+explorable en el contexto de una materia de grado. Esta es 
+una de sus principales virtudes academicas: no solo se puede usar 
+como RTOS, sino tambien entender, modificar y extender su 
+funcionamiento interno.
+
+\subsection{XINU para arquitectura AVR (atmega328p)}
+
+El port de XINU para arquitectura AVR se ejecuta sobre el 
+microcontrolador atmega328p, un microontrolador de arquitectura Harvard, 
+32KB de memoria flash y 2KB de RAM. Es el microcontrolador mas popular 
+de la placa Arduino UNO y sus decenas de derivados.
+
+Existen dos versiones para esta arquitectura:
+\begin{itemize}
+	\item Versión RTOS (codigo fuente):  \textit{https://github.com/zrafa/xinu-avr-rtos}
+
+	\item Página web del port para utilizar un atmega328p como 
+	una retro computadora UNIX: \textit{http://se.fi.uncoma.edu.ar/xinu-avr/}
+\end{itemize}
 
 \subsection{ Creacion y finalizacion de procesos}
 En XINU, un proceso es una funcion C que se ejecuta de forma concurrente con las demas. La funcion create() crea el proceso en estado suspendido; resume() lo coloca en estado "listo para ejecutar". La combinacion de ambas es la forma estandar de lanzar un proceso. create() retorna un PID (Process ID) que permite referirse al proceso en llamadas posteriores.
@@ -655,102 +691,90 @@ process mi_tarea(int param) {
 }
 
 Otras primitivas de gestion de ciclo de vida:
-pid32 pid_actual = getpid();       // PID del proceso que ejecuta esta linea
+pid32 pid_actual = getpid();   // PID del proceso que ejecuta esta linea
 
-kill(pid);                          // termina un proceso por su PID
+kill(pid);                     // termina un proceso por su PID
 
-suspend(pid);                       // suspende un proceso (queda en estado SUSPENDED)
-resume(pid);                        // reanuda un proceso suspendido
+suspend(pid);                  // suspende un proceso (queda en estado SUSPENDED)
+resume(pid);                   // reanuda un proceso suspendido
 
-chprio(pid, nueva_prioridad);       // cambia la prioridad de un proceso en ejecucion
+chprio(pid, nueva_prioridad);  // cambia la prioridad de un proceso en ejecucion
+create()	: crea un nuevo proceso (tarea)
+resume(pid)	: pone en estado de LISTO a un proceso
+sleep(n)	: el proceso delega la CPU al kernel XINU por n segundos
+sleepms(n)	: el proceso delega la CPU al kernel XINU por n milisegundos
+suspend(pid)	: se le solicita al kernel XINU que suspenda al proceso pid
+getpid()
+getprio()
+kill(pid)	: finalizar un proceso (tarea)
+kprinf( *char)	: utiliza el driver UART del kernel para emitir un msg
+send(pid, msg)	: enviar el mensaje msg (un entero) a pid (no bloqueante)
+receive()	: el proceso espera por un mensaje (system call bloqueante)
+recvclr()
+wait()
+signal()
+
+
+
+
 \end{verbatim}
 
-4.2. Procesos periodicos con sleep()
-La funcion sleep(ms) bloquea el proceso durante la cantidad de milisegundos indicada. Durante ese tiempo, el planificador cede la CPU a otros procesos listos. Cuando el tiempo vence, el proceso pasa al estado LISTO y sera ejecutado cuando el planificador lo decida segun su prioridad.
-Combinada con un bucle infinito dentro de la tarea, sleep() implementa el patron de tarea periodica de forma directa. A diferencia del bucle + ISR, aqui cada tarea tiene su propio plazo, y el planificador garantiza que la de mayor prioridad siempre se activa primero:
+\subsection{Tareas periodicas}
+Las funciones sleep(s) y sleepms(ms) bloquean la tarea durante 
+la cantidad de segundos o milisegundos indicado como argumento. 
+Durante ese tiempo, el planificador cede la CPU a otros procesos listos. 
+Cuando el tiempo vence, el proceso pasa al estado LISTO y será ejecutado 
+cuando el planificador lo decida segun su prioridad.
+Combinada con un bucle infinito dentro de la tarea, sleep() o sleepms() 
+implementa el patron de tarea periodica de forma directa. 
+A diferencia del bucle + ISR, aqui cada tarea tiene su propio plazo, 
+y el planificador garantiza que la de mayor prioridad siempre se activa primero.
+
+En el ejemplo siguiente se observan dos tareas periódicas.
+Una de gran importancia, que es la ventilación de la planta química, y 
+otra tarea menos crítica que reporta mediante una lámpara el estado
+de la temperatura. Como la tarea más crítica se ejecuta cada cierto tiempo,
+50ms en este caso, en cuanto se active por el RTOS luego de 50ms,
+se le otorgará el uso de CPU inmediatamente. Esto se maneja simplemente
+asignando una mayor prioridad a esta tarea. La tarea de menor prioridad
+se ejecuta mas frecuentemente, y sólo es interrumpida por un momento
+cuando se active la de ventilación.
+
 \begin{verbatim}
 // Dos tareas periodicas con distintas restricciones temporales
 
-// PRIORIDAD 40 — critica: error de odometria inaceptable si se retrasa
-process tarea_odometria(void) {
-    while (TRUE) {
-        calcular_odometria(leer_encoder());
-        sleep(5);    // 5 ms: restriccion critica
+// PRIORIDAD 40 — critica
+process tarea_ventilacion_planta_quimica(void) {
+    for (;;) {
+        calcular_ventilación(leer_encoder());
+        sleepms(50);    // 50 ms: restriccion critica
     }
 }
 
-// PRIORIDAD 15 — menos critica: tolerancia de decenas de ms
+// PRIORIDAD 15 — menos critica
 process tarea_temperatura(void) {
-    while (TRUE) {
+    for (;;) {
         int t = leer_sensor_temp();
-        if (t > UMBRAL) encender_LED();
-        else             apagar_LED();
-        sleep(100);  // 100 ms
+        if (t > UMBRAL) 
+            encender_LED();
+        else             
+            apagar_LED();
+
+        sleepms(10);  // 10 ms
     }
 }
 
 void main(void) {
-    resume(create(tarea_odometria,  256, 40, "odom", 0));
-    resume(create(tarea_temperatura,256, 15, "temp", 0));
+    resume(create(tarea_ventilacion_planta_quimica, 256, 40, "vent", 0));
+    resume(create(tarea_temperatura, 256, 15, "temp", 0));
 }
 \end{verbatim}
 
-Por que esto funciona y el bucle no
-Si tarea\_temperatura esta ejecutando y vence el periodo de tarea\_odometria, el planificador interrumpe inmediatamente a tarea\_temperatura y le da la CPU a tarea\_odometria. tarea\_temperatura retoma exactamente donde fue interrumpida cuando tarea\_odometria termina su ciclo. El programador no necesita calcular cuanto tarda cada funcion: el planificador lo gestiona de forma sistematica en tiempo de ejecucion.
 
-\subsection{ Sincronizacion con semaforos: productor y consumidor}
-Los semaforos son el mecanismo principal de sincronizacion en XINU. Conceptualmente, un semaforo es un contador entero con dos operaciones atomicas:
-    • wait(sem): si el contador es mayor que cero, lo decrementa y continua. Si es cero, bloquea el proceso hasta que otro haga signal().
-    • signal(sem): incrementa el contador. Si hay procesos bloqueados esperando, desbloquea al primero (segun prioridad).
-La funcion screate(n) crea un semaforo con valor inicial n. El siguiente ejemplo muestra el patron productor/consumidor completo con buffer circular:
+\subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
+El siguiente ejemplo integra los tres patrones en un sistema realista: tarea periodica critica, tarea activada por un evento asincronico, y dos tareas periodicas de baja prioridad. Este ejemplo podría ser un punto de partida de
+un tipico sistema embebido desarrollado utilizlando un RTOS.
 
-\begin{verbatim}
-#include <xinu.h>
-
-#define BUF_SIZE 8
-
-sid32 sem_lleno;          // cuantos items hay en el buffer (inicia en 0)
-sid32 sem_vacio;          // cuantos huecos libres hay (inicia en BUF_SIZE)
-int   buffer[BUF_SIZE];
-int   in = 0, out = 0;
-
-process productor(void) {
-    int i = 0;
-    while (TRUE) {
-        wait(sem_vacio);              // si buffer lleno, se bloquea
-        buffer[in] = i++;
-        in = (in + 1) % BUF_SIZE;
-        signal(sem_lleno);            // avisa que hay un item nuevo
-        sleep(10);                    // produce cada 10 ms
-    }
-}
-
-process consumidor(void) {
-    while (TRUE) {
-        wait(sem_lleno);              // si buffer vacio, se bloquea
-        int dato = buffer[out];
-        out = (out + 1) % BUF_SIZE;
-        signal(sem_vacio);            // libera un hueco
-        kprintf("Consumido: %d\n", dato);
-    }
-}
-
-void main(void) {
-    sem_lleno = screate(0);           // buffer inicialmente vacio
-    sem_vacio = screate(BUF_SIZE);    // todos los huecos libres
-
-    resume(create(productor,  256, 20, "prod", 0));
-    resume(create(consumidor, 256, 20, "cons", 0));
-}
-\end{verbatim}
-
-Que garantizan los semaforos aqui?
-El consumidor nunca lee del buffer vacio: sem\_lleno comienza en 0 y lo bloquea hasta que el productor haga signal().
-El productor nunca escribe en un buffer lleno: sem\_vacio lo bloquea cuando llega a 0.
-No se necesita deshabilitar interrupciones ni usar flags volatiles con acceso no protegido: el RTOS maneja la sincronizacion de forma segura y predecible. Cualquier violacion de estas reglas quedaria capturada por el semaforo antes de ocurrir.
-
-\subsection{ Ejemplo completo: tres tareas con prioridades distintas}
-El siguiente ejemplo integra los tres patrones en un sistema realista: tarea periodica critica, tarea despertada por evento asincrono, y tarea periodica de baja prioridad. Corresponde al tipo de diseno utilizado en el trabajo de tesis de grado mencionado anteriormente:
 
 \begin{verbatim}
 #include <xinu.h>
@@ -758,192 +782,184 @@ El siguiente ejemplo integra los tres patrones en un sistema realista: tarea per
 sid32 sem_uart;
 volatile char cmd_byte;
 
-// ISR: rapida, solo guarda dato y despierta la tarea
-ISR(USART_RX_vect) {
+// ISR: asincronica, obtiene un dato por serial y activa tarea
+ISR(USART_RX_vect) 
+{
     cmd_byte = UDR0;
     signal(sem_uart);
 }
 
 // PRIORIDAD 40 — critica: odometria, 5 ms
-process tarea_encoder(void) {
-    while (TRUE) {
+process tarea_encoder(void) 
+{
+    for (;;) {
         calcular_odometria(leer_encoder());
-        sleep(5);
+        sleepms(5);
     }
 }
 
-// PRIORIDAD 30 — alta: responde a comandos UART en < 20 ms
-process tarea_comandos(void) {
-    while (TRUE) {
+// PRIORIDAD 30 — alta: responde a comandos via serial en < 20 ms
+process tarea_comandos(void) 
+{
+    for (;;) {
         wait(sem_uart);
         procesar_comando(cmd_byte);
     }
 }
 
-// PRIORIDAD 10 — baja: display LCD, 500 ms
-process tarea_display(void) {
-    while (TRUE) {
+// PRIORIDAD 10 — baja: display LCD, 10 ms
+process tarea_display(void) 
+{
+    for (;;) {
         actualizar_lcd();
-        sleep(500);
+        sleepms(10);
+    }
+}
+
+// PRIORIDAD 10 — baja: 
+// Un led que parpadea para indicar que el sistema está en ejecución
+process tarea_led(void) 
+{
+    for (;;) {
+        led_on();
+        sleepms(500);
+        led_off();
+        sleepms(500);
     }
 }
 
 void main(void) {
     sem_uart = screate(0);
-    resume(create(tarea_encoder,  256, 40, "encoder",  0));
-    resume(create(tarea_comandos, 256, 30, "comandos", 0));
-    resume(create(tarea_display,  256, 10, "display",  0));
+    resume(create(tarea_encoder, 256, 40, "encoder",  0));
+    resume(create(tarea_comandos,256, 30, "comandos", 0));
+    resume(create(tarea_display, 256, 10, "display",  0));
+    resume(create(tarea_led, 256, 10, "run",  0));
 }
 \end{verbatim}
 
-El planificador garantiza el siguiente comportamiento en tiempo de ejecucion: tarea\_encoder siempre se activa primero cuando su periodo de 5 ms vence, sin importar que esten haciendo las otras. tarea\_comandos se activa en microsegundos luego de que llega un byte UART, con tiempo de sobra para cumplir el plazo de 20 ms. tarea\_display solo ocupa la CPU cuando las otras dos estan dormidas o bloqueadas. Todo esto sin que el programador tenga que calcular manualmente cuanto tarda cada funcion ni en que orden se ejecutan.
+El planificador garantiza el siguiente comportamiento en tiempo de ejecucion: tarea\_encoder siempre se activa cuando su periodo de 5ms vence, sin importar que esten haciendo las demás. tarea\_comandos se activa luego de que llega un dato por el serial, con tiempo para cumplir el plazo de 20ms. tarea\_display solo ocupa la CPU cuando las otras dos estan inactivas o bloqueadas. Todo esto sin que el programador deba calcular explicitamente cuanto demora cada funcion ni en que orden colocarlas en un bucle infinito.
 
-5. Sintesis y proximos pasos
-A lo largo de este tutorial hemos visto que un sistema de tiempo real necesita garantizar no solo la correccion de sus resultados, sino tambien el cumplimiento de plazos. El uso de un RTOS es una de las formas mas comunes de lograr esto, aunque no la unica. Su ventaja central es que permite disenar el sistema como un conjunto de tareas independientes, cada una con su propia prioridad, y delegar al planificador la responsabilidad de garantizar que la tarea mas urgente siempre ocupe la CPU.
-El esquema de bucle infinito + ISR se vuelve inviable a medida que crecen la cantidad de tareas y la diversidad de sus plazos. No existe una forma sistematica de garantizar todos los plazos dentro de ese esquema. Un RTOS resuelve este problema de forma formal y escalable: agregar una nueva tarea es tan simple como llamar a create() con la prioridad adecuada.
-XINU para AVR (Arduino) es una herramienta ideal para aprender estos conceptos: su codigo fuente es pequeno y explorable, su API es sencilla y uniforme, y corre en el hardware accesible de una placa Arduino Nano. Los ejemplos de este tutorial pueden ejecutarse directamente en ese hardware.
-
-Para seguir explorando
-    1. Codigo fuente de XINU-AVR: http://se.fi.uncoma.edu.ar/xinu-avr/
-    2. Libro de referencia: D. Comer, "Operating System Design — The Xinu Approach", 2da ed., CRC Press, 2015.
-    3. Ejercicio 1: ampliar el ejemplo del productor/consumidor para que la ISR de UART sea el productor y una tarea XINU sea el consumidor que procesa comandos. Verificar con un terminal serie.
-    4. Ejercicio 2: disenar un sistema con 3 tareas de distintas prioridades y medir con un osciloscopio (o con GPIO toggling) los tiempos de activacion. Verificar que la tarea de mayor prioridad siempre cumple su plazo.
-    5. Ejercicio 3: implementar el patron ISR + consumidor para la recepcion por I2C de un sensor IMU, y comparar el jitter en el tiempo de procesamiento contra un diseno con bucle + ISR.
+\subsection{Instrucciones de utilizar el código fuente de XINU RTOS}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-La interfaz entre un procesador embebido y un dispositivo periférico
-es un conjunto de registros de estado y control. Estos registros son parte
-del hardware del periférico, y sus ubicaciones, sus tamaños (en bits) y el
-significado individual de cada bit en cada registro son característicos 
-de cada dispositivo. Por ejemplo, 
-el significado de los bits de los registros de un dispositivo serial son 
-muy diferentes a los
-de los contadores o relojes. En esta sección se encuentra explicado la 
-manera de manipular el contenido de los registros de estado y control
-directamente desde programas en C/C++.
-
-Dependiendo del diseño del procesador y la placa, los dispositivos periféricos
-se encuentran localizados en el espacio de memoria del procesador o dentro
-del espacio de E/S. De hecho, es común en sistemas embebidos que se incluyan
-periféricos de ambos tipos. Se los denomina \textit{periféricos mapeados en memoria}
-y \textit{periféricos mapeados en E/S} respectivamente (estos últimos tambien son 
-denominados como \textit{aislados}). De los dos tipos, los periféricos
-mapeados en memoria son los más fáciles de utilizar y por lo tanto su popularidad
-aumenta.
-
-Los registros de estado y control de periféricos mapeados en memoria se pueden
-parecer a variables comunes en un programa. Por ejemplo, es posible 
-declarar un puntero en C a un registro o bloque de registros, 
-y establecer
-la dirección explícitamente (valor del puntero). Supongamos el registro
-\texttt{puerto\_b} utilizado en el capítulo 2, el cual es mapeado en memoria en la dirección 
-física 0x25. La función \texttt{led\_toggle} estudiada en ese capitulo puede ser 
-escrita completamente en C, como se muestra a continuación.
+XINU avr es una versión de XINU para ser utilizado como RTOS en arquitectura
+AVR. Esta versión de XINU RTOS presenta los siguientes directorios de
+código fuente:
 
 \begin{verbatim}
-volatile unsigned char * puerto_b = (unsigned char *) 0x25;
-
-void led_toggle(void)
-{
-    *puerto_b ^= LED_ROJO;    /* Read, xor, and modify. */
-}    /* led_toggle() */
+config/Configuration	: archivo de configuracion general
+include/		: cabeceras del kernel de XINU RTOS y sus bibliotecas
+lib/			: codigo fuente de las bibliotecas de XINU RTOS
+system/			: codigo fuente del kernel de XINU RTOS
+main/			: codigo fuente de la aplicación embebida
 \end{verbatim}
 
-Aquí se declara un puntero a un registro de 8 bits y explícitamente se lo
-inicializa con  la dirección 0x25. A partir de este momento el puntero al 
-registro
-trabaja como cualquier puntero a una variable de tipo char de 8 bits.
+En general, el único directorio donde se trabaja es debajo de \texttt{main/}.
+
+Esta versión de XINU RTOS trae un gestor de memoria dinámica, gestor de tareas
+(procesos), un driver del timer que el planificador de CPU del kernel de
+XINU utiliza para obtener la CPU en intervalos regulares. Tambien para
+gestionar los procesos que delegaron voluntariamente la CPU via los system
+calls sleep() o sleepms() (y activarlos cuando sea necesario).
+
+Esta versión de XINU utiliza el timer2 del AVR. POR LO QUE NO PUEDE
+USARSE ESE TIMER! para la aplicación embebida.
+
+El sistema trabaja en base a prioridades. El planificador pone a ejecutar
+siempre al proceso de la mas alta prioridad. Si existen varios procesos
+con la misma prioridad el scheduller utiliza algoritmo round-robin
+para asignar la CPU a cada proceso.
+
+Cada proceso utiliza la CPU durante un milisegundo (esto es configurable 
+modificando el simbolo QUANTUM). Luego, el timer
+interrumpe la CPU, y el kernel de XINU obtiene el control de la CPU.
+Si no existe otro proceso listo para ejecutar con la prioridad necesaria,
+entonces el kernel de XINU asigna la CPU nuevamente al proceso que la estaba
+utilizando.
+
+Cuando un proceso desea colaborativamente delegar la CPU por un lapso de tiempo
+puede utilizar los system calls \texttt{sleep() o sleepms()}. El kernel XINU pone
+a ese proceso en estado DURMIENDO, y le asigna la CPU al proceso con la
+mas alta prioridad en estado de LISTO.
+
+Si no existe ningun proceso en estado de LISTO, entonces el kernel de XINU
+le asigna la CPU al proceso \texttt{null}.
+
+En total, existen aproximadamente 1200 bytes de memoria disponible
+para las tareas y aplicación embebida.
+\texttt{system/initialize.c} crea el proceso main, y le asigna 256 bytes de esa memoria libre.
+
+\subsubsection*{Instrucciones para utilizar XINU RTOS en AVR}
+
+\begin{verbatim}
+
+Para poder compilar XINU RTOS debe instalar los siguientes paquetes:
+
+bison
+flex
+gawk
+build-essential
+
+(en su Linux pueden llamarse distinto).
+
+Descargar XINU RTOS baremetal
+-----------------------------
+
+git clone https://github.com/zrafa/xinu-avr-rtos
 
 
-\section{Referencias}
+Configurar y compilar
+---------------------
 
-Michael Barr. Programming Embedded Systems in C and C++ 1st Edition. ISBN-13: 978-1565923546
-ISBN-10: 1565923545. O'Reilly Media; 1 edition (February 9, 1999)
+cd xinu-avr-rtos/compile
+
+Editar el Makefile en ese directorio, y seleccionar una de las dos opciones
+que especifiquen su plataforma:
+
+opcion 1:
+# PLATFORM      =       -Dlgt8f328p
+# HZ            =       4000000
+
+opcion 2:
+# PLATFORM        =       -DATMEGA
+# HZ              =       16000000
+
+
+Si su arduino tiene un chip atmega original, descomentar la opción dos
+(quitar el #, y dejar comentada la opcion 1).
+Para los que tengan el arduino nano de este año descomentar la opción uno.
+
+Esta configuración permitirá compilar adecuadamente el driver del clock
+que usa XINU RTOS y el driver del serial.
+
+Compilar y verificar
+--------------------
+
+(estando en el directorio de trabajo xinu-avr-rtos/compile/
+
+make clean
+make
+make flash
+
+
+\end{verbatim}
+
+
 
 
 \section {Licencia y notas de la traducción}
 
-Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 2016-2020
-
-Este apunte es una traducción del libro de referencia, para
-ser utilizado como apunte en la materia de grado
-'Programación de Sistemas Embebidos' de la Facultad de Informática,
-Universidad Nacional del Comahue.
-Se han realizado modificaciones
-al contenido para aclarar ciertos detalles o agregar secciones nuevas.
- Tambien se han
-modificado todos los archivos fuentes de código, ya que fueron
-portados a la plataforma Atmel AVR atmega328.
-
+Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 2026
 
 \begin{center}
 \begin{tabularx}{\textwidth}{|X|}
 %\hline
 \rowcolor{aliceblue}
-\textit{Esta es una obra derivada del libro de referencia que ha obtenido permiso de O'Reilly para su publicación en PEDCO.}\\
+\textit{Este apunte es un apunte de libre distribución y uso.}\\
 %\hline
 \end{tabularx}
 \end{center}
 
-
-
-\subsubsection {Permiso de publicación}
-
-\begin{footnotesize}
-\begin{verbatim}
-From: Teri Finn <teri@oreilly.com>
-Date: Mon, 11 Apr 2016 15:48:58 -0700
-Message-ID: <CAOgscZ92-G9iT+=+nnuft4LCoHoe5o8SYPfVEKnS6AKXh8TLyQ@mail.gmail.com>
-Subject: Re: Question about permission to translate some parts
-To: Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
-Content-Type: multipart/alternative; boundary=94eb2c094eeedeba0005303d5a31
-
---94eb2c094eeedeba0005303d5a31
-Content-Type: text/plain; charset=UTF-8
-
-Hi Rafael,
-
-Thank you for providing this further information.  O'Reilly Media is happy
-to grant you permission to translation the content you have proposed for
-posting to the Moddle site. We're happy you find this information helpful
-to the students.
-
-Best regards,
-
-Teri Finn
-O'Reilly Media, Inc.
-
-On Thu, Apr 7, 2016 at 10:56 AM, Rafael Ignacio Zurita <
-rafa@fi.uncoma.edu.ar> wrote:
-
-[snip]
-\end{verbatim}
-\end{footnotesize}
 
 
 
