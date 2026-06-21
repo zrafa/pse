@@ -43,6 +43,22 @@ plataforma de estudio y experimentación.
 \usepackage{tabularx}
 \usepackage[table]{xcolor}
 
+\usepackage{float}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage{afterpage}
+
+\newfloat{codefloat}{tbp}{lop}
+\floatname{codefloat}{Listado}
+
+
+
+\lstset{
+  basicstyle=\bfseries\footnotesize\ttfamily,
+  frame=single
+}
+
+
 \definecolor{aliceblue}{rgb}{0.90, 0.93, 0.96}
 
 
@@ -249,56 +265,71 @@ Suponga que se debe desarrollar un sistema embebido robotico que navega y contro
 El robot realiza dos funciones principales:
 
 \begin{itemize}
-	\item Temperatura: el sistema debe leer varios sensores de temperatura. Si al procesar esos valores se exede un umbral se activa una alarma. Esta función debe realizarse al menos \textbf{una vez cada 10ms}. Al implementar esta funcionalidad se evalúa y se demuestra que esta funcionalidad se logra en \textbf{3ms} utilizando el microcontrolador seleccionado.
-	\item Odometria: el sistema debe leer encoders opticos que permiten calcular la velocidad de cada rueda del robot, y con esta información, calcular la posicion del robot \textbf{una vez cada 5ms} al menos. Si el calculo se realiza luego de 5ms el error de posicionamiento supera el margen aceptable. Al implementar la funcionalidad se evalúa y se demuestra que el computo demora \textbf{3ms} en este microcontrolador. \textbf{Esta tarea se define como la de mayor importancia}.
+	\item Odometria: el sistema debe leer encoders opticos que permiten calcular la velocidad de cada rueda del robot, y con esta información, calcular la posicion del robot \textbf{una vez cada 10ms} al menos.
+Al implementar la funcionalidad se evalúa y se demuestra que el computo demora \textbf{3ms} en este microcontrolador. 
+	\item Temperatura: el sistema debe leer varios sensores de temperatura. Si al procesar esos valores se exede un umbral se activa una alarma y se accionan actuadores de control. Esta función debe realizarse al menos \textbf{una vez cada 5ms}. Si el calculo se realiza luego de 5ms se accionarán los actuadores fuera del margen aceptable.  Al implementar esta funcionalidad se evalúa y se demuestra que esta funcionalidad se logra en \textbf{3ms} utilizando el microcontrolador seleccionado.
+		\textbf{Esta tarea se define como la de mayor importancia}.
 \end{itemize}
 
 \subsubsection{Intento con bucle infinito e interrupciones}
 
 Una primera implementación tradicional es utilizar dos timers por hardware para activar las diferentes tareas a tiempo, mediante interrupciones (cada 10ms y cada 5ms). Luego, procesar todo en el bucle principal de main.
 
-\begin{verbatim}
-// ---- Intento con bucle + ISR: PROBLEMATICO ----
 
-ISR(TIMER1_OVF_vect) {        // interrupcion cada 10 ms
-  temperaturas = leer_sensores_temp();
-  tarea_temp = 1;
-}
-
-ISR(TIMER0_OVF_vect) {        // interrupcion cada 5 ms
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[
+  caption={Resolución de bucle infinito},
+  frame=single
+]
+ISR(TIMER0_OVF_vect) {        // interrupcion cada 10 ms
   velocidad = leer_encoder();
   tarea_odom = 1;
 }
 
-int main(void) {
-  for(;;) {
-      if (tarea_temp) {	  /* temperatura */
-          tarea_temp = 0;
-          PELIGRO = procesar(temperaturas);    // demora 3ms
-                                               // PROBLEMA !!
-          if (PELIGRO)
-              alarma_ON();	
-      }
+ISR(TIMER1_OVF_vect) {        // interrupcion cada 5 ms
+  temperaturas = leer_sensores_temp();
+  tarea_temp = 1;
+}
 
-      if (tarea_odom) {	  /* odometria */
-          tarea_odom = 0; 		
-          calcular_odometria(velocidad);      // demora 3ms
-      }
+int main(void) {
+
+  for(;;) {
+          if (tarea_odom) {	  /* odometria */
+              tarea_odom = 0; 		
+              calcular_odometria(velocidad);      // demora 3ms
+                                                  // PROBLEMA !!
+          }
+
+          if (tarea_temp) {	  /* temperatura */
+              tarea_temp = 0;
+              PELIGRO = procesar(temperaturas);   // demora 3ms
+              if (PELIGRO) {
+                  accionar_actuadores();
+                  alarma_ON();	
+              }
+          }
   }
 }
-\end{verbatim}
+\end{lstlisting}
+\end{codefloat}
+%\end{minipage}
+
+.
+En el código fuente 1.1 se observa la implementación con un bucle infinito.
+
 
 \subsubsection*{Donde falla este diseño}
 
 \begin{itemize}
-	\item procesar(temperaturas) demora 3ms, y debe finalizar este cálculo en menos de 10ms desde que se activó la tarea. 
+	\item calcular\_odometria() demora 3ms, y debe finalizar este cálculo en menos de 10ms desde que se activó la tarea. 
+	\item procesar(temperaturas) demora 3ms, y debe finalizar este cálculo en menos de 5ms desde que se activó la tarea. 
 
-	\item calcular\_odometria() demora 3ms, y debe finalizar este cálculo en menos de 5ms desde que se activó la tarea. 
 \end{itemize}
 
-El problema con la solución tradicional es que si las tareas se activan en algun momento casi simultaneamente,  con tarea\_temp en primer lugar, entonces 
-tarea\_odom finalizará a los 6ms, lo que producirá como resultado que la \textbf{tarea crítica superó el tiempo límite}.
-Tal incumplimento del plazo producirá un error irrecuperable. En este ejemplo, el robot no logra calcular su posición a tiempo, y probablemente comenzará a malfuncionar (chocando o realizando movimientos fuera de lugar).
+El problema con la solución tradicional es que si las tareas se activan en algun momento casi simultaneamente,  con tarea\_odom en primer lugar, entonces 
+tarea\_temp (temperatura) finalizará a los 6ms, lo que producirá como resultado que la \textbf{tarea crítica superó el tiempo límite}.
+Tal incumplimento del plazo producirá un error irrecuperable. En este ejemplo, es posible que al no accionar los actuadores a tiempo se produzca un incendio o problema en la planta que se esté controlando.
 
 
 % "La tarea no cumplió con el plazo."
@@ -308,11 +339,14 @@ Tal incumplimento del plazo producirá un error irrecuperable. En este ejemplo, 
 % "La tarea excedió el tiempo máximo permitido."
 % "No se logró completar el cálculo dentro de la ventana de tiempo."
 
-Una alternativa que inmediatamente muchos estudiantes intentan proponer es modificar las rutinas de atención de interrupciones, y colocar dentro el procesamiento de cada tarea. De esta manera, si se está procesando las temperaturas, y aparece una interrupción de odometría, se ejecutará inmediatamente la rutina de atención de interrupciones calculando la odometría a tiempo.
+Una alternativa que inmediatamente muchos estudiantes intentan proponer es modificar las rutinas de atención de interrupciones, y colocar dentro el procesamiento de cada tarea. 
+De esta manera, si se está procesando la odometría, y aparece una interrupción de temperaturas, se ejecutará inmediatamente la rutina de atención de interrupciones procesando las temperaturas a tiempo.
 Esta solución, aparentemente apropiada en principio, tiene el inconveniente de
 que las rutinas de atención de interrupciones tomarán mucho tiempo en 
 ejecutarse. 
-Como se vió en módulos teóricos previos, una rutina de atención de interrupciones debe activarse, realizar alguna acción lo más rápido posible y finalizar. No es aceptable tener a estas rutinas en ejecución por varios ms. La principal razón es que otras interrupciones no serán atendidas (mientras se ejecuta una rutina de este tipo las interrupciones están desactivadas). En caso de activar las interrupciones dentro de rutinas críticas, para no perder otras interrupciones, aún sigue siendo un gran problema mantener este código. Casi imposible ampliarlo con mayores funcionalidades por rutinas de atención de interrupciones anidadas.
+Como se vió en módulos teóricos previos, una rutina de atención de interrupciones debe activarse, realizar alguna acción lo más rápido posible y finalizar. 
+No es aceptable tener a estas rutinas en ejecución por varios ms. 
+La principal razón es que otras interrupciones no serán atendidas (mientras se ejecuta una rutina de este tipo las interrupciones están desactivadas). En caso de activar las interrupciones dentro de rutinas críticas, para no perder otras interrupciones, aún sigue siendo un gran problema mantener este código. Casi imposible ampliarlo con mayores funcionalidades por rutinas de atención de interrupciones anidadas.
 
 
 
@@ -324,49 +358,53 @@ Cuando una tarea de mayor prioridad se activa, mientras otra está utilizando
 la CPU, el planificador de CPU del RTOS realiza un cambio de contexto,
 y pone a ejecutar la tarea de mayor prioridad.
 
-\begin{verbatim}
-// ---- Solucion utilizando un RTOS ----
-
-// PRIORIDAD 15 — 10 ms
-process tarea_temperatura(void) {
-   for (;;) {
-        temperaturas = leer_sensores_temp();
-        PELIGRO = procesar(temperaturas);     // demora 3ms
-                        
-        if (PELIGRO)
-              alarma_ON();	
-
-        sleepms(10);
-    }
-}
-
-// PRIORIDAD 40 — tarea critica: finalizar antes de 5 ms
-process tarea_odometria(void) {
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
+process tarea_odometria(void)        // Prioridad 15: tiempo de respuesta < 10ms
+{
    for (;;) {
         velocidad = leer_encoder();
         calcular_odometria(velocidad);      // demora 3ms
-	
-        sleepms(5);   
+
+        sleepms(10);   
     }         
 }
 
-void main(void) {
-    resume(create(tarea_temperatura, 256, 15, "temp", 0));
-    resume(create(tarea_odometria, 256, 40, "odom", 0));
-}
-\end{verbatim}
+process tarea_temperatura(void)      // Prioridad 40: tiempo de respuesta < 5ms
+{
+   for (;;) {
+        temperaturas = leer_sensores_temp();
 
-Aqui, si tarea\_temperatura se está ejecutando, y en ese
-instante vence el periodo de espera de 5ms de la tarea\_odometria, 
+        PELIGRO = procesar(temperaturas);     // demora 3ms
+        if (PELIGRO) {
+            accionar_actuadores();
+            alarma_ON();	
+        }
+
+        sleepms(5);
+    }
+}
+
+void main(void) 
+{
+    resume(create(tarea_odometria, 256, 15, "odom", 0));
+    resume(create(tarea_temperatura, 256, 40, "temp", 0));
+}
+\end{lstlisting}
+\end{codefloat}
+
+Aqui, si tarea\_odometria se está ejecutando, y en ese
+instante vence el periodo de espera de 5ms de la tarea\_temperatura, 
 el planificador interrumpe a 
-tarea\_temperatura y le da la CPU a tarea\_odometria. 
-Cuando esta termina, el RTOS bloquea a tarea\_odometria por otros 5ms y le 
-devuelve la CPU a tarea\_temperatura para que continúe su ejecución. 
+tarea\_odometria y le da la CPU a tarea\_temperatura. 
+Cuando esta termina, el RTOS bloquea a tarea\_temperatura por otros 5ms y le 
+devuelve la CPU a tarea\_odometria para que continúe su ejecución. 
 
 Es decir, sleepms() no hace una espera activa. sleepms()
 es una llamada al sistema del RTOS
 que pone a la tarea en estado SLEEPING. En ese estado, la tarea nunca
-consume CPU. Cuando sucedan exactamente 5ms, el RTOS pone a la tarea\_odometria en estado de LISTO. En este punto, inmediatamente la coloca en estado EJECUTANDO y realiza un cambio de contexto para que utilice la CPU, 
+consume CPU. Cuando sucedan exactamente 5ms, el RTOS pone a la tarea\_temperatura en estado de LISTO. En este punto, inmediatamente la coloca en estado EJECUTANDO y realiza un cambio de contexto para que utilice la CPU, 
 ya que al ingresar al estado de LISTO, y ser de la mas alta prioridad, 
 el RTOS asegura su ejecución inmediata.
 El plazo de 5ms se cumple siempre, sin necesidad de calcular 
@@ -386,6 +424,63 @@ en este caso. Utilizando las prioridades adecuadas se puede modelar
 el comportamiento de manera predecible, y cumplir con los tiempos
 de respuesta necesarios para cada funcionalidad.
 
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
+// ---- Solucion utilizando un RTOS ----
+
+sid32 sem_comando;                   // semaforo global, inicializado en 0
+char cmd_byte = 0;
+
+ISR(USART_RX_vect)                   // rutina de atención de interrupción
+{
+    cmd_byte = UDR0;                 // leer dato desde el hardware serial
+    signal(sem_comando);             // activar a tarea_comandos 
+}
+
+process tarea_odometria(void)        // Prioridad 15: tiempo de respuesta < 10ms
+{
+   for (;;) {
+        velocidad = leer_encoder();
+        calcular_odometria(velocidad);      // demora 3ms
+	
+        sleepms(10);   
+    }         
+}
+
+process tarea_temperatura(void)      // Prioridad 40: tiempo de respuesta < 5ms
+{
+   for (;;) {
+        temperaturas = leer_sensores_temp();
+
+        PELIGRO = procesar(temperaturas);     // demora 3ms
+        if (PELIGRO) {
+            accionar_actuadores();
+            alarma_ON();	
+        }
+
+        sleepms(5);
+    }
+}
+
+process tarea_comandos(void)         // Prioridad 20: tarea intermedia 
+{
+   for (;;) {
+        wait(sem_comando);           // bloquea a la espera de un comando
+        accionar_comando(cmd_byte);  // demora 10ms
+    }         
+}
+
+void main(void) 
+{
+    sem_comando = semcreate(0);
+    resume(create(tarea_odometria, 256, 15, "odom", 0));
+    resume(create(tarea_temperatura, 256, 40, "temp", 0));
+    resume(create(tarea_comandos, 256, 20, "comm", 0));
+}
+\end{lstlisting}
+\end{codefloat}
+
 \subsection{Ejemplo de un sistema con eventos asincronicos}
 
 Ahora se agrega, al mismo ejemplo de la sección anterior,  
@@ -398,77 +493,28 @@ Si no responde a tiempo, el sistema se vuelve inestable.
 
 Al implementar esta funcionalidad se evalúa que su ejecución demora 10ms.
 
-Como la tarea de odometría es muy justa en tiempo de ejecución con
+Como la tarea de temperatura es muy justa en tiempo de ejecución con
 respecto a su tiempo de activación, aún sigue siendo la tarea más crítica.
 Agregando este requisito al escenario anterior:
 \begin{itemize}
-	\item Tarea Odometria: cada 5 ms. Prioridad maxima.
+	\item Tarea Odometria: cada 10 ms. Prioridad baja.
+	\item Tarea Temperatura: cada 5 ms. Prioridad maxima.
 	\item Tarea de Comandos: responder en menos de 20 ms desde la llegada del comando a procesar. Prioridad alta.
-	\item Tarea Temperatura: cada 10 ms. Prioridad baja.
 \end{itemize}
 
 Se debe agregar la nueva funcionalidad
 como tarea independiente, y su prioridad debe estar definida con un valor
 intermedio, de manera que todas las tareas se cumplan a tiempo.
 
-\begin{verbatim}
-// ---- Solucion utilizando un RTOS ----
-
-sid32 sem_comando;   // semaforo global, inicializado en 0
-char cmd_byte = 0;
-
-// ISR: solo toma el dato comando y activa a la tarea consumidora
-ISR(USART_RX_vect) {
-    cmd_byte = UDR0;    // leer el dato del hardware serial
-    signal(sem_comando);   // activar a tarea_comandos 
-}
-
-// PRIORIDAD 15 — tarea de mas baja prioridad
-process tarea_temperatura(void) {
-   for (;;) {
-        temperaturas = leer_sensores_temp();
-        PELIGRO = procesar(temperaturas);     // demora 3ms
-                        
-        if (PELIGRO)
-              alarma_ON();	
-
-        sleepms(10);
-    }
-}
-
-// PRIORIDAD 40 — tarea critica: finalizar antes de 5 ms
-process tarea_odometria(void) {
-   for (;;) {
-        velocidad = leer_encoder();
-        calcular_odometria(velocidad);      // demora 3ms
-	
-        sleepms(5);   
-    }         
-}
-
-// PRIORIDAD 20 — tarea intermedia 
-process tarea_comandos(void) {
-   for (;;) {
-        wait(sem_comando);             // bloquea a la espera
-                                       // de un comando
-
-        accionar_comando(cmd_byte);    // demora 10ms
-    }         
-}
-
-void main(void) {
-    sem_comando = semcreate(0);
-    resume(create(tarea_temperatura, 256, 15, "temp", 0));
-    resume(create(tarea_odometria, 256, 40, "odom", 0));
-    resume(create(tarea_comandos, 256, 20, "comm", 0));
-}
-\end{verbatim}
 
 
-Cuando la rutina de atención de interrupciones ejecuta signal(sem\_comando), el planificador del RTOS despierta a tarea\_comandos. Como su prioridad (20) es mayor que la de tarea\_temperatura (10), si esta ultima se estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte via el hardware serie y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20ms se cumple con margen.
+Cuando la rutina de atención de interrupciones ejecuta signal(sem\_comando), el planificador del RTOS despierta a tarea\_comandos. Como su prioridad (20) es mayor que la de tarea\_odometria (15), si esta ultima se estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte via el hardware serie y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20ms se cumple con margen. 
+Si en cambio, la tarea en ejecución fuese tarea\_temperatura, al activarse la tarea\_comando, entonces el RTOS pondrá a ejecutar esta última recién luego de que tarea\_temperatura haya finalizado su procesamiento y delegue la CPU voluntariamente con sleepms(5).
 
 \section{Patrones tipicos de uso de tareas con un RTOS}
 Mas alla de los ejemplos anteriores, en la practica, casi todas las tareas de un sistema embebido con RTOS caen en uno de los siguientes tres patrones. Conocerlos permite disenar un sistema de forma adecuada.
+
+
 
 \subsection{Tarea periodica }
 La tarea realiza su trabajo y luego "duerme" (es bloqueada por el RTOS) durante
@@ -479,7 +525,9 @@ o acciones en momentos periódicos.
 El RTOS garantiza que, si la tarea tiene la prioridad adecuada, sea 
 activada a tiempo, independientemente de lo que hagan las demas.
 
-\begin{verbatim}
+%\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
 process tarea_control_pid(void) {
     for (;;) {
         int error = setpoint - leer_sensor_velocidad();
@@ -489,27 +537,12 @@ process tarea_control_pid(void) {
         sleepms(10);   // periodo de 10 ms
     }
 }
-\end{verbatim}
+\end{lstlisting}
+\end{codefloat}
 
-\subsection{Tarea activada por eventos}
-
-En esta categoría la tarea permanece bloqueada hasta que ocurre un evento.
-Mientras espera, no consume CPU. El planificador la ignora y ejecuta en 
-modo round-robin (y/o en base a sus prioridades) otras tareas. 
-En cuanto el evento que espera la tarea bloqueada ocurre
-la tarea se desbloquea y, si su prioridad es la mas alta entre 
-las tareas listas, el planificador le da la CPU inmediatamente.
-Este patron es ideal cuando la tarea no debe estar activa continuamente, 
-sino unicamente cuando hay trabajo que realizar. Por ejemplo, 
-cuando llegan datos desde un hardware externo, u otra tarea productora
-genera el evento, etc.
-
-Usualmente, los RTOS proveen, como mecanismo de sincronización para este
-tipo de tareas, semáforos. El concepto en sí y su mecanismo no se explica
-en este apunte. Puede leerse sobre los mismos en algun libro sobre
-conceptos de Sistemas Operativos.
-
-\begin{verbatim}
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
 sid32 sem_conversion_adc;
 
 /* La siguiente rutina de atención de interrupciones se activa
@@ -528,7 +561,47 @@ process tarea_procesar_adc(void) {
         iniciar_nueva_conversion();
     }
 }
-\end{verbatim}
+\end{lstlisting}
+\end{codefloat}
+\subsection{Tarea activada por eventos}
+
+En esta categoría la tarea permanece bloqueada hasta que ocurre un evento.
+Mientras espera, no consume CPU. El planificador la ignora y ejecuta en 
+modo round-robin (y/o en base a sus prioridades) otras tareas. 
+En cuanto el evento que espera la tarea bloqueada ocurre
+la tarea se desbloquea y, si su prioridad es la mas alta entre 
+las tareas listas, el planificador le da la CPU inmediatamente.
+Este patron es ideal cuando la tarea no debe estar activa continuamente, 
+sino unicamente cuando hay trabajo que realizar. Por ejemplo, 
+cuando llegan datos desde un hardware externo, u otra tarea productora
+genera el evento, etc.
+
+Usualmente, los RTOS proveen, como mecanismo de sincronización para este
+tipo de tareas, semáforos. El concepto en sí y su mecanismo no se explica
+en este apunte. Puede leerse sobre los mismos en algun libro sobre
+conceptos de Sistemas Operativos.
+
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Productor-Consumidor via interrupciones}, frame=single ]
+sid32 sem_consumidor;         // inicializado en 0
+
+/* rutina de atención de interrupciones */
+ISR(USART_RX_vect) {
+    buffer_put(UDR0);
+    signal(sem_consumidor);   // activar consumidor
+}
+
+process tarea_consumidor_uart(void) {
+    while (TRUE) {
+        wait(sem_consumidor);        // bloqueado hasta que 
+                                     // existan datos para procesar
+        char d = buffer_get();
+        procesar_caracter(d);
+    }
+}
+\end{lstlisting}
+\end{codefloat}
 
 \subsection{Productor-consumidor via interrupciones}
 Los datos son producidos por interrupciones de hardware en ráfagas, y frecuentemente.  La ISR no los puede procesar, así que sólo los deposita en un buffer y 
@@ -574,38 +647,9 @@ el problema no es el tamaño del buffer, es de procesamiento.
 \end{center}
 
 
-\begin{verbatim}
-
-sid32 sem_consumidor;         // inicializado en 0
-
-/* rutina de atención de interrupciones */
-ISR(USART_RX_vect) {
-    buffer_put(UDR0);
-    signal(sem_consumidor);   // activar consumidor
-}
-
-process tarea_consumidor_uart(void) {
-    while (TRUE) {
-        wait(sem_consumidor);        // bloqueado hasta que 
-                                     // existan datos para procesar
-        char d = buffer_get();
-        procesar_caracter(d);
-    }
-}
-\end{verbatim}
-
-\subsection{Productor-consumidor}
-
-Un variante del caso anterior es un clásico. Son dos tareas, una
-que produce datos y la otra las que los procesa.
-En el Código N se observa un ejemplo, utilizando las herramientas del RTOS
-que sincroniza este problema de manera sencilla.
-Como se observa, el productor no produce mas datos hasta que el consumidor
-no lo active nuevamente. Es el típico patrón productor-consumidor 
-sincronizados mediante dos semáforos provistos por el RTOS.
-
-
-\begin{verbatim}
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Sincronizacion productor-consumidor entre tareas}, frame=single ]
 sid32 produced;
 sid32 consumed;
 int n = 0;        // buffer
@@ -642,7 +686,21 @@ void main(void) {
     for(;;);
 
 }
-\end{verbatim}
+\end{lstlisting}
+\end{codefloat}
+
+
+\subsection{Productor-consumidor}
+
+Un variante del caso anterior es un clásico. Son dos tareas, una
+que produce datos y la otra las que los procesa.
+En el Código N se observa un ejemplo, utilizando las herramientas del RTOS
+que sincroniza este problema de manera sencilla.
+Como se observa, el productor no produce mas datos hasta que el consumidor
+no lo active nuevamente. Es el típico patrón productor-consumidor 
+sincronizados mediante dos semáforos provistos por el RTOS.
+
+
 
 
 
@@ -683,20 +741,9 @@ Existen dos versiones para esta arquitectura:
 	una retro computadora UNIX: \textit{http://se.fi.uncoma.edu.ar/xinu-avr/}
 \end{itemize}
 
-\subsection{ Creacion y finalizacion de tareas}
-En XINU RTOS, una tarea\footnote{IMPORTANTE: el término usual para entidades ejecutadas en forma independiente y de manera concurrente es \textbf{\textit{proceso}} en la literatura de Sistemas Operativos. Lo es tambien dentro de la terminología del sistema operativo XINU tradicional. Sin embargo, en sistemas embebidos utilizando RTOS el término usual es \textbf{\textit{tarea}}, y es el que utilizaremos en todo este apunte} es una función en C que se ejecuta de forma concurrente con las demas. La función create() crea la tarea en estado suspendido; resume() la coloca en estado "listo para ejecutar". La combinacion de ambas es la forma estandar de ejecutar una tarea. create() retorna un PID (Process ID) que permite referirse a la tarea proceso en llamadas posteriores.
-El prototipo de la función create() es:
-
-\begin{verbatim}
-// create(función, tam_pila_bytes, prioridad, nombre, nro_args, args...)
-
-pid32 create(void *function, uint16 stksize, pri8 priority,
-             char *name, uint8 nargs, ...);
-
-\end{verbatim}
-Un programa ejemplo completo de creacion, obtencion de PID y finalizacion:
-
-\begin{verbatim}
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Creación y finalización de una tarea (programa completo)}, frame=single ]
 #include <xinu.h>
 
 process mi_tarea(int param);   // prototipo
@@ -719,9 +766,24 @@ process mi_tarea(int param)
     // Al retornar de la función, la tarea finaliza automaticamente.
     // También la puede finalizar otra tarea con kill(pid).
 }
+\end{lstlisting}
+\end{codefloat}
+
+Otras llamadas al sistema provistas por XINU:
+
+\subsection{ Creacion y finalizacion de tareas}
+En XINU RTOS, una tarea\footnote{IMPORTANTE: el término usual para entidades ejecutadas en forma independiente y de manera concurrente es \textbf{\textit{proceso}} en la literatura de Sistemas Operativos. Lo es tambien dentro de la terminología del sistema operativo XINU tradicional. Sin embargo, en sistemas embebidos utilizando RTOS el término usual es \textbf{\textit{tarea}}, y es el que utilizaremos en todo este apunte} es una función en C que se ejecuta de forma concurrente con las demas. La función create() crea la tarea en estado suspendido; resume() la coloca en estado "listo para ejecutar". La combinacion de ambas es la forma estandar de ejecutar una tarea. create() retorna un PID (Process ID) que permite referirse a la tarea proceso en llamadas posteriores.
+El prototipo de la función create() es:
+
+\begin{verbatim}
+// create(función, tam_pila_bytes, prioridad, nombre, nro_args, args...)
+
+pid32 create(void *function, uint16 stksize, pri8 priority,
+             char *name, uint8 nargs, ...);
 
 \end{verbatim}
-Otras llamadas al sistema provistas por XINU:
+Un programa ejemplo completo de creacion, obtencion de PID, y finalizacion de una tarea se puede ver en el Código Fuente 1.8. Además se documenta brevemente otras llamadas al sistema de XINU RTOS aquí debajo:
+
 \begin{verbatim}
 getpid();        // obtención del PID de la tarea 
 kill(pid);       // termina una tarea por su PID
@@ -742,6 +804,49 @@ wait();          // espera por un semáforo
 signal();        // señaliza un semáforo
 
 \end{verbatim}
+
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Tareas periódicas}, frame=single ]
+// Dos tareas periodicas con distintas restricciones temporales
+
+/*
+ * Ventilación de la planta: tarea crítica a 20hz
+ * Prioridad 40
+ */
+process tarea_ventilacion_planta_quimica(void)
+{
+    for (;;) {
+        calcular_ventilación(leer_encoder());
+
+        sleepms(50);    // 50 ms: restriccion critica
+    }
+}
+
+/*
+ * Control de temperatura: tarea a 100hz
+ * Prioridad 15
+ */
+process tarea_temperatura(void)
+{
+    for (;;) {
+        int t = leer_sensor_temp();
+        if (t > UMBRAL) 
+            encender_LED();
+        else             
+            apagar_LED();
+
+        sleepms(10);  // 10 ms
+    }
+}
+
+void main(void) 
+{
+    resume(create(tarea_ventilacion_planta_quimica, 256, 40, "vent", 0));
+    resume(create(tarea_temperatura, 256, 15, "temp", 0));
+}
+\end{lstlisting}
+\end{codefloat}
 
 \subsection{Tareas periodicas}
 Las funciones sleep(s) y sleepms(ms) bloquean la tarea durante 
@@ -766,38 +871,6 @@ asignando una mayor prioridad a esta tarea. La tarea de menor prioridad
 se ejecuta mas frecuentemente, y sólo es interrumpida por un momento
 cuando se active la de ventilación.
 
-\begin{verbatim}
-// Dos tareas periodicas con distintas restricciones temporales
-
-// PRIORIDAD 40 — critica
-process tarea_ventilacion_planta_quimica(void) 
-{
-    for (;;) {
-        calcular_ventilación(leer_encoder());
-        sleepms(50);    // 50 ms: restriccion critica
-    }
-}
-
-// PRIORIDAD 15 — menos critica
-process tarea_temperatura(void) 
-{
-    for (;;) {
-        int t = leer_sensor_temp();
-        if (t > UMBRAL) 
-            encender_LED();
-        else             
-            apagar_LED();
-
-        sleepms(10);  // 10 ms
-    }
-}
-
-void main(void) 
-{
-    resume(create(tarea_ventilacion_planta_quimica, 256, 40, "vent", 0));
-    resume(create(tarea_temperatura, 256, 15, "temp", 0));
-}
-\end{verbatim}
 
 
 \subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
