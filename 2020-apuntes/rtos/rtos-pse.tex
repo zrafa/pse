@@ -521,20 +521,23 @@ La tarea realiza su trabajo y luego "duerme" (es bloqueada por el RTOS) durante
 un periodo fijo. Al activarse nuevamente vuelve a ejecutarse. Este patron es 
 muy utilizado para el muestreo de diferentes eventos u observaciones.
 Por ejemplo, para leer un sensor con una frecuencia definida. O para la actualizaciónde un control PID, o la actualización de una pantalla, o calculos
-o acciones en momentos periódicos.
+o acciones en momentos periódicos. En el Código Fuente 1.4 se presenta una
+tarea posible de control PID a 100hz. Cada vez que la tarea finaliza
+su actividad delega voluntariamente la CPU al RTOS via la llamada sleepms();
 El RTOS garantiza que, si la tarea tiene la prioridad adecuada, sea 
 activada a tiempo, independientemente de lo que hagan las demas.
 
 %\FloatBarrier
 \begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
-process tarea_control_pid(void) {
+\begin{lstlisting}[ caption={Ejemplo de una tarea periódica}, frame=single ]
+process tarea_control_pid(void)   // tarea a 100hz
+{
     for (;;) {
         int error = setpoint - leer_sensor_velocidad();
         int salida = calcular_pid(error);
         aplicar_pwm(salida);
 
-        sleepms(10);   // periodo de 10 ms
+        sleepms(10);
     }
 }
 \end{lstlisting}
@@ -544,17 +547,20 @@ process tarea_control_pid(void) {
 \begin{codefloat}[tp]
 \begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
 sid32 sem_conversion_adc;
+int resultado_adc;		    // buffer compartido
 
 /* La siguiente rutina de atención de interrupciones se activa
  * cuando el conversor analógico a digital finaliza de realizar
  * una conversión.
  */
-ISR(ADC_vect) {
-    resultado_adc = ADCW;
-    signal(sem_conversion_adc);  // generar evento para desbloquear tarea
+ISR(ADC_vect) 
+{
+    resultado_adc = ADCW;           // colocar el nuevo dato en buffer
+    signal(sem_conversion_adc);     // generar evento para desbloquear tarea
 }
 
-process tarea_procesar_adc(void) {
+process adc(void) 
+{
     for (;;) {
         wait(sem_conversion_adc);   // bloqueada hasta que suceda evento
         procesar_muestra(resultado_adc);
@@ -563,7 +569,7 @@ process tarea_procesar_adc(void) {
 }
 \end{lstlisting}
 \end{codefloat}
-\subsection{Tarea activada por eventos}
+\subsection{Tarea activada por evento}
 
 En esta categoría la tarea permanece bloqueada hasta que ocurre un evento.
 Mientras espera, no consume CPU. El planificador la ignora y ejecuta en 
@@ -579,7 +585,16 @@ genera el evento, etc.
 Usualmente, los RTOS proveen, como mecanismo de sincronización para este
 tipo de tareas, semáforos. El concepto en sí y su mecanismo no se explica
 en este apunte. Puede leerse sobre los mismos en algun libro sobre
-conceptos de Sistemas Operativos.
+conceptos de Sistemas Operativos. En el Código Fuente 1.5 puede leerse
+una tarea que se activa a través de una rutina de atención de interrupciones.
+En este ejemplo, el ADC está configurado para generar interrupciones.
+Cada vez que el hw ADC finaliza una conversión de analógico a digital,
+genera una interrupción de E/S. El sistema salta automáticamente a ejecutar
+la rutina de atención de interrupciones, la cual lee el dato desde el HW
+y activa a la tarea consumidora mediante un semáforo. La tarea consumidora
+procesa el nuevo dato generado por el ADC y vuelve a bloquearse esperando
+el próximo evento.
+
 
 \FloatBarrier
 \begin{codefloat}[tp]
@@ -592,7 +607,7 @@ ISR(USART_RX_vect) {
     signal(sem_consumidor);   // activar consumidor
 }
 
-process tarea_consumidor_uart(void) {
+process consumidor_uart(void) {
     while (TRUE) {
         wait(sem_consumidor);        // bloqueado hasta que 
                                      // existan datos para procesar
@@ -611,7 +626,7 @@ Este patron es util para perifericos que genera datos a alta velocidad en
 ráfagas, y que su procesamiento está a cargo de alguna tarea que eventualmente
 obtendrá la CPU. La rutina de atención de interrupciones es básica y rapida; el procesamiento pesado queda en la tarea. 
 
-En el ejemplo del Código N se observa una rutina de atención de 
+En el ejemplo del Código Fuente 1.6 se observa una rutina de atención de 
 interrupciones productora, que obtiene datos de una interfaz serie,
 y los deposita en un buffer. Además, activa a la tarea consumidora
 por cada dato que llega, utilizando sincronización mediante un 
@@ -620,6 +635,10 @@ por el RTOS. Si la tarea que consume, demora en procesar
 un dato, y llegan nuevos datos, la rutina de atención de interrupciones
 depositará automaticamente los nuevos datos en el buffer, y activará
 el semáforo del consumidor tantas veces como datos existan en el buffer.
+Este ejemplo es muy similar al Código Fuente 1.5. Pero observe que ahora
+los datos son colocados en un buffer. Si la tarea consumidora no obtiene
+CPU porque, por ejemplo, alguna otra tarea crítica está en ejecución,
+los datos no se pierden.
 
 Esta funcionalidad es util en problemas donde la rutina
 que procesa la información requiere de una cantidad de datos N mínima antes
@@ -694,7 +713,7 @@ void main(void) {
 
 Un variante del caso anterior es un clásico. Son dos tareas, una
 que produce datos y la otra las que los procesa.
-En el Código N se observa un ejemplo, utilizando las herramientas del RTOS
+En el Código Fuente 1.7 se observa un ejemplo, utilizando las herramientas del RTOS
 que sincroniza este problema de manera sencilla.
 Como se observa, el productor no produce mas datos hasta que el consumidor
 no lo active nuevamente. Es el típico patrón productor-consumidor 
@@ -746,13 +765,13 @@ Existen dos versiones para esta arquitectura:
 \begin{lstlisting}[ caption={Creación y finalización de una tarea (programa completo)}, frame=single ]
 #include <xinu.h>
 
-process mi_tarea(int param);   // prototipo
+process prender_led(int n);   // prototipo
 
 void main(void) 
 {
     pid32 pid;
 
-    pid = create(mi_tarea, 256, 20, "mi_tarea", 1, 42);
+    pid = create(prender_led, 256, 20, "led", 1, 13);
     if (pid == SYSERR) {
         return;          // hubo un error al crear la tarea
     }
@@ -760,9 +779,9 @@ void main(void)
     resume(pid);   // lo coloca en estado LISTO para ejecutar
 }
 
-process mi_tarea(int param) 
+process prender_led(int n) 
 {
-    prender_led(13);
+    gpio_on(n);
     // Al retornar de la función, la tarea finaliza automaticamente.
     // También la puede finalizar otra tarea con kill(pid).
 }
@@ -782,6 +801,7 @@ pid32 create(void *function, uint16 stksize, pri8 priority,
              char *name, uint8 nargs, ...);
 
 \end{verbatim}
+
 Un programa ejemplo completo de creacion, obtencion de PID, y finalizacion de una tarea se puede ver en el Código Fuente 1.8. Además se documenta brevemente otras llamadas al sistema de XINU RTOS aquí debajo:
 
 \begin{verbatim}
@@ -872,27 +892,21 @@ se ejecuta mas frecuentemente, y sólo es interrumpida por un momento
 cuando se active la de ventilación.
 
 
-
-\subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
-El siguiente ejemplo integra los tres patrones en un sistema realista: tarea periodica critica, tarea activada por un evento asincronico, y dos tareas periodicas de baja prioridad. Este ejemplo podría ser un punto de partida de
-un tipico sistema embebido desarrollado utilizando un RTOS.
-
-
-\begin{verbatim}
+\FloatBarrier
+\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Programa ejemplo completo con cuatro tareas}, frame=single ]
 #include <xinu.h>
 
 sid32 sem_uart;
 volatile char cmd_byte;
 
-// ISR: asincronica, obtiene un dato por serial y activa tarea
-ISR(USART_RX_vect) 
+ISR(USART_RX_vect)             // rutina de atención de interrupcion
 {
     cmd_byte = UDR0;
     signal(sem_uart);
 }
 
-// PRIORIDAD 40 — critica: odometria, 5 ms
-process tarea_encoder(void) 
+process encoder(void)          // Tarea crítica: tiempo de respuesta < 5ms
 {
     for (;;) {
         calcular_odometria(leer_encoder());
@@ -900,8 +914,7 @@ process tarea_encoder(void)
     }
 }
 
-// PRIORIDAD 30 — alta: responde a comandos via serial en < 20 ms
-process tarea_comandos(void) 
+process comandos(void)         // Tarea activada por evento
 {
     for (;;) {
         wait(sem_uart);
@@ -909,8 +922,7 @@ process tarea_comandos(void)
     }
 }
 
-// PRIORIDAD 10 — baja: display LCD, 10 ms
-process tarea_display(void) 
+process display(void)          // Actualizar display a 100hz
 {
     for (;;) {
         actualizar_lcd();
@@ -918,12 +930,10 @@ process tarea_display(void)
     }
 }
 
-// PRIORIDAD 10 — baja: 
-// Un led que parpadea para indicar que el sistema está en ejecución
-process tarea_led(void) 
+process led(void)              // Parpadear un LED a 1hz
 {
     for (;;) {
-        led_on();
+        led_on();    
         sleepms(500);
         led_off();
         sleepms(500);
@@ -932,16 +942,30 @@ process tarea_led(void)
 
 void main(void) {
     sem_uart = screate(0);
-    resume(create(tarea_encoder, 256, 40, "encoder",  0));
-    resume(create(tarea_comandos,256, 30, "comandos", 0));
-    resume(create(tarea_display, 256, 10, "display",  0));
-    resume(create(tarea_led, 256, 10, "run",  0));
+    resume(create(encoder, 256, 40, "encoder",  0));
+    resume(create(comandos,256, 30, "comandos", 0));
+    resume(create(display, 256, 10, "display",  0));
+    resume(create(led, 256, 10, "run",  0));
 }
-\end{verbatim}
+\end{lstlisting}
+\end{codefloat}
 
-El planificador garantiza el siguiente comportamiento en tiempo de ejecucion: tarea\_encoder siempre se activa cuando su periodo de 5ms vence, sin importar que esten haciendo las demás. tarea\_comandos se activa luego de que llega un dato por el serial, con tiempo para cumplir el plazo de 20ms. tarea\_display solo ocupa la CPU cuando las otras dos estan inactivas o bloqueadas. Todo esto sin que el programador deba calcular explicitamente cuanto demora cada función ni en que orden colocarlas en un bucle infinito.
+\subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
+El siguiente ejemplo integra los tres patrones en un sistema realista: tarea periodica critica, tarea activada por un evento asincronico, y dos tareas periodicas de baja prioridad. Este ejemplo podría ser un punto de partida de
+un tipico sistema embebido desarrollado utilizando un RTOS. El programa de este ejemplo puede verse en el Código Fuente 1.10.
+
+El planificador garantiza el siguiente comportamiento en tiempo de ejecucion: la tarea \texttt{\textbf{encoder}} siempre se activa cuando su periodo de 5ms vence, sin importar que esten haciendo las demás. 
+La tarea \texttt{\textbf{comandos}} se activa luego de que llega un dato por el serial, con tiempo para cumplir el plazo de 20ms. 
+La tarea \texttt{\textbf{display}} solo ocupa la CPU cuando las otras dos estan inactivas o bloqueadas. Todo esto sin que el programador deba calcular explicitamente cuanto demora cada función ni en que orden colocarlas en un bucle infinito. La tarea \texttt{\textbf{led}} tiene la misma prioridad que display, por
+lo que ambas se ejecutan en modo round-robin.
 
 \subsection{Instrucciones para utilizar el código fuente de XINU RTOS}
+
+Para descargar la versión actual del código fuente puede utilizar git:
+
+\begin{verbatim}
+git clone https://github.com/zrafa/xinu-avr-rtos
+\end{verbatim}
 
 
 XINU RTOS presenta los siguientes directorios de
@@ -958,13 +982,10 @@ main/                 : código fuente de la aplicación embebida
 En general, el único directorio donde se trabaja es debajo de \texttt{main/}.  \\
 
 Esta versión de XINU RTOS trae un gestor de memoria dinámica, gestor de tareas
-(procesos), un driver del timer que el planificador de CPU del kernel de
+(procesos), un driver del timer 2 que el planificador de CPU del kernel de
 XINU utiliza para obtener la CPU en intervalos regulares. También para
 gestionar las tareas que delegaron voluntariamente la CPU via los system
 calls sleep() o sleepms() (y activarlas cuando sea necesario).
-
-Esta versión de XINU utiliza el timer2 del AVR. POR LO QUE NO PUEDE
-USARSE ESE TIMER! para la aplicación embebida.
 
 El sistema trabaja en base a prioridades. El planificador pone a ejecutar
 siempre a la tarea de más alta prioridad. Si existen varias tareas 
@@ -991,29 +1012,10 @@ para las tareas y aplicación embebida.
 \texttt{system/initialize.c} crea la tarea main, y le asigna 256 bytes 
 de esa memoria libre.
 
-\subsubsection*{Instrucciones para utilizar XINU RTOS en AVR}
+
+\subsubsection*{Configurar XINU RTOS}
 
 \begin{verbatim}
-
-Para poder compilar XINU RTOS debe instalar los siguientes paquetes:
-
-bison
-flex
-gawk
-build-essential
-
-(en su Linux pueden llamarse distinto).
-
-
-Descargar XINU RTOS baremetal
------------------------------
-
-git clone https://github.com/zrafa/xinu-avr-rtos
-
-
-Configurar y compilar
----------------------
-
 cd xinu-avr-rtos/compile
 
 Editar el Makefile en ese directorio, y seleccionar una de las dos opciones
@@ -1027,15 +1029,27 @@ opcion 2:
 # PLATFORM        =       -DATMEGA
 # HZ              =       16000000
 
-
 Si su arduino tiene un chip atmega original, descomentar la opción dos
 (quitar el #, y dejar comentada la opcion 1).
 Para los que tengan el arduino nano chino de 4Mhz descomentar la opción uno.
 
+El archivo config/Configuration define los demás parámetros del sistema.
+\end{verbatim}
 
-Compilar y verificar
---------------------
+\subsubsection*{Compilar y verificar}
 
+\begin{verbatim}
+Para poder compilar XINU RTOS debe instalar los siguientes paquetes:
+
+bison
+flex
+gawk
+build-essential
+
+(en su Linux pueden llamarse distinto).
+\end{verbatim}
+
+\begin{verbatim}
 La carpeta main/ tiene un programa de ejemplo de varias tareas
 listo para realizar una prueba. 
 
@@ -1044,10 +1058,7 @@ Estando en el directorio de trabajo xinu-avr-rtos/compile/
 make clean
 make
 make flash
-
-
 \end{verbatim}
-
 
 
 
