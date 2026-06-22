@@ -214,10 +214,12 @@ inabarcables, los desarrolladores pueden realizar simulaciones y
 aproximaciones para evaluar si el sistema cumplirá con los 
 plazos requeridos.
 
-Existe también un modelo formal para validar un modelo de sistema de tiempo real
+Existe también un mecanismo formal para validar un modelo de sistema de 
+tiempo real
 el cual se basa en convertir los eventos asincronicos a periodicos, y evaluar
-todo el sistema con por ejemplo ............
-Puede leer mayor documentacion en : AGREGAR REFERENCIA.
+luego todo el sistema matematicamente. 
+Puede leer mayor documentacion al respecto en 
+\textit{"Sistemas de Tiempo Real y Lenguajes de Programación" \ 3ra. edición, Alan Burns y Andy Wellings, Addison-wesley 2003, ISBN:9788478290581}.
 
 \subsubsection{Caracteristicas de un RTOS}
 
@@ -316,7 +318,7 @@ int main(void) {
 %\end{minipage}
 
 .
-En el código fuente 1.1 se observa la implementación con un bucle infinito.
+En el Código Fuente 1.1 se observa la implementación con un bucle infinito.
 
 
 \subsubsection*{Donde falla este diseño}
@@ -360,7 +362,7 @@ y pone a ejecutar la tarea de mayor prioridad.
 
 \FloatBarrier
 \begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
+\begin{lstlisting}[ caption={Resolución utilizando un RTOS}, frame=single ]
 process tarea_odometria(void)        // Prioridad 15: tiempo de respuesta < 10ms
 {
    for (;;) {
@@ -530,7 +532,7 @@ activada a tiempo, independientemente de lo que hagan las demas.
 %\FloatBarrier
 \begin{codefloat}[tp]
 \begin{lstlisting}[ caption={Ejemplo de una tarea periódica}, frame=single ]
-process tarea_control_pid(void)   // tarea a 100hz
+process control_pid(void)   // tarea a 100hz
 {
     for (;;) {
         int error = setpoint - leer_sensor_velocidad();
@@ -834,7 +836,7 @@ signal();        // señaliza un semáforo
  * Ventilación de la planta: tarea crítica a 20hz
  * Prioridad 40
  */
-process tarea_ventilacion_planta_quimica(void)
+process ventilacion_planta_quimica(void)
 {
     for (;;) {
         calcular_ventilación(leer_encoder());
@@ -847,7 +849,7 @@ process tarea_ventilacion_planta_quimica(void)
  * Control de temperatura: tarea a 100hz
  * Prioridad 15
  */
-process tarea_temperatura(void)
+process temperatura(void)
 {
     for (;;) {
         int t = leer_sensor_temp();
@@ -862,8 +864,8 @@ process tarea_temperatura(void)
 
 void main(void) 
 {
-    resume(create(tarea_ventilacion_planta_quimica, 256, 40, "vent", 0));
-    resume(create(tarea_temperatura, 256, 15, "temp", 0));
+    resume(create(ventilacion_planta_quimica, 256, 40, "vent", 0));
+    resume(create(temperatura, 256, 15, "temp", 0));
 }
 \end{lstlisting}
 \end{codefloat}

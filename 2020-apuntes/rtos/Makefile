@@ -4,7 +4,7 @@ CAP = rtos-pse.tex
 pdf: $(CAP)
 	if (! ls build) ; then mkdir build ; fi
 	xelatex -output-directory=build $^
-	pdftk build/*pdf cat 13 15-end output /tmp/out_tmp_build_pse.pdf
+	pdftk build/*pdf cat 1 3-end output /tmp/out_tmp_build_pse.pdf
 	mv /tmp/out_tmp_build_pse.pdf build/*.pdf
 
 clean:
