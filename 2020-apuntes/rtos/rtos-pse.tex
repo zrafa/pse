@@ -426,9 +426,39 @@ en este caso. Utilizando las prioridades adecuadas se puede modelar
 el comportamiento de manera predecible, y cumplir con los tiempos
 de respuesta necesarios para cada funcionalidad.
 
-\FloatBarrier
+
+\subsection{Ejemplo de un sistema con eventos asincronicos}
+
+Ahora se agrega, al mismo ejemplo de la sección anterior,  
+un requisito extra:
+el sistema debe poder atender comandos que 
+llegan por una interfaz de hardware serie desde un dispositivo remoto.
+Los comandos no llegan en forma periodica. Pueden llegar en cualquier 
+momento, y el sistema debe responder dentro de los 20ms desde la recepcion. 
+Si no responde a tiempo, el sistema se vuelve inestable.
+
+Al implementar esta funcionalidad se evalúa que su ejecución demora 10ms.
+
+Como la tarea de temperatura es muy justa en tiempo de ejecución con
+respecto a su tiempo de activación, aún sigue siendo la tarea más crítica.
+Agregando este requisito al escenario anterior:
+\begin{itemize}
+	\item Tarea Odometria: cada 10 ms. Prioridad baja.
+	\item Tarea Temperatura: cada 5 ms. Prioridad maxima.
+	\item Tarea de Comandos: responder en menos de 20 ms desde la llegada del comando a procesar. Prioridad alta.
+\end{itemize}
+
+Se debe agregar la nueva funcionalidad
+como tarea independiente, y su prioridad debe estar definida con un valor
+intermedio, de manera que todas las tareas se cumplan a tiempo.
+
+
+
+Cuando la rutina de atención de interrupciones ejecuta signal(sem\_comando), el planificador del RTOS despierta a tarea\_comandos. Como su prioridad (20) es mayor que la de tarea\_odometria (15), si esta ultima se estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte via el hardware serie y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20ms se cumple con margen. 
+Si en cambio, la tarea en ejecución fuese tarea\_temperatura, al activarse la tarea\_comando, entonces el RTOS pondrá a ejecutar esta última recién luego de que tarea\_temperatura haya finalizado su procesamiento y delegue la CPU voluntariamente con sleepms(5).
+
 \begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
+\begin{lstlisting}[ caption={Ejemplo de un sistema con eventos asincronicos}, frame=single ]
 // ---- Solucion utilizando un RTOS ----
 
 sid32 sem_comando;                   // semaforo global, inicializado en 0
@@ -483,36 +513,7 @@ void main(void)
 \end{lstlisting}
 \end{codefloat}
 
-\subsection{Ejemplo de un sistema con eventos asincronicos}
-
-Ahora se agrega, al mismo ejemplo de la sección anterior,  
-un requisito extra:
-el sistema debe poder atender comandos que 
-llegan por una interfaz de hardware serie desde un dispositivo remoto.
-Los comandos no llegan en forma periodica. Pueden llegar en cualquier 
-momento, y el sistema debe responder dentro de los 20ms desde la recepcion. 
-Si no responde a tiempo, el sistema se vuelve inestable.
-
-Al implementar esta funcionalidad se evalúa que su ejecución demora 10ms.
-
-Como la tarea de temperatura es muy justa en tiempo de ejecución con
-respecto a su tiempo de activación, aún sigue siendo la tarea más crítica.
-Agregando este requisito al escenario anterior:
-\begin{itemize}
-	\item Tarea Odometria: cada 10 ms. Prioridad baja.
-	\item Tarea Temperatura: cada 5 ms. Prioridad maxima.
-	\item Tarea de Comandos: responder en menos de 20 ms desde la llegada del comando a procesar. Prioridad alta.
-\end{itemize}
-
-Se debe agregar la nueva funcionalidad
-como tarea independiente, y su prioridad debe estar definida con un valor
-intermedio, de manera que todas las tareas se cumplan a tiempo.
-
-
-
-Cuando la rutina de atención de interrupciones ejecuta signal(sem\_comando), el planificador del RTOS despierta a tarea\_comandos. Como su prioridad (20) es mayor que la de tarea\_odometria (15), si esta ultima se estaba ejecutando, es interrumpida inmediatamente. El tiempo entre la llegada del byte via el hardware serie y el inicio de procesar\_comando() es del orden de microsegundos: el plazo de 20ms se cumple con margen. 
-Si en cambio, la tarea en ejecución fuese tarea\_temperatura, al activarse la tarea\_comando, entonces el RTOS pondrá a ejecutar esta última recién luego de que tarea\_temperatura haya finalizado su procesamiento y delegue la CPU voluntariamente con sleepms(5).
-
+\newpage
 \section{Patrones tipicos de uso de tareas con un RTOS}
 Mas alla de los ejemplos anteriores, en la practica, casi todas las tareas de un sistema embebido con RTOS caen en uno de los siguientes tres patrones. Conocerlos permite disenar un sistema de forma adecuada.
 
@@ -530,8 +531,8 @@ El RTOS garantiza que, si la tarea tiene la prioridad adecuada, sea
 activada a tiempo, independientemente de lo que hagan las demas.
 
 %\FloatBarrier
-\begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Ejemplo de una tarea periódica}, frame=single ]
+%\begin{codefloat}[tp]
+\begin{lstlisting}[caption={Ejemplo de una tarea periódica}, frame=single ]
 process control_pid(void)   // tarea a 100hz
 {
     for (;;) {
@@ -543,34 +544,8 @@ process control_pid(void)   // tarea a 100hz
     }
 }
 \end{lstlisting}
-\end{codefloat}
+%\end{codefloat}
 
-\FloatBarrier
-\begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Resolución de bucle infinito}, frame=single ]
-sid32 sem_conversion_adc;
-int resultado_adc;		    // buffer compartido
-
-/* La siguiente rutina de atención de interrupciones se activa
- * cuando el conversor analógico a digital finaliza de realizar
- * una conversión.
- */
-ISR(ADC_vect) 
-{
-    resultado_adc = ADCW;           // colocar el nuevo dato en buffer
-    signal(sem_conversion_adc);     // generar evento para desbloquear tarea
-}
-
-process adc(void) 
-{
-    for (;;) {
-        wait(sem_conversion_adc);   // bloqueada hasta que suceda evento
-        procesar_muestra(resultado_adc);
-        iniciar_nueva_conversion();
-    }
-}
-\end{lstlisting}
-\end{codefloat}
 \subsection{Tarea activada por evento}
 
 En esta categoría la tarea permanece bloqueada hasta que ocurre un evento.
@@ -597,28 +572,32 @@ y activa a la tarea consumidora mediante un semáforo. La tarea consumidora
 procesa el nuevo dato generado por el ADC y vuelve a bloquearse esperando
 el próximo evento.
 
+%\begin{codefloat}[tp]
+\begin{lstlisting}[ caption={Tarea activada por evento}, frame=single ]
+sid32 sem_conversion_adc;
+int resultado_adc;		    // buffer compartido
 
-\FloatBarrier
-\begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Productor-Consumidor via interrupciones}, frame=single ]
-sid32 sem_consumidor;         // inicializado en 0
-
-/* rutina de atención de interrupciones */
-ISR(USART_RX_vect) {
-    buffer_put(UDR0);
-    signal(sem_consumidor);   // activar consumidor
+/* La siguiente rutina de atención de interrupciones se activa
+ * cuando el conversor analógico a digital finaliza de realizar
+ * una conversión.
+ */
+ISR(ADC_vect) 
+{
+    resultado_adc = ADCW;           // colocar el nuevo dato en buffer
+    signal(sem_conversion_adc);     // generar evento para desbloquear tarea
 }
 
-process consumidor_uart(void) {
-    while (TRUE) {
-        wait(sem_consumidor);        // bloqueado hasta que 
-                                     // existan datos para procesar
-        char d = buffer_get();
-        procesar_caracter(d);
+process adc(void) 
+{
+    for (;;) {
+        wait(sem_conversion_adc);   // bloqueada hasta que suceda evento
+        procesar_muestra(resultado_adc);
+        iniciar_nueva_conversion();
     }
 }
 \end{lstlisting}
-\end{codefloat}
+%\end{codefloat}
+
 
 \subsection{Productor-consumidor via interrupciones}
 Los datos son producidos por interrupciones de hardware en ráfagas, y frecuentemente.  La ISR no los puede procesar, así que sólo los deposita en un buffer y 
@@ -632,8 +611,7 @@ En el ejemplo del Código Fuente 1.6 se observa una rutina de atención de
 interrupciones productora, que obtiene datos de una interfaz serie,
 y los deposita en un buffer. Además, activa a la tarea consumidora
 por cada dato que llega, utilizando sincronización mediante un 
-semáforo provisto
-por el RTOS. Si la tarea que consume, demora en procesar
+semáforo.  Si la tarea que consume, demora en procesar
 un dato, y llegan nuevos datos, la rutina de atención de interrupciones
 depositará automaticamente los nuevos datos en el buffer, y activará
 el semáforo del consumidor tantas veces como datos existan en el buffer.
@@ -641,11 +619,6 @@ Este ejemplo es muy similar al Código Fuente 1.5. Pero observe que ahora
 los datos son colocados en un buffer. Si la tarea consumidora no obtiene
 CPU porque, por ejemplo, alguna otra tarea crítica está en ejecución,
 los datos no se pierden.
-
-Esta funcionalidad es util en problemas donde la rutina
-que procesa la información requiere de una cantidad de datos N mínima antes
-de poder procesar. Por ejemplo, el procesamiento de un paquete de red compuesto
-usualmente por varios bytes.
 
 \begin{center}
 \begin{tabularx}{\textwidth}{|X|}
@@ -667,10 +640,41 @@ el problema no es el tamaño del buffer, es de procesamiento.
 \end{tabularx}
 \end{center}
 
+\begin{lstlisting}[ caption={Productor-Consumidor via interrupciones}, frame=single ]
+sid32 sem_consumidor;         // inicializado en 0
 
-\FloatBarrier
-\begin{codefloat}[tp]
+/* rutina de atención de interrupciones */
+ISR(USART_RX_vect) {
+    buffer_put(UDR0);
+    signal(sem_consumidor);   // activar consumidor
+}
+
+process consumidor_uart(void) {
+    while (TRUE) {
+        wait(sem_consumidor);        // bloqueado hasta que 
+                                     // existan datos para procesar
+        char d = buffer_get();
+        procesar_caracter(d);
+    }
+}
+\end{lstlisting}
+
+
+
+\subsection{Productor-consumidor}
+
+Un variante del caso anterior es un clásico. Son dos tareas, una
+que produce datos y la otra las que los procesa.
+En el Código Fuente 1.7 se observa un ejemplo, utilizando las herramientas del RTOS
+que sincroniza este problema de manera sencilla.
+Como se observa, el productor no produce mas datos hasta que el consumidor
+no lo active nuevamente. Es el típico patrón productor-consumidor 
+sincronizados mediante dos semáforos provistos por el RTOS.
+
+
 \begin{lstlisting}[ caption={Sincronizacion productor-consumidor entre tareas}, frame=single ]
+#include <xinu.h>
+
 sid32 produced;
 sid32 consumed;
 int n = 0;        // buffer
@@ -703,25 +707,8 @@ void main(void) {
 
     resume(create(prod, 256, 20, "pro", 0));
     resume(create(cons, 256, 20, "con", 0));
-
-    for(;;);
-
 }
 \end{lstlisting}
-\end{codefloat}
-
-
-\subsection{Productor-consumidor}
-
-Un variante del caso anterior es un clásico. Son dos tareas, una
-que produce datos y la otra las que los procesa.
-En el Código Fuente 1.7 se observa un ejemplo, utilizando las herramientas del RTOS
-que sincroniza este problema de manera sencilla.
-Como se observa, el productor no produce mas datos hasta que el consumidor
-no lo active nuevamente. Es el típico patrón productor-consumidor 
-sincronizados mediante dos semáforos provistos por el RTOS.
-
-
 
 
 
@@ -762,8 +749,39 @@ Existen dos versiones para esta arquitectura:
 	una retro computadora UNIX: \textit{http://se.fi.uncoma.edu.ar/xinu-avr/}
 \end{itemize}
 
-\FloatBarrier
-\begin{codefloat}[tp]
+\subsection{ Creacion y finalizacion de tareas}
+En XINU RTOS, una tarea\footnote{IMPORTANTE: el término usual para entidades ejecutadas en forma independiente y de manera concurrente es \textbf{\textit{proceso}} en la literatura de Sistemas Operativos. Lo es tambien dentro de la terminología del sistema operativo XINU tradicional. Sin embargo, en sistemas embebidos utilizando RTOS el término usual es \textbf{\textit{tarea}}, y es el que utilizaremos en todo este apunte} es una función en C que se ejecuta de forma concurrente con las demas. La función create() crea la tarea en estado suspendido; resume() la coloca en estado "listo para ejecutar". La combinacion de ambas es la forma estandar de ejecutar una tarea. create() retorna un PID (Process ID) que permite referirse a la tarea proceso en llamadas posteriores.
+El prototipo de la función create() es:
+
+\begin{verbatim}
+// create(función, tam_pila_bytes, prioridad, nombre, nro_args, args...)
+
+pid32 create(void *function, uint16 stksize, pri8 priority,
+             char *name, uint8 nargs, ...);
+\end{verbatim}
+
+Un programa ejemplo completo de creacion, obtencion de PID, y finalizacion de una tarea se puede ver en el Código Fuente 1.8. Además se documenta brevemente otras llamadas al sistema de XINU RTOS aquí debajo:
+
+\begin{verbatim}
+getpid();        // obtención del PID de la tarea 
+kill(pid);       // termina una tarea por su PID
+kill(getpid());  // termina nuestra tarea
+suspend(pid);    // suspende una tarea (queda en estado SUSPENDED)
+resume(pid);     // reanuda una tarea suspendida
+getprio();       // obtiene la prioridad de una tarea
+chprio(pid, nueva_prio);  // cambia la prioridad de una tarea en ejecucion
+create();        // crea una nueva tarea
+resume(pid);     // pone en estado de LISTO a una tarea
+suspend(pid);    // se le solicita al kernel XINU que suspenda a la tarea pid
+sleep(n);        // la tarea delega la CPU al kernel XINU por n segundos
+sleepms(n);      // la tarea delega la CPU al kernel XINU por n milisegundos
+send(pid, msg);  // enviar el mensaje msg (un entero) a pid (no bloqueante)
+receive();       // espera por un mensaje (system call bloqueante)
+recvclr();       // limpia el buffer de recepción (no bloqueante)
+wait();          // espera por un semáforo
+signal();        // señaliza un semáforo
+\end{verbatim}
+
 \begin{lstlisting}[ caption={Creación y finalización de una tarea (programa completo)}, frame=single ]
 #include <xinu.h>
 
@@ -788,49 +806,34 @@ process prender_led(int n)
     // También la puede finalizar otra tarea con kill(pid).
 }
 \end{lstlisting}
-\end{codefloat}
 
-Otras llamadas al sistema provistas por XINU:
 
-\subsection{ Creacion y finalizacion de tareas}
-En XINU RTOS, una tarea\footnote{IMPORTANTE: el término usual para entidades ejecutadas en forma independiente y de manera concurrente es \textbf{\textit{proceso}} en la literatura de Sistemas Operativos. Lo es tambien dentro de la terminología del sistema operativo XINU tradicional. Sin embargo, en sistemas embebidos utilizando RTOS el término usual es \textbf{\textit{tarea}}, y es el que utilizaremos en todo este apunte} es una función en C que se ejecuta de forma concurrente con las demas. La función create() crea la tarea en estado suspendido; resume() la coloca en estado "listo para ejecutar". La combinacion de ambas es la forma estandar de ejecutar una tarea. create() retorna un PID (Process ID) que permite referirse a la tarea proceso en llamadas posteriores.
-El prototipo de la función create() es:
 
-\begin{verbatim}
-// create(función, tam_pila_bytes, prioridad, nombre, nro_args, args...)
+\subsection{Tareas periodicas}
+Las funciones sleep(s) y sleepms(ms) bloquean la tarea durante 
+la cantidad de segundos o milisegundos indicado como argumento. 
+Esto es, la tarea que ejecuta sleelp(s) o sleepms(ms) delega voluntariamente
+la CPU por el tiempo requerido.
+Durante ese tiempo, el planificador cede la CPU a otra tareas listas.
+Cuando el tiempo vence, la tarea pasa al estado LISTO y será ejecutada
+cuando el planificador lo decida segun su prioridad.
+Combinada con un bucle infinito dentro de la tarea, sleep() o sleepms() 
+implementa el patron de tarea periodica de forma directa. 
+A diferencia del bucle + ISR, aqui cada tarea tiene su propio plazo, 
+y el planificador garantiza que la de mayor prioridad siempre se activa primero.
 
-pid32 create(void *function, uint16 stksize, pri8 priority,
-             char *name, uint8 nargs, ...);
+En el Código Fuente 1.9 se observan dos tareas periódicas.
+Una de gran importancia, que es la ventilación de la planta química, y 
+otra tarea menos crítica que reporta mediante una lámpara el estado
+de la temperatura. Como la tarea crítica se ejecuta cada cierto tiempo,
+50ms en este caso, en cuanto sea activada 
+se le otorgará el uso de CPU inmediatamente. Esto se maneja 
+asignando una mayor prioridad a esta tarea. La tarea temperatura
+se ejecuta mas frecuentemente, y sólo es interrumpida por un momento
+cuando se active la de ventilación.
 
-\end{verbatim}
-
-Un programa ejemplo completo de creacion, obtencion de PID, y finalizacion de una tarea se puede ver en el Código Fuente 1.8. Además se documenta brevemente otras llamadas al sistema de XINU RTOS aquí debajo:
-
-\begin{verbatim}
-getpid();        // obtención del PID de la tarea 
-kill(pid);       // termina una tarea por su PID
-kill(getpid());  // termina nuestra tarea
-suspend(pid);    // suspende una tarea (queda en estado SUSPENDED)
-resume(pid);     // reanuda una tarea suspendida
-getprio();       // obtiene la prioridad de una tarea
-chprio(pid, nueva_prio);  // cambia la prioridad de una tarea en ejecucion
-create();        // crea una nueva tarea
-resume(pid);     // pone en estado de LISTO a una tarea
-suspend(pid);    // se le solicita al kernel XINU que suspenda a la tarea pid
-sleep(n);        // la tarea delega la CPU al kernel XINU por n segundos
-sleepms(n);      // la tarea delega la CPU al kernel XINU por n milisegundos
-send(pid, msg);  // enviar el mensaje msg (un entero) a pid (no bloqueante)
-receive();       // espera por un mensaje (system call bloqueante)
-recvclr();       // limpia el buffer de recepción (no bloqueante)
-wait();          // espera por un semáforo
-signal();        // señaliza un semáforo
-
-\end{verbatim}
-
-\FloatBarrier
-\begin{codefloat}[tp]
-\begin{lstlisting}[ caption={Tareas periódicas}, frame=single ]
-// Dos tareas periodicas con distintas restricciones temporales
+\begin{lstlisting}[ caption={Dos tareas periódicas con distintas restricciones temporales}, frame=single ]
+#include <xinu.h>
 
 /*
  * Ventilación de la planta: tarea crítica a 20hz
@@ -868,77 +871,47 @@ void main(void)
     resume(create(temperatura, 256, 15, "temp", 0));
 }
 \end{lstlisting}
-\end{codefloat}
 
-\subsection{Tareas periodicas}
-Las funciones sleep(s) y sleepms(ms) bloquean la tarea durante 
-la cantidad de segundos o milisegundos indicado como argumento. 
-Esto es, la tarea que ejecuta sleelp(s) o sleepms(ms) delega voluntariamente
-la CPU por el tiempo requerido.
-Durante ese tiempo, el planificador cede la CPU a otra tareas listas.
-Cuando el tiempo vence, la tarea pasa al estado LISTO y será ejecutada
-cuando el planificador lo decida segun su prioridad.
-Combinada con un bucle infinito dentro de la tarea, sleep() o sleepms() 
-implementa el patron de tarea periodica de forma directa. 
-A diferencia del bucle + ISR, aqui cada tarea tiene su propio plazo, 
-y el planificador garantiza que la de mayor prioridad siempre se activa primero.
+\subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
+El ejemplo en el Código Fuente 1.10 integra los tres patrones en un sistema realista: tarea periodica critica, tarea activada por un evento asincronico, y dos tareas periodicas de baja prioridad. Este ejemplo podría ser un punto de partida de
+un tipico sistema embebido desarrollado utilizando un RTOS. 
 
-En el ejemplo siguiente se observan dos tareas periódicas.
-Una de gran importancia, que es la ventilación de la planta química, y 
-otra tarea menos crítica que reporta mediante una lámpara el estado
-de la temperatura. Como la tarea más crítica se ejecuta cada cierto tiempo,
-50ms en este caso, en cuanto sea activada por el RTOS 
-se le otorgará el uso de CPU inmediatamente. Esto se maneja simplemente
-asignando una mayor prioridad a esta tarea. La tarea de menor prioridad
-se ejecuta mas frecuentemente, y sólo es interrumpida por un momento
-cuando se active la de ventilación.
-
-
-\FloatBarrier
-\begin{codefloat}[tp]
 \begin{lstlisting}[ caption={Programa ejemplo completo con cuatro tareas}, frame=single ]
 #include <xinu.h>
 
 sid32 sem_uart;
 volatile char cmd_byte;
 
-ISR(USART_RX_vect)             // rutina de atención de interrupcion
-{
+ISR(USART_RX_vect) {             // rutina de atención de interrupcion
     cmd_byte = UDR0;
     signal(sem_uart);
 }
 
-process encoder(void)          // Tarea crítica: tiempo de respuesta < 5ms
-{
+process encoder(void) {          // Tarea crítica: tiempo de respuesta < 5ms
     for (;;) {
         calcular_odometria(leer_encoder());
         sleepms(5);
     }
 }
 
-process comandos(void)         // Tarea activada por evento
-{
+process comandos(void) {         // Tarea activada por evento
     for (;;) {
         wait(sem_uart);
         procesar_comando(cmd_byte);
     }
 }
 
-process display(void)          // Actualizar display a 100hz
-{
+process display(void) {          // Actualizar display a 100hz
     for (;;) {
         actualizar_lcd();
         sleepms(10);
     }
 }
 
-process led(void)              // Parpadear un LED a 1hz
-{
+process led(void) {              // Parpadear un LED a 1hz
     for (;;) {
-        led_on();    
-        sleepms(500);
-        led_off();
-        sleepms(500);
+        led_on();    sleepms(500);
+        led_off();   sleepms(500);
     }
 }
 
@@ -950,16 +923,13 @@ void main(void) {
     resume(create(led, 256, 10, "run",  0));
 }
 \end{lstlisting}
-\end{codefloat}
-
-\subsection{ Ejemplo completo: cuatro tareas con prioridades distintas}
-El siguiente ejemplo integra los tres patrones en un sistema realista: tarea periodica critica, tarea activada por un evento asincronico, y dos tareas periodicas de baja prioridad. Este ejemplo podría ser un punto de partida de
-un tipico sistema embebido desarrollado utilizando un RTOS. El programa de este ejemplo puede verse en el Código Fuente 1.10.
 
 El planificador garantiza el siguiente comportamiento en tiempo de ejecucion: la tarea \texttt{\textbf{encoder}} siempre se activa cuando su periodo de 5ms vence, sin importar que esten haciendo las demás. 
 La tarea \texttt{\textbf{comandos}} se activa luego de que llega un dato por el serial, con tiempo para cumplir el plazo de 20ms. 
 La tarea \texttt{\textbf{display}} solo ocupa la CPU cuando las otras dos estan inactivas o bloqueadas. Todo esto sin que el programador deba calcular explicitamente cuanto demora cada función ni en que orden colocarlas en un bucle infinito. La tarea \texttt{\textbf{led}} tiene la misma prioridad que display, por
 lo que ambas se ejecutan en modo round-robin.
+
+
 
 \subsection{Instrucciones para utilizar el código fuente de XINU RTOS}
 
@@ -970,7 +940,7 @@ git clone https://github.com/zrafa/xinu-avr-rtos
 \end{verbatim}
 
 
-XINU RTOS presenta los siguientes directorios de
+\noindent XINU RTOS presenta los siguientes directorios de
 código fuente:
 
 \begin{verbatim}
@@ -981,7 +951,7 @@ system/               : código fuente del kernel de XINU RTOS
 main/                 : código fuente de la aplicación embebida
 \end{verbatim}
 
-En general, el único directorio donde se trabaja es debajo de \texttt{main/}.  \\
+\noindent En general, el único directorio donde se trabaja es debajo de \texttt{main/}.  \\
 
 Esta versión de XINU RTOS trae un gestor de memoria dinámica, gestor de tareas
 (procesos), un driver del timer 2 que el planificador de CPU del kernel de
@@ -1019,10 +989,12 @@ de esa memoria libre.
 
 \begin{verbatim}
 cd xinu-avr-rtos/compile
+\end{verbatim}
 
-Editar el Makefile en ese directorio, y seleccionar una de las dos opciones
+\noindent Editar el Makefile en ese directorio, y seleccionar una de las dos opciones
 que especifiquen su plataforma:
 
+\begin{verbatim}
 opcion 1:
 # PLATFORM      =       -Dlgt8f328p
 # HZ            =       4000000
@@ -1030,33 +1002,32 @@ opcion 1:
 opcion 2:
 # PLATFORM        =       -DATMEGA
 # HZ              =       16000000
-
-Si su arduino tiene un chip atmega original, descomentar la opción dos
-(quitar el #, y dejar comentada la opcion 1).
-Para los que tengan el arduino nano chino de 4Mhz descomentar la opción uno.
-
-El archivo config/Configuration define los demás parámetros del sistema.
 \end{verbatim}
+
+\noindent Si su arduino tiene un chip atmega original, descomentar la opción dos
+(quitar el \#, y dejar comentada la opcion 1). Para los que tengan el arduino nano chino de 4Mhz descomentar la opción uno.\\
+
+\noindent El archivo \texttt{config/Configuration} define los demás parámetros del sistema.
 
 \subsubsection*{Compilar y verificar}
 
-\begin{verbatim}
 Para poder compilar XINU RTOS debe instalar los siguientes paquetes:
 
+\begin{verbatim}
 bison
 flex
 gawk
 build-essential
-
-(en su Linux pueden llamarse distinto).
 \end{verbatim}
 
+\noindent (en su Linux pueden llamarse distinto).\\
+
+\noindent La carpeta main/ tiene un programa de ejemplo de varias tareas
+listo para realizar una prueba.\\ 
+
+\noindent Estando en el directorio de trabajo xinu-avr-rtos/compile/
+
 \begin{verbatim}
-La carpeta main/ tiene un programa de ejemplo de varias tareas
-listo para realizar una prueba. 
-
-Estando en el directorio de trabajo xinu-avr-rtos/compile/
-
 make clean
 make
 make flash
@@ -1066,9 +1037,9 @@ make flash
 
 \section {Licencia}
 
-Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 2026\\
+Rafael Ignacio Zurita ({\texttt{rafa@fi.uncoma.edu.ar}) 2026.
 
-\textit{Este apunte es un apunte de libre distribución y uso.}\\
+\noindent \textit{Este apunte es un apunte de libre distribución y uso.}
 
 
 
